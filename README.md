@@ -19,3 +19,4 @@ View your app in AI Studio: https://ai.studio/apps/d1911c9c-0133-405f-ba41-4d98c
 3. Run the app:
    `npm run dev`
 "# linktree" 
+"# my-linktree" 
