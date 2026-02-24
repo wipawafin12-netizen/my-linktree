@@ -9,6 +9,11 @@ import {
   Check, Upload, Pencil, X, Search, Heart, Play, Phone, FileText,
   ShoppingBag, Grid3x3, Tag, ClipboardList, Download, Mail,
   Copy, CheckCircle2, Coins, Info, GraduationCap,
+  MapPin, Headphones, Podcast, Camera, Gamepad2,
+  Store, Rss, AtSign, Send, Radio, Tv, Newspaper,
+  BookOpen, Coffee, Gift, Megaphone, Mic, Clapperboard, PenTool,
+  Brush, Wallet, Bitcoin, Code2, Terminal, Rocket, Flame,
+  Shirt, Crown, Anchor, Zap, Star, Music, Video,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -59,63 +64,122 @@ const linkColors = [
   { id: 'orange', label: 'Orange', value: '#ffe0b2' },
   { id: 'blue', label: 'Blue', value: '#dbeafe' },
   { id: 'peach', label: 'Peach', value: '#fde8d8' },
+  // Dark colors
+  { id: 'charcoal', label: 'Charcoal', value: '#1e1e1e' },
+  { id: 'navy', label: 'Navy', value: '#1a1a40' },
+  { id: 'dark-green', label: 'Forest', value: '#1b3a2d' },
+  { id: 'dark-red', label: 'Wine', value: '#4a1c2e' },
+  { id: 'dark-blue', label: 'Midnight', value: '#0f2744' },
+  { id: 'dark-purple', label: 'Plum', value: '#2d1b4e' },
+  { id: 'dark-brown', label: 'Espresso', value: '#3b2a1a' },
+  { id: 'slate', label: 'Slate', value: '#2d3748' },
+  { id: 'gunmetal', label: 'Gunmetal', value: '#2c3e50' },
+  { id: 'black', label: 'Black', value: '#0a0a0a' },
+];
+
+// ── Text color palette ──
+const textColorGroups = [
+  { label: 'Dark', colors: [
+    { id: 'black', label: 'Black', value: '#000000' },
+    { id: 'charcoal', label: 'Charcoal', value: '#1f2937' },
+    { id: 'gray', label: 'Gray', value: '#6b7280' },
+    { id: 'navy', label: 'Navy', value: '#1e3a5f' },
+    { id: 'dark-green', label: 'Forest', value: '#14532d' },
+    { id: 'brown', label: 'Brown', value: '#5c3d2e' },
+    { id: 'wine', label: 'Wine', value: '#6b2140' },
+    { id: 'plum', label: 'Plum', value: '#4c1d95' },
+  ]},
+  { label: 'Light', colors: [
+    { id: 'white', label: 'White', value: '#ffffff' },
+    { id: 'cream', label: 'Cream', value: '#fef3c7' },
+    { id: 'light-pink', label: 'Pink', value: '#fda4af' },
+    { id: 'light-blue', label: 'Sky', value: '#93c5fd' },
+    { id: 'light-green', label: 'Mint', value: '#86efac' },
+    { id: 'gold', label: 'Gold', value: '#d97706' },
+    { id: 'coral', label: 'Coral', value: '#f87171' },
+    { id: 'teal', label: 'Teal', value: '#2dd4bf' },
+  ]},
 ];
 
 // ── Background patterns ──
 const bgPatterns = [
   { id: 'none', label: 'None', style: {} as React.CSSProperties },
-  { id: 'gingham', label: 'Gingham', style: {
-    backgroundImage: `repeating-linear-gradient(0deg, rgba(200,150,200,0.12) 0px, rgba(200,150,200,0.12) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, rgba(200,150,200,0.12) 0px, rgba(200,150,200,0.12) 1px, transparent 1px, transparent 20px)`,
-    backgroundSize: '20px 20px',
-  } as React.CSSProperties },
-  { id: 'dots', label: 'Dots', style: {
-    backgroundImage: `radial-gradient(circle, rgba(180,140,200,0.18) 1.5px, transparent 1.5px)`,
-    backgroundSize: '16px 16px',
-  } as React.CSSProperties },
-  { id: 'stripes', label: 'Stripes', style: {
-    backgroundImage: `repeating-linear-gradient(135deg, rgba(200,150,200,0.1) 0px, rgba(200,150,200,0.1) 2px, transparent 2px, transparent 12px)`,
-  } as React.CSSProperties },
-  { id: 'confetti', label: 'Confetti', style: {
-    backgroundImage: `radial-gradient(circle, rgba(252,196,204,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(200,180,240,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(180,230,200,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(255,240,170,0.3) 2px, transparent 2px)`,
-    backgroundSize: '40px 40px, 50px 50px, 35px 45px, 45px 35px',
-    backgroundPosition: '0 0, 20px 15px, 10px 30px, 35px 5px',
-  } as React.CSSProperties },
-  { id: 'diamond', label: 'Diamond', style: {
-    backgroundImage: `repeating-linear-gradient(45deg, rgba(180,160,210,0.1) 0px, rgba(180,160,210,0.1) 1px, transparent 1px, transparent 16px), repeating-linear-gradient(-45deg, rgba(180,160,210,0.1) 0px, rgba(180,160,210,0.1) 1px, transparent 1px, transparent 16px)`,
-    backgroundSize: '22px 22px',
-  } as React.CSSProperties },
-  { id: 'zigzag', label: 'Zigzag', style: {
-    backgroundImage: `linear-gradient(135deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(225deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(315deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(45deg, rgba(200,150,180,0.12) 25%, transparent 25%)`,
-    backgroundSize: '20px 10px',
-    backgroundPosition: '0 0, 10px 0, 10px -5px, 0 5px',
-  } as React.CSSProperties },
-  { id: 'waves', label: 'Waves', style: {
-    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 14px, rgba(160,180,220,0.12) 14px, rgba(160,180,220,0.12) 16px), repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(160,180,220,0.06) 30px, rgba(160,180,220,0.06) 32px)`,
-  } as React.CSSProperties },
-  { id: 'hearts', label: 'Hearts', style: {
-    backgroundImage: `radial-gradient(circle, rgba(240,140,160,0.2) 3px, transparent 3px), radial-gradient(circle, rgba(240,140,160,0.12) 2px, transparent 2px)`,
-    backgroundSize: '30px 30px, 30px 30px',
-    backgroundPosition: '0 0, 15px 15px',
-  } as React.CSSProperties },
-  { id: 'stars', label: 'Stars', style: {
-    backgroundImage: `radial-gradient(circle, rgba(220,180,100,0.2) 1.5px, transparent 1.5px), radial-gradient(circle, rgba(220,180,100,0.15) 1px, transparent 1px), radial-gradient(circle, rgba(220,180,100,0.25) 2px, transparent 2px)`,
-    backgroundSize: '24px 24px, 36px 36px, 48px 48px',
-    backgroundPosition: '0 0, 12px 18px, 6px 36px',
-  } as React.CSSProperties },
-  { id: 'grid', label: 'Grid', style: {
-    backgroundImage: `linear-gradient(rgba(150,150,180,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(150,150,180,0.08) 1px, transparent 1px)`,
-    backgroundSize: '12px 12px',
-  } as React.CSSProperties },
-  { id: 'honeycomb', label: 'Honeycomb', style: {
-    backgroundImage: `radial-gradient(circle, transparent 7px, rgba(200,170,130,0.08) 7px, rgba(200,170,130,0.08) 8px, transparent 8px)`,
-    backgroundSize: '20px 34px',
-    backgroundPosition: '0 0, 10px 17px',
-  } as React.CSSProperties },
-  { id: 'bubbles', label: 'Bubbles', style: {
-    backgroundImage: `radial-gradient(circle, rgba(160,200,230,0.15) 6px, transparent 6px), radial-gradient(circle, rgba(200,170,220,0.12) 4px, transparent 4px), radial-gradient(circle, rgba(180,220,180,0.1) 8px, transparent 8px)`,
-    backgroundSize: '50px 50px, 38px 38px, 60px 60px',
-    backgroundPosition: '0 0, 25px 20px, 10px 35px',
-  } as React.CSSProperties },
+  {
+    id: 'gingham', label: 'Gingham', style: {
+      backgroundImage: `repeating-linear-gradient(0deg, rgba(200,150,200,0.12) 0px, rgba(200,150,200,0.12) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, rgba(200,150,200,0.12) 0px, rgba(200,150,200,0.12) 1px, transparent 1px, transparent 20px)`,
+      backgroundSize: '20px 20px',
+    } as React.CSSProperties
+  },
+  {
+    id: 'dots', label: 'Dots', style: {
+      backgroundImage: `radial-gradient(circle, rgba(180,140,200,0.18) 1.5px, transparent 1.5px)`,
+      backgroundSize: '16px 16px',
+    } as React.CSSProperties
+  },
+  {
+    id: 'stripes', label: 'Stripes', style: {
+      backgroundImage: `repeating-linear-gradient(135deg, rgba(200,150,200,0.1) 0px, rgba(200,150,200,0.1) 2px, transparent 2px, transparent 12px)`,
+    } as React.CSSProperties
+  },
+  {
+    id: 'confetti', label: 'Confetti', style: {
+      backgroundImage: `radial-gradient(circle, rgba(252,196,204,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(200,180,240,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(180,230,200,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(255,240,170,0.3) 2px, transparent 2px)`,
+      backgroundSize: '40px 40px, 50px 50px, 35px 45px, 45px 35px',
+      backgroundPosition: '0 0, 20px 15px, 10px 30px, 35px 5px',
+    } as React.CSSProperties
+  },
+  {
+    id: 'diamond', label: 'Diamond', style: {
+      backgroundImage: `repeating-linear-gradient(45deg, rgba(180,160,210,0.1) 0px, rgba(180,160,210,0.1) 1px, transparent 1px, transparent 16px), repeating-linear-gradient(-45deg, rgba(180,160,210,0.1) 0px, rgba(180,160,210,0.1) 1px, transparent 1px, transparent 16px)`,
+      backgroundSize: '22px 22px',
+    } as React.CSSProperties
+  },
+  {
+    id: 'zigzag', label: 'Zigzag', style: {
+      backgroundImage: `linear-gradient(135deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(225deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(315deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(45deg, rgba(200,150,180,0.12) 25%, transparent 25%)`,
+      backgroundSize: '20px 10px',
+      backgroundPosition: '0 0, 10px 0, 10px -5px, 0 5px',
+    } as React.CSSProperties
+  },
+  {
+    id: 'waves', label: 'Waves', style: {
+      backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 14px, rgba(160,180,220,0.12) 14px, rgba(160,180,220,0.12) 16px), repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(160,180,220,0.06) 30px, rgba(160,180,220,0.06) 32px)`,
+    } as React.CSSProperties
+  },
+  {
+    id: 'hearts', label: 'Hearts', style: {
+      backgroundImage: `radial-gradient(circle, rgba(240,140,160,0.2) 3px, transparent 3px), radial-gradient(circle, rgba(240,140,160,0.12) 2px, transparent 2px)`,
+      backgroundSize: '30px 30px, 30px 30px',
+      backgroundPosition: '0 0, 15px 15px',
+    } as React.CSSProperties
+  },
+  {
+    id: 'stars', label: 'Stars', style: {
+      backgroundImage: `radial-gradient(circle, rgba(220,180,100,0.2) 1.5px, transparent 1.5px), radial-gradient(circle, rgba(220,180,100,0.15) 1px, transparent 1px), radial-gradient(circle, rgba(220,180,100,0.25) 2px, transparent 2px)`,
+      backgroundSize: '24px 24px, 36px 36px, 48px 48px',
+      backgroundPosition: '0 0, 12px 18px, 6px 36px',
+    } as React.CSSProperties
+  },
+  {
+    id: 'grid', label: 'Grid', style: {
+      backgroundImage: `linear-gradient(rgba(150,150,180,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(150,150,180,0.08) 1px, transparent 1px)`,
+      backgroundSize: '12px 12px',
+    } as React.CSSProperties
+  },
+  {
+    id: 'honeycomb', label: 'Honeycomb', style: {
+      backgroundImage: `radial-gradient(circle, transparent 7px, rgba(200,170,130,0.08) 7px, rgba(200,170,130,0.08) 8px, transparent 8px)`,
+      backgroundSize: '20px 34px',
+      backgroundPosition: '0 0, 10px 17px',
+    } as React.CSSProperties
+  },
+  {
+    id: 'bubbles', label: 'Bubbles', style: {
+      backgroundImage: `radial-gradient(circle, rgba(160,200,230,0.15) 6px, transparent 6px), radial-gradient(circle, rgba(200,170,220,0.12) 4px, transparent 4px), radial-gradient(circle, rgba(180,220,180,0.1) 8px, transparent 8px)`,
+      backgroundSize: '50px 50px, 38px 38px, 60px 60px',
+      backgroundPosition: '0 0, 25px 20px, 10px 35px',
+    } as React.CSSProperties
+  },
 ];
 
 // ── Button styles ──
@@ -129,9 +193,35 @@ const buttonStyles = [
 
 // ── Font options ──
 const fontOptions = [
-  { id: 'inter', label: 'Inter', cls: 'font-sans' },
-  { id: 'serif', label: 'Serif', cls: 'font-serif' },
-  { id: 'mono', label: 'Mono', cls: 'font-mono' },
+  // Sans-serif
+  { id: 'inter', label: 'Inter', cls: 'font-sans', category: 'Sans-serif' },
+  { id: 'poppins', label: 'Poppins', cls: 'font-poppins', category: 'Sans-serif' },
+  { id: 'dm-sans', label: 'DM Sans', cls: 'font-dm-sans', category: 'Sans-serif' },
+  { id: 'outfit', label: 'Outfit', cls: 'font-outfit', category: 'Sans-serif' },
+  { id: 'space-grotesk', label: 'Space Grotesk', cls: 'font-space-grotesk', category: 'Sans-serif' },
+  { id: 'nunito', label: 'Nunito', cls: 'font-nunito', category: 'Sans-serif' },
+  { id: 'quicksand', label: 'Quicksand', cls: 'font-quicksand', category: 'Sans-serif' },
+  { id: 'comfortaa', label: 'Comfortaa', cls: 'font-comfortaa', category: 'Sans-serif' },
+  { id: 'rubik', label: 'Rubik', cls: 'font-rubik', category: 'Sans-serif' },
+  { id: 'montserrat', label: 'Montserrat', cls: 'font-montserrat', category: 'Sans-serif' },
+  { id: 'raleway', label: 'Raleway', cls: 'font-raleway', category: 'Sans-serif' },
+  { id: 'oswald', label: 'Oswald', cls: 'font-oswald', category: 'Sans-serif' },
+  { id: 'bebas', label: 'Bebas Neue', cls: 'font-bebas', category: 'Sans-serif' },
+  // Serif
+  { id: 'playfair', label: 'Playfair', cls: 'font-playfair', category: 'Serif' },
+  { id: 'lora', label: 'Lora', cls: 'font-lora', category: 'Serif' },
+  { id: 'merriweather', label: 'Merriweather', cls: 'font-merriweather', category: 'Serif' },
+  { id: 'crimson', label: 'Crimson', cls: 'font-crimson', category: 'Serif' },
+  { id: 'source-serif', label: 'Source Serif', cls: 'font-source-serif', category: 'Serif' },
+  // Monospace
+  { id: 'jetbrains', label: 'JetBrains', cls: 'font-jetbrains', category: 'Mono' },
+  { id: 'fira-code', label: 'Fira Code', cls: 'font-fira-code', category: 'Mono' },
+  { id: 'space-mono', label: 'Space Mono', cls: 'font-space-mono', category: 'Mono' },
+  // Handwriting
+  { id: 'caveat', label: 'Caveat', cls: 'font-caveat', category: 'Handwriting' },
+  { id: 'dancing', label: 'Dancing', cls: 'font-dancing', category: 'Handwriting' },
+  { id: 'pacifico', label: 'Pacifico', cls: 'font-pacifico', category: 'Handwriting' },
+  { id: 'satisfy', label: 'Satisfy', cls: 'font-satisfy', category: 'Handwriting' },
 ];
 
 // ── Social icons map ──
@@ -144,6 +234,42 @@ const socialPlatforms = [
   { id: 'twitch', icon: Twitch, label: 'Twitch' },
   { id: 'github', icon: Github, label: 'GitHub' },
   { id: 'website', icon: Globe, label: 'Website' },
+  { id: 'linkedin', icon: AtSign, label: 'LinkedIn' },
+  { id: 'email', icon: Mail, label: 'Email' },
+  { id: 'telegram', icon: Send, label: 'Telegram' },
+  { id: 'whatsapp', icon: Phone, label: 'WhatsApp' },
+  { id: 'spotify', icon: Headphones, label: 'Spotify' },
+  { id: 'soundcloud', icon: Music, label: 'SoundCloud' },
+  { id: 'podcast', icon: Podcast, label: 'Podcast' },
+  { id: 'pinterest', icon: MapPin, label: 'Pinterest' },
+  { id: 'snapchat', icon: Camera, label: 'Snapchat' },
+  { id: 'reddit', icon: MessageSquare, label: 'Reddit' },
+  { id: 'discord', icon: Gamepad2, label: 'Discord' },
+  { id: 'steam', icon: Flame, label: 'Steam' },
+  { id: 'shopify', icon: Store, label: 'Shopify' },
+  { id: 'etsy', icon: Shirt, label: 'Etsy' },
+  { id: 'rss', icon: Rss, label: 'RSS' },
+  { id: 'blog', icon: BookOpen, label: 'Blog' },
+  { id: 'newsletter', icon: Newspaper, label: 'Newsletter' },
+  { id: 'patreon', icon: Crown, label: 'Patreon' },
+  { id: 'kofi', icon: Coffee, label: 'Ko-fi' },
+  { id: 'donate', icon: Gift, label: 'Donate' },
+  { id: 'video', icon: Video, label: 'Video' },
+  { id: 'tv', icon: Tv, label: 'TV' },
+  { id: 'radio', icon: Radio, label: 'Radio' },
+  { id: 'mic', icon: Mic, label: 'Mic' },
+  { id: 'film', icon: Clapperboard, label: 'Film' },
+  { id: 'design', icon: PenTool, label: 'Design' },
+  { id: 'art', icon: Brush, label: 'Art' },
+  { id: 'wallet', icon: Wallet, label: 'Wallet' },
+  { id: 'crypto', icon: Bitcoin, label: 'Crypto' },
+  { id: 'code', icon: Code2, label: 'Code' },
+  { id: 'terminal', icon: Terminal, label: 'Terminal' },
+  { id: 'product', icon: Rocket, label: 'Product' },
+  { id: 'promo', icon: Megaphone, label: 'Promo' },
+  { id: 'anchor', icon: Anchor, label: 'Anchor' },
+  { id: 'featured', icon: Star, label: 'Featured' },
+  { id: 'flash', icon: Zap, label: 'Flash' },
 ];
 
 // ── Add modal categories ──
@@ -159,10 +285,10 @@ const addCategories = [
 ];
 
 const addQuickCards = [
-  { icon: Grid3x3, label: 'Collection', color: '#8b5cf6' },
-  { icon: Link2, label: 'Link', color: '#8b5cf6' },
-  { icon: Tag, label: 'Product', color: '#8b5cf6' },
-  { icon: ClipboardList, label: 'Form', color: '#8b5cf6' },
+  { icon: Grid3x3, label: 'Collection', color: '#c4917b' },
+  { icon: Link2, label: 'Link', color: '#c4917b' },
+  { icon: Tag, label: 'Product', color: '#c4917b' },
+  { icon: ClipboardList, label: 'Form', color: '#c4917b' },
 ];
 
 const addSuggestedItems = [
@@ -203,10 +329,13 @@ export default function CreatePage() {
   const [selectedTheme, setSelectedTheme] = useState('minimal');
   const [selectedButton, setSelectedButton] = useState('rounded');
   const [selectedFont, setSelectedFont] = useState('inter');
+  const [customTextColor, setCustomTextColor] = useState('');
   const [customBgColor, setCustomBgColor] = useState('#6366f1');
   const [customBgSecondary, setCustomBgSecondary] = useState('#4f46e5');
   const [links, setLinks] = useState<LinkItem[]>([]);
   const [activeSocials, setActiveSocials] = useState<string[]>([]);
+  const [socialSearch, setSocialSearch] = useState('');
+  const [fontCategory, setFontCategory] = useState('all');
   const [activeSection, setActiveSection] = useState('links');
   const [mainTab, setMainTab] = useState<'add' | 'settings'>('add');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -311,6 +440,8 @@ export default function CreatePage() {
   const theme = isCustom ? customTheme : (themes.find((t) => t.id === selectedTheme) || themes[0]);
   const btnStyle = buttonStyles.find((b) => b.id === selectedButton) || buttonStyles[0];
   const fontStyle = fontOptions.find((f) => f.id === selectedFont) || fontOptions[0];
+  // Resolve text color: user pick > theme auto
+  const resolvedTextColor = customTextColor || (isCustom ? customTheme.textColor : undefined);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -398,16 +529,22 @@ export default function CreatePage() {
   const visibleLinks = showArchive ? links : links.filter((l) => l.enabled);
 
   return (
-    <div className="min-h-screen bg-[#f3f3f1] pt-16">
+    <div
+      className="min-h-screen bg-[#faf7f5] pt-16"
+      style={{
+        backgroundImage: `radial-gradient(circle at 1px 1px, rgba(196,145,123,0.07) 1px, transparent 0)`,
+        backgroundSize: '24px 24px',
+      }}
+    >
       <div className="flex">
 
         {/* ══════ Sidebar ══════ */}
-        <aside className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-100 pt-20 lg:pt-4 pb-6 flex flex-col transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <aside className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-[#fdf8f6] border-r border-[#f0e6e0] pt-20 lg:pt-4 pb-6 flex flex-col transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           {/* User info */}
-          <div className="px-5 pb-4 mb-2 border-b border-gray-100 relative">
+          <div className="px-5 pb-4 mb-2 border-b border-[#f0e6e0] relative">
             <button
               onClick={() => setSidebarUserMenu(!sidebarUserMenu)}
-              className="w-full flex items-center gap-3 hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors"
+              className="w-full flex items-center gap-3 hover:bg-[#faf0ec] rounded-lg p-1 -m-1 transition-colors"
             >
               <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
                 {avatar ? (
@@ -426,14 +563,14 @@ export default function CreatePage() {
             {sidebarUserMenu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setSidebarUserMenu(false)} />
-                <div className="absolute left-3 right-3 top-full mt-1 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50">
-                  <div className="px-3 py-2 border-b border-gray-100">
+                <div className="absolute left-3 right-3 top-full mt-1 bg-white rounded-xl shadow-lg border border-[#f0e6e0] py-1.5 z-50">
+                  <div className="px-3 py-2 border-b border-[#f0e6e0]">
                     <p className="text-xs text-gray-400">linktr.ee/{displayName || 'username'}</p>
                   </div>
-                  <button onClick={() => { handleCopyUrl(); setSidebarUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <button onClick={() => { handleCopyUrl(); setSidebarUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-[#faf0ec]">
                     <Copy size={14} /> Copy my link
                   </button>
-                  <button onClick={() => { setActiveSection('links'); setSidebarUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <button onClick={() => { setActiveSection('links'); setSidebarUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-[#faf0ec]">
                     <Settings size={14} /> Account settings
                   </button>
                   <button onClick={() => { logout(); navigate('/'); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-50">
@@ -457,14 +594,14 @@ export default function CreatePage() {
                     }
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activeSection === item.id
-                    ? 'bg-gray-100 text-gray-900 font-medium'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    ? 'bg-[#f5ebe6] text-[#8b6f5e] font-medium'
+                    : 'text-gray-500 hover:text-[#8b6f5e] hover:bg-[#faf0ec]'
                     }`}
                 >
                   <item.icon size={18} />
                   {item.label}
                   {(item.id === 'earn' || item.id === 'audience') && (
-                    <ChevronDown size={14} className={`ml-auto text-gray-300 transition-transform ${expandedSidebar === item.id ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={14} className={`ml-auto text-[#d4a996] transition-transform ${expandedSidebar === item.id ? 'rotate-180' : ''}`} />
                   )}
                 </button>
                 {/* Sub-menu for Earn */}
@@ -472,25 +609,17 @@ export default function CreatePage() {
                   <div className="ml-8 mt-2 space-y-2 relative before:absolute before:left-[-15px] before:top-[-10px] before:bottom-3 before:w-[1.5px] before:bg-gray-100">
                     <button
                       onClick={() => { setEarnSubTab('overview'); scrollToSubSection('earn', 'revenue-overview'); }}
-                      className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors ${earnSubTab === 'overview' ? 'bg-[#f3f3f1] text-gray-900' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
+                      className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors ${earnSubTab === 'overview' ? 'bg-[#f5ebe6] text-[#8b6f5e]' : 'text-gray-500 hover:text-[#8b6f5e] hover:bg-[#faf0ec]'}`}
                     >
                       Overview
                     </button>
                     <button
                       onClick={() => { setEarnSubTab('earnings'); scrollToSubSection('earn', 'revenue-overview'); }}
-                      className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center justify-between ${earnSubTab === 'earnings' ? 'bg-[#f3f3f1] text-gray-900' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
+                      className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center justify-between ${earnSubTab === 'earnings' ? 'bg-[#f5ebe6] text-[#8b6f5e]' : 'text-gray-500 hover:text-[#8b6f5e] hover:bg-[#faf0ec]'}`}
                     >
                       <span>Earnings</span>
                       <span>US$0.00</span>
                     </button>
-                  </div>
-                )}
-                {/* Sub-menu for Audience */}
-                {item.id === 'audience' && expandedSidebar === 'audience' && (
-                  <div className="ml-8 mt-0.5 space-y-0.5">
-                    <button onClick={() => scrollToSubSection('audience', 'subscribers')} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Subscribers</button>
-                    <button onClick={() => scrollToSubSection('audience', 'email-forms')} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Email forms</button>
-                    <button onClick={() => scrollToSubSection('audience', 'campaigns')} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Campaigns</button>
                   </div>
                 )}
               </div>
@@ -506,8 +635,8 @@ export default function CreatePage() {
                   key={item.id}
                   onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activeSection === item.id
-                    ? 'bg-gray-100 text-gray-900 font-medium'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    ? 'bg-[#f5ebe6] text-[#8b6f5e] font-medium'
+                    : 'text-gray-500 hover:text-[#8b6f5e] hover:bg-[#faf0ec]'
                     }`}
                 >
                   <item.icon size={18} />
@@ -518,12 +647,12 @@ export default function CreatePage() {
           </div>
 
           {/* Setup checklist */}
-          <div className="mt-auto mx-3 p-4 bg-gray-50 rounded-xl">
+          <div className="mt-auto mx-3 p-4 bg-[#faf0ec] rounded-xl">
             <div className="flex items-center gap-3 mb-2">
               <div className="relative w-10 h-10">
                 <svg className="w-10 h-10 -rotate-90" viewBox="0 0 36 36">
-                  <circle cx="18" cy="18" r="14" fill="none" stroke="#e5e7eb" strokeWidth="3" />
-                  <circle cx="18" cy="18" r="14" fill="none" stroke="#8b5cf6" strokeWidth="3"
+                  <circle cx="18" cy="18" r="14" fill="none" stroke="#f0e6e0" strokeWidth="3" />
+                  <circle cx="18" cy="18" r="14" fill="none" stroke="#c4917b" strokeWidth="3"
                     strokeDasharray={`${(links.length > 0 ? 33 : 0) + (displayName ? 33 : 0) + (activeSocials.length > 0 ? 34 : 0)} 100`}
                   />
                 </svg>
@@ -540,7 +669,7 @@ export default function CreatePage() {
             </div>
             <button
               onClick={handleFinishSetup}
-              className="w-full py-2 bg-purple-600 text-white text-xs font-semibold rounded-lg hover:bg-purple-700 transition-colors"
+              className="w-full py-2 bg-gradient-to-r from-[#c4917b] to-[#d4a996] text-white text-xs font-semibold rounded-lg hover:from-[#b8826e] hover:to-[#c99b89] transition-colors"
             >
               Finish setup
             </button>
@@ -555,12 +684,12 @@ export default function CreatePage() {
         {/* ══════ Main Content ══════ */}
         <main className="flex-1 min-w-0">
           {/* Top Bar */}
-          <div className="sticky top-16 z-20 bg-white border-b border-gray-100 px-4 sm:px-6">
+          <div className="sticky top-16 z-20 bg-white/80 backdrop-blur-sm border-b border-[#f0e6e0] px-4 sm:px-6">
             <div className="flex items-center justify-between h-14">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="lg:hidden p-2 -ml-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100"
+                  className="lg:hidden p-2 -ml-2 text-gray-500 hover:text-[#8b6f5e] rounded-lg hover:bg-[#faf0ec]"
                 >
                   <GripVertical size={18} />
                 </button>
@@ -571,19 +700,19 @@ export default function CreatePage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleEnhance}
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors"
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#8b6f5e] bg-[#faf0ec] rounded-full hover:bg-[#f5ebe6] transition-colors"
                 >
                   <Sparkles size={15} /> Enhance
                 </button>
                 <button
                   onClick={() => setMainTab('settings')}
-                  className="p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="p-2 text-gray-500 hover:text-[#8b6f5e] rounded-lg hover:bg-[#faf0ec] transition-colors"
                 >
                   <Settings size={18} />
                 </button>
                 <button
                   onClick={handleCopyUrl}
-                  className="hidden sm:flex items-center gap-2 ml-2 px-4 py-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors"
+                  className="hidden sm:flex items-center gap-2 ml-2 px-4 py-2 bg-[#faf0ec] rounded-full hover:bg-[#f5ebe6] transition-colors"
                 >
                   <span className="text-xs text-gray-500">linktr.ee/</span>
                   <span className="text-xs font-semibold text-gray-900">{displayName || 'username'}</span>
@@ -603,7 +732,7 @@ export default function CreatePage() {
                   key={activeSection}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-5 mb-6"
+                  className="space-y-4 mb-6"
                 >
                   {/* ── Earn Section ── */}
                   {activeSection === 'earn' && (
@@ -638,7 +767,7 @@ export default function CreatePage() {
                             {/* Courses */}
                             <button className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
                               <div className="w-12 h-12 bg-[#e9d5ff] rounded-xl flex items-center justify-center flex-shrink-0">
-                                <GraduationCap size={22} className="text-[#7c3aed]" />
+                                <GraduationCap size={22} className="text-[#c4917b]" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-bold text-gray-900">Courses</p>
@@ -662,7 +791,7 @@ export default function CreatePage() {
                             {/* Bookings */}
                             <button className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
                               <div className="w-12 h-12 bg-[#f3e8ff] rounded-xl flex items-center justify-center flex-shrink-0">
-                                <Calendar size={22} className="text-[#7c3aed]" />
+                                <Calendar size={22} className="text-[#c4917b]" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-bold text-gray-900">Bookings</p>
@@ -692,7 +821,7 @@ export default function CreatePage() {
                           <h1 className="text-2xl font-bold text-gray-900 mb-6">Earnings</h1>
 
                           {/* Balance Card */}
-                          <div className="bg-white rounded-[24px] p-8 border border-gray-100 shadow-sm mb-8">
+                          <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm mb-8">
                             <div className="flex items-center gap-1.5 mb-1 text-gray-500">
                               <span className="text-sm font-medium">Balance</span>
                               <Info size={14} className="text-gray-300" />
@@ -701,12 +830,12 @@ export default function CreatePage() {
                           </div>
 
                           {/* Start earning */}
-                          <h2 className="text-lg font-bold text-gray-900 mb-5 px-1">Start earning on OpenBio</h2>
-                          <div className="space-y-4 mb-10">
+                          <h2 className="text-xl font-bold text-gray-900 mb-6 px-1">Start earning on OpenBio</h2>
+                          <div className="space-y-6 mb-12">
                             {/* Offer your time */}
                             <button className="w-full flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
                               <div className="w-12 h-12 bg-[#f3f3f1] rounded-xl flex items-center justify-center flex-shrink-0">
-                                <Calendar size={20} className="text-[#7c3aed]" />
+                                <Calendar size={20} className="text-[#c4917b]" />
                               </div>
                               <div className="flex-1">
                                 <p className="text-sm font-bold text-gray-900">Offer your time</p>
@@ -718,7 +847,7 @@ export default function CreatePage() {
                             {/* Sell digital products */}
                             <button className="w-full flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
                               <div className="w-12 h-12 bg-[#f3f3f1] rounded-xl flex items-center justify-center flex-shrink-0">
-                                <ShoppingBag size={20} className="text-[#7c3aed]" />
+                                <ShoppingBag size={20} className="text-[#c4917b]" />
                               </div>
                               <div className="flex-1">
                                 <p className="text-sm font-bold text-gray-900">Sell digital products</p>
@@ -730,7 +859,7 @@ export default function CreatePage() {
                             {/* Teach a course */}
                             <button className="w-full flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
                               <div className="w-12 h-12 bg-[#f3f3f1] rounded-xl flex items-center justify-center flex-shrink-0">
-                                <GraduationCap size={20} className="text-[#7c3aed]" />
+                                <GraduationCap size={20} className="text-[#c4917b]" />
                               </div>
                               <div className="flex-1">
                                 <p className="text-sm font-bold text-gray-900">Teach a course</p>
@@ -1309,14 +1438,14 @@ export default function CreatePage() {
                   </button>
                   <button
                     onClick={() => setShowArchive(!showArchive)}
-                    className={`flex items-center gap-2 text-sm transition-colors ${showArchive ? 'text-purple-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`flex items-center gap-2 text-sm transition-colors ${showArchive ? 'text-[#c4917b] font-medium' : 'text-gray-500 hover:text-[#8b6f5e]'}`}
                   >
                     <Archive size={15} /> {showArchive ? 'Hide archive' : 'View archive'} <ChevronRight size={14} className={`transition-transform ${showArchive ? 'rotate-90' : ''}`} />
                   </button>
                 </div>
 
                 {/* Link Cards */}
-                <div className="space-y-3 mb-6">
+                <div className="space-y-3 mb-8">
                   <AnimatePresence>
                     {visibleLinks.map((link) => (
                       <motion.div
@@ -1326,7 +1455,7 @@ export default function CreatePage() {
                         exit={{ opacity: 0, y: -10 }}
                         className={`bg-white rounded-2xl border shadow-sm overflow-hidden ${!link.enabled ? 'border-gray-200 opacity-60' : 'border-gray-100'}`}
                       >
-                        <div className="flex items-start gap-1 p-4">
+                        <div className="flex items-start gap-1 p-3">
                           <div className="mt-1 text-gray-300 cursor-grab hover:text-gray-400 p-1">
                             <GripVertical size={16} />
                           </div>
@@ -1365,7 +1494,7 @@ export default function CreatePage() {
                                   initial={{ opacity: 0, height: 0 }}
                                   animate={{ opacity: 1, height: 'auto' }}
                                   exit={{ opacity: 0, height: 0 }}
-                                  className="mt-3 pt-3 border-t border-gray-100 space-y-2 overflow-hidden"
+                                  className="mt-4 pt-4 border-t border-gray-100 space-y-4 overflow-hidden"
                                 >
                                   <label className="block text-[11px] text-gray-400">Title</label>
                                   <input
@@ -1381,17 +1510,17 @@ export default function CreatePage() {
                                     onChange={(e) => updateLink(link.id, 'url', e.target.value)}
                                     className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300"
                                   />
-                                  <label className="block text-[11px] text-gray-400">Button Color</label>
-                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                  <label className="block text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-1">Button Color</label>
+                                  <div className="grid grid-cols-10 gap-1.5 w-fit">
                                     {linkColors.map((c) => (
                                       <button
                                         key={c.id}
                                         onClick={() => updateLink(link.id, 'color', c.value)}
-                                        className={`w-7 h-7 rounded-full border-2 transition-all flex items-center justify-center ${link.color === c.value ? 'border-gray-900 scale-110' : 'border-gray-200 hover:border-gray-300'}`}
+                                        className={`w-5 h-5 rounded-full border transition-all flex items-center justify-center ${link.color === c.value ? 'border-gray-900 scale-110 shadow-sm' : 'border-gray-100 hover:border-gray-200'}`}
                                         style={{ backgroundColor: c.value || '#f3f4f6' }}
                                         title={c.label}
                                       >
-                                        {link.color === c.value && <Check size={12} className="text-gray-600" />}
+                                        {link.color === c.value && <Check size={8} className={c.value && parseInt(c.value.slice(1), 16) < 0x808080 ? 'text-white' : 'text-gray-900'} />}
                                       </button>
                                     ))}
                                   </div>
@@ -1450,7 +1579,7 @@ export default function CreatePage() {
                         key={tab}
                         onClick={() => setMainTab(tab)}
                         className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${mainTab === tab
-                          ? 'border-gray-900 text-gray-900'
+                          ? 'border-gray-400 text-gray-900'
                           : 'border-transparent text-gray-400 hover:text-gray-600'
                           }`}
                       >
@@ -1472,7 +1601,7 @@ export default function CreatePage() {
                           <button
                             key={t.id}
                             onClick={() => setSelectedTheme(t.id)}
-                            className={`relative p-1 rounded-2xl border-2 transition-all ${selectedTheme === t.id ? 'border-gray-900' : 'border-transparent hover:border-gray-200'
+                            className={`relative p-1 rounded-2xl border-2 transition-all ${selectedTheme === t.id ? 'border-gray-400' : 'border-transparent hover:border-gray-200'
                               }`}
                           >
                             <div className={`h-20 rounded-xl ${t.bg} flex items-center justify-center`}>
@@ -1494,7 +1623,7 @@ export default function CreatePage() {
                         {showAllThemes && (
                           <button
                             onClick={() => setSelectedTheme('custom')}
-                            className={`relative p-1 rounded-2xl border-2 transition-all ${isCustom ? 'border-gray-900' : 'border-transparent hover:border-gray-200'}`}
+                            className={`relative p-1 rounded-2xl border-2 transition-all ${isCustom ? 'border-gray-400' : 'border-transparent hover:border-gray-200'}`}
                           >
                             <div className="h-20 rounded-xl flex items-center justify-center" style={customTheme.bgStyle}>
                               <div className="space-y-1.5">
@@ -1567,7 +1696,7 @@ export default function CreatePage() {
                           <button
                             key={p.id}
                             onClick={() => setSelectedPattern(p.id)}
-                            className={`relative p-1 rounded-xl border-2 transition-all ${selectedPattern === p.id ? 'border-gray-900' : 'border-transparent hover:border-gray-200'}`}
+                            className={`relative p-1 rounded-xl border-2 transition-all ${selectedPattern === p.id ? 'border-gray-400' : 'border-transparent hover:border-gray-200'}`}
                           >
                             <div
                               className="h-12 rounded-lg bg-gray-100"
@@ -1590,7 +1719,7 @@ export default function CreatePage() {
                           <button
                             key={style.id}
                             onClick={() => setSelectedButton(style.id)}
-                            className={`p-3 rounded-xl border-2 transition-all ${selectedButton === style.id ? 'border-gray-900' : 'border-gray-100 hover:border-gray-200'
+                            className={`p-3 rounded-xl border-2 transition-all ${selectedButton === style.id ? 'border-gray-400' : 'border-gray-100 hover:border-gray-200'
                               }`}
                           >
                             <div className={`h-7 bg-gray-300 ${style.cls} mb-1.5`} />
@@ -1605,19 +1734,83 @@ export default function CreatePage() {
                       <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
                         <Type size={16} /> Font
                       </h2>
-                      <div className="grid grid-cols-3 gap-3">
-                        {fontOptions.map((f) => (
+                      {/* Category tabs */}
+                      <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1">
+                        {['all', 'Sans-serif', 'Serif', 'Mono', 'Handwriting'].map((cat) => (
                           <button
-                            key={f.id}
-                            onClick={() => setSelectedFont(f.id)}
-                            className={`p-4 rounded-xl border-2 transition-all ${selectedFont === f.id ? 'border-gray-900' : 'border-gray-100 hover:border-gray-200'
-                              }`}
+                            key={cat}
+                            onClick={() => setFontCategory(cat)}
+                            className={`px-3 py-1 rounded-full text-[11px] font-medium whitespace-nowrap transition-all ${fontCategory === cat ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
                           >
-                            <span className={`text-lg ${f.cls} text-gray-700`}>Aa</span>
-                            <span className="block text-[11px] font-medium text-gray-400 mt-1">{f.label}</span>
+                            {cat === 'all' ? 'All' : cat}
                           </button>
                         ))}
                       </div>
+                      <div className="grid grid-cols-3 gap-2 max-h-[300px] overflow-y-auto pr-1">
+                        {fontOptions
+                          .filter((f) => fontCategory === 'all' || f.category === fontCategory)
+                          .map((f) => (
+                            <button
+                              key={f.id}
+                              onClick={() => setSelectedFont(f.id)}
+                              className={`p-3 rounded-xl border-2 transition-all ${selectedFont === f.id ? 'border-gray-400' : 'border-gray-100 hover:border-gray-200'
+                                }`}
+                            >
+                              <span className={`text-lg ${f.cls} text-gray-700`}>Aa</span>
+                              <span className="block text-[10px] font-medium text-gray-400 mt-1">{f.label}</span>
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* Text Color */}
+                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                          <Palette size={16} /> Text Color
+                        </h2>
+                        {/* Auto / Custom picker */}
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={customTextColor || '#000000'}
+                            onChange={(e) => setCustomTextColor(e.target.value)}
+                            className="w-6 h-6 rounded-md cursor-pointer border border-gray-200 p-0.5"
+                          />
+                          <button
+                            onClick={() => setCustomTextColor('')}
+                            className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition-all ${!customTextColor ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                          >
+                            Auto
+                          </button>
+                        </div>
+                      </div>
+                      {/* Preview */}
+                      <div className="rounded-xl bg-gray-50 p-3 mb-4 text-center">
+                        <span className="text-lg font-semibold" style={{ color: customTextColor || '#1f2937' }}>Preview Text</span>
+                        <p className="text-[11px] mt-0.5" style={{ color: customTextColor || '#6b7280', opacity: 0.6 }}>Subtitle looks like this</p>
+                      </div>
+                      {/* Color groups */}
+                      {textColorGroups.map((group) => (
+                        <div key={group.label} className="mb-3 last:mb-0">
+                          <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">{group.label}</p>
+                          <div className="flex items-center gap-1.5">
+                            {group.colors.map((c) => (
+                              <button
+                                key={c.id}
+                                onClick={() => setCustomTextColor(c.value)}
+                                className={`w-7 h-7 rounded-full border-2 transition-all flex items-center justify-center ${customTextColor === c.value ? 'border-gray-400 scale-110 ring-2 ring-gray-200' : 'border-transparent hover:scale-105'}`}
+                                style={{ backgroundColor: c.value }}
+                                title={c.label}
+                              >
+                                {customTextColor === c.value && (
+                                  <Check size={10} className={parseInt(c.value.slice(1), 16) < 0x808080 ? 'text-white' : 'text-gray-600'} />
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
                     </div>
 
                     {/* Social Icons */}
@@ -1625,21 +1818,37 @@ export default function CreatePage() {
                       <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
                         <Globe size={16} /> Social Icons
                       </h2>
-                      <div className="grid grid-cols-4 gap-2">
-                        {socialPlatforms.map((p) => {
-                          const isActive = activeSocials.includes(p.id);
-                          return (
-                            <button
-                              key={p.id}
-                              onClick={() => toggleSocial(p.id)}
-                              className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all ${isActive ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
-                                }`}
-                            >
-                              <p.icon size={18} />
-                              <span className="text-[10px] font-medium">{p.label}</span>
-                            </button>
-                          );
-                        })}
+                      {/* Search bar */}
+                      <div className="relative mb-3">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
+                        <input
+                          type="text"
+                          placeholder="Search icons..."
+                          value={socialSearch}
+                          onChange={(e) => setSocialSearch(e.target.value)}
+                          className="w-full pl-8 pr-3 py-2 text-xs bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:border-gray-300 transition-colors"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 gap-2 max-h-[280px] overflow-y-auto pr-1">
+                        {socialPlatforms
+                          .filter((p) => p.label.toLowerCase().includes(socialSearch.toLowerCase()))
+                          .map((p) => {
+                            const isActive = activeSocials.includes(p.id);
+                            return (
+                              <button
+                                key={p.id}
+                                onClick={() => toggleSocial(p.id)}
+                                className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all ${isActive ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                                  }`}
+                              >
+                                <p.icon size={18} />
+                                <span className="text-[10px] font-medium">{p.label}</span>
+                              </button>
+                            );
+                          })}
+                        {socialPlatforms.filter((p) => p.label.toLowerCase().includes(socialSearch.toLowerCase())).length === 0 && (
+                          <p className="col-span-4 text-center text-xs text-gray-400 py-4">No icons found</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1706,8 +1915,8 @@ export default function CreatePage() {
                         />
                       )}
                       {/* OpenBio logo */}
-                      <div className="pt-3 flex justify-center relative z-[1]">
-                        <span className={`text-xs ${!isCustom ? theme.text : ''} opacity-20`} style={isCustom ? { color: customTheme.textColor } : undefined}>OpenBio</span>
+                      <div className="pt-8 flex justify-center relative z-[1]">
+                        <span className={`text-xs font-medium ${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-30`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>OpenBio</span>
                       </div>
 
                       {/* Profile */}
@@ -1716,14 +1925,14 @@ export default function CreatePage() {
                           {avatar ? (
                             <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
                           ) : (
-                            <User size={22} className={`${!isCustom ? theme.text : ''} opacity-25`} style={isCustom ? { color: customTheme.textColor } : undefined} />
+                            <User size={22} className={`${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-25`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined} />
                           )}
                         </div>
-                        <h3 className={`font-bold text-sm ${!isCustom ? theme.text : ''}`} style={isCustom ? { color: customTheme.textColor } : undefined}>
+                        <h3 className={`font-bold text-sm ${!resolvedTextColor && !isCustom ? theme.text : ''}`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
                           {displayName || 'username'}
                         </h3>
                         {bio && (
-                          <p className={`text-[11px] mt-0.5 ${!isCustom ? theme.subtext : ''} text-center`} style={isCustom ? { color: customTheme.subtextColor } : undefined}>{bio}</p>
+                          <p className={`text-[11px] mt-0.5 ${!resolvedTextColor && !isCustom ? theme.subtext : ''} text-center`} style={resolvedTextColor ? { color: resolvedTextColor, opacity: 0.6 } : undefined}>{bio}</p>
                         )}
                       </div>
 
@@ -1735,7 +1944,7 @@ export default function CreatePage() {
                             if (!p) return null;
                             return (
                               <div key={id} className={`w-7 h-7 rounded-full ${!isCustom ? theme.card : ''} flex items-center justify-center`} style={isCustom ? customTheme.cardStyle : undefined}>
-                                <p.icon size={12} className={`${!isCustom ? theme.text : ''} opacity-50`} style={isCustom ? { color: customTheme.textColor } : undefined} />
+                                <p.icon size={12} className={`${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-50`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined} />
                               </div>
                             );
                           })}
@@ -1745,7 +1954,7 @@ export default function CreatePage() {
                       {/* Links */}
                       <div className="px-4 pb-4 space-y-2 flex-1 relative z-[1]">
                         {links.filter((l) => l.title && l.enabled).length === 0 && (
-                          <div className={`text-center py-6 ${!isCustom ? theme.text : ''} opacity-15`} style={isCustom ? { color: customTheme.textColor } : undefined}>
+                          <div className={`text-center py-6 ${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-15`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
                             <ExternalLink size={20} className="mx-auto mb-1.5" />
                             <p className="text-[10px]">Add links above</p>
                           </div>
@@ -1764,7 +1973,7 @@ export default function CreatePage() {
                                 : isCustom ? customTheme.cardStyle : undefined
                               }
                             >
-                              <span className={`text-[11px] font-medium ${!link.color && !isCustom ? theme.text : ''}`} style={link.color ? { color: '#374151' } : isCustom ? { color: customTheme.textColor } : undefined}>{link.title}</span>
+                              <span className={`text-[11px] font-medium ${!link.color && !resolvedTextColor && !isCustom ? theme.text : ''}`} style={resolvedTextColor ? { color: resolvedTextColor } : link.color ? { color: '#374151' } : undefined}>{link.title}</span>
                             </motion.div>
                           ))}
                       </div>
@@ -1810,7 +2019,7 @@ export default function CreatePage() {
 
               {/* Search Bar */}
               <div className="px-6 pb-4">
-                <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-200 focus-within:border-purple-400 transition-colors">
+                <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-200 focus-within:border-gray-400 transition-colors">
                   <Search size={18} className="text-gray-400" />
                   <input
                     type="text"
@@ -1883,8 +2092,8 @@ export default function CreatePage() {
                         <Link2 size={18} className="text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-purple-700">Add as link</p>
-                        <p className="text-[11px] text-purple-400 truncate">{addModalSearch}</p>
+                        <p className="text-sm font-medium text-[#8b6f5e]">Add as link</p>
+                        <p className="text-[11px] text-[#c4917b] truncate">{addModalSearch}</p>
                       </div>
                       <Plus size={18} className="text-purple-400" />
                     </button>

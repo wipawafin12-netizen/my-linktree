@@ -92,7 +92,7 @@ export default function Navbar() {
                   )}
                 </div>
               </>
-            ) : (
+            ) : ( 
               <>
                 <Link
                   to="/login"

@@ -395,33 +395,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════ Stats ══════ */}
-      <section className="py-24 bg-gradient-to-r from-[#3CC8DB]/5 to-[#5BBD6B]/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid sm:grid-cols-3 gap-8 text-center">
-            {[
-              { value: '70M+', label: 'Users worldwide' },
-              { value: '1.2B+', label: 'Monthly link clicks' },
-              { value: '30+', label: 'Integrations' },
-            ].map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className={i < 2 ? 'sm:border-r sm:border-gray-200' : ''}
-              >
-                <div className="text-5xl sm:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#3CC8DB] to-[#5BBD6B] mb-2">
-                  {stat.value}
-                </div>
-                <div className="text-gray-500 text-sm font-medium">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ══════ CTA Banner ══════ */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

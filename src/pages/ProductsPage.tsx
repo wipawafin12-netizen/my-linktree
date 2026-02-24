@@ -4,31 +4,44 @@ import {
   ChevronRight, Instagram, Music2, Linkedin, Twitter,
   ArrowRight,
 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const sidebarItems = [
-  { icon: Link2, label: 'Link in bio + tools', desc: 'Everything you need to connect audiences to your content.' },
-  { icon: Settings, label: 'Manage your social media', desc: 'Schedule, publish, and analyze across platforms.' },
-  { icon: Users, label: 'Grow and engage your audience', desc: 'Turn followers into fans with powerful tools.' },
-  { icon: DollarSign, label: 'Monetize your following', desc: 'Start earning from your content and community.' },
-  { icon: BarChart3, label: 'Measure your success', desc: 'Track clicks, views, and revenue in one dashboard.' },
+  { icon: Link2, label: 'Link in bio + tools', desc: 'Everything you need to connect audiences to your content.', to: '/create' },
+  { icon: Settings, label: 'Manage your social media', desc: 'Schedule, publish, and analyze across platforms.', to: '/create' },
+  { icon: Users, label: 'Grow and engage your audience', desc: 'Turn followers into fans with powerful tools.', to: '/admin/audience/contacts' },
+  { icon: DollarSign, label: 'Monetize your following', desc: 'Start earning from your content and community.', to: '/create' },
+  { icon: BarChart3, label: 'Measure your success', desc: 'Track clicks, views, and revenue in one dashboard.', to: '/create' },
 ];
 
 const productItems = [
-  { title: 'Link in bio', desc: 'Customize your OpenBio', icon: '🔗' },
-  { title: 'Link shortener', desc: 'Create trackable, shareable short links', icon: '✂️' },
-  { title: 'QR code generator', desc: 'Turn links into scannable QR codes', icon: '📱' },
-  { title: 'Canva Background Editor', desc: 'Import your custom designs from Canva into your profile', icon: '🎨' },
-  { title: 'OpenBio for every social platform', desc: 'Grow and engage your audience everywhere', icon: '🌐' },
+  { title: 'Link in bio', desc: 'Customize your OpenBio', icon: '🔗', to: '/create' },
+  { title: 'Link shortener', desc: 'Create trackable, shareable short links', icon: '✂️', to: '/create' },
+  { title: 'QR code generator', desc: 'Turn links into scannable QR codes', icon: '📱', to: '/create' },
+  { title: 'Canva Background Editor', desc: 'Import your custom designs from Canva into your profile', icon: '🎨', to: '/create' },
+  { title: 'OpenBio for every social platform', desc: 'Grow and engage your audience everywhere', icon: '🌐', to: '/create' },
 ];
 
 const socialIcons = [
-  { icon: Instagram, label: 'Instagram' },
-  { icon: Music2, label: 'TikTok' },
-  { icon: Linkedin, label: 'LinkedIn' },
-  { icon: Twitter, label: 'X' },
+  { icon: Instagram, label: 'Instagram', url: 'https://www.instagram.com' },
+  { icon: Music2, label: 'TikTok', url: 'https://www.tiktok.com' },
+  { icon: Linkedin, label: 'LinkedIn', url: 'https://www.linkedin.com' },
+  { icon: Twitter, label: 'X', url: 'https://x.com' },
 ];
 
 export default function ProductsPage() {
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+
+  const handleNavigate = (to: string) => {
+    if (isLoggedIn) {
+      navigate(to);
+    } else {
+      navigate('/signup');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#fafaf9]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
@@ -51,13 +64,13 @@ export default function ProductsPage() {
         {/* Main Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
           {sidebarItems.map((item, i) => (
-            <motion.a
+            <motion.div
               key={item.label}
-              href="#"
+              onClick={() => handleNavigate(item.to)}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="group bg-white rounded-2xl p-6 border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-md transition-all duration-300"
+              className="group bg-white rounded-2xl p-6 border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
             >
               <div className="w-12 h-12 rounded-xl bg-gray-100 group-hover:bg-gray-900 flex items-center justify-center mb-4 transition-colors duration-300">
                 <item.icon size={22} className="text-gray-600 group-hover:text-white transition-colors duration-300" />
@@ -67,7 +80,7 @@ export default function ProductsPage() {
               <div className="mt-4 flex items-center gap-1 text-sm font-medium text-gray-400 group-hover:text-gray-900 transition-colors">
                 Learn more <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </div>
-            </motion.a>
+            </motion.div>
           ))}
         </div>
 
@@ -82,20 +95,20 @@ export default function ProductsPage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {productItems.map((item, i) => (
-              <motion.a
+              <motion.div
                 key={item.title}
-                href="#"
+                onClick={() => handleNavigate(item.to)}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: 0.4 + i * 0.06 }}
-                className="group flex items-start gap-4 bg-white rounded-xl p-5 border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-md transition-all"
+                className="group flex items-start gap-4 bg-white rounded-xl p-5 border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
               >
                 <span className="text-2xl flex-shrink-0">{item.icon}</span>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 group-hover:text-black">{item.title}</h3>
                   <p className="text-xs text-gray-500 mt-1">{item.desc}</p>
                 </div>
-              </motion.a>
+              </motion.div>
             ))}
           </div>
         </motion.div>
@@ -113,12 +126,12 @@ export default function ProductsPage() {
             <p className="text-white/80 text-base mb-8">
               One link to share everything you create, curate, and sell across all your socials.
             </p>
-            <a
-              href="#"
+            <Link
+              to={isLoggedIn ? '/create' : '/signup'}
               className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-900 font-semibold rounded-full hover:bg-gray-100 transition-colors"
             >
-              Get started free <ArrowRight size={18} />
-            </a>
+              {isLoggedIn ? 'Go to Dashboard' : 'Get started free'} <ArrowRight size={18} />
+            </Link>
           </div>
         </motion.div>
 
@@ -127,7 +140,9 @@ export default function ProductsPage() {
           {socialIcons.map((s) => (
             <a
               key={s.label}
-              href="#"
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-12 h-12 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:text-black hover:border-gray-400 transition-colors"
               title={s.label}
             >

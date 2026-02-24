@@ -9,6 +9,7 @@ import LearnPage from './pages/LearnPage';
 import CreatePage from './pages/CreatePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import AudienceContactsPage from './pages/AudienceContactsPage';
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/templates" element={<TemplatesPage />} />
           <Route path="/marketplace" element={<MarketplacePage />} />
           <Route path="/learn" element={<LearnPage />} />
+          <Route path="/admin/audience/contacts" element={<AudienceContactsPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
