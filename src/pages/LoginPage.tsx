@@ -43,7 +43,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-10">
           <Link to="/" className="inline-flex items-center gap-1 text-black font-bold text-2xl">
-            Linktree<span className="text-3xl leading-none">*</span>
+            OpenBio
           </Link>
           <p className="text-gray-400 text-sm mt-2">Welcome back! Log in to your account.</p>
         </div>

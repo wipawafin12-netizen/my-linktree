@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { Mail } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function Newsletter() {
   const [email, setEmail] = useState('');
@@ -9,7 +9,7 @@ export default function Newsletter() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    
+
     setStatus('loading');
     // Simulate API call
     setTimeout(() => {
@@ -32,7 +32,7 @@ export default function Newsletter() {
       <p className="text-sm text-gray-400 mb-4">Get the latest updates and resources directly to your inbox.</p>
 
       {status === 'success' ? (
-        <motion.div 
+        <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="py-2 px-4 bg-green-500/20 text-green-300 rounded-lg text-sm font-medium"

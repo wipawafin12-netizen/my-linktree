@@ -14,11 +14,11 @@ const sidebarItems = [
 ];
 
 const productItems = [
-  { title: 'Link in bio', desc: 'Customize your Linktree', icon: '🔗' },
+  { title: 'Link in bio', desc: 'Customize your OpenBio', icon: '🔗' },
   { title: 'Link shortener', desc: 'Create trackable, shareable short links', icon: '✂️' },
   { title: 'QR code generator', desc: 'Turn links into scannable QR codes', icon: '📱' },
   { title: 'Canva Background Editor', desc: 'Import your custom designs from Canva into your profile', icon: '🎨' },
-  { title: 'Linktree for every social platform', desc: 'Grow and engage your audience everywhere', icon: '🌐' },
+  { title: 'OpenBio for every social platform', desc: 'Grow and engage your audience everywhere', icon: '🌐' },
 ];
 
 const socialIcons = [
@@ -109,7 +109,7 @@ export default function ProductsPage() {
         >
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]" />
           <div className="relative z-10 max-w-2xl">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Join 70M+ using Linktree as their link in bio</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Join 70M+ using OpenBio as their link in bio</h2>
             <p className="text-white/80 text-base mb-8">
               One link to share everything you create, curate, and sell across all your socials.
             </p>

@@ -29,7 +29,7 @@ export default function SignupPage() {
         {/* Logo */}
         <div className="text-center mb-10">
           <Link to="/" className="inline-flex items-center gap-1 text-black font-bold text-2xl">
-            Linktree<span className="text-3xl leading-none">*</span>
+            OpenBio
           </Link>
           <p className="text-gray-400 text-sm mt-2">Create your free account in seconds.</p>
         </div>
@@ -145,7 +145,7 @@ export default function SignupPage() {
 
           {/* Terms */}
           <p className="text-[11px] text-gray-400 leading-relaxed">
-            By creating an account, you agree to Linktree's{' '}
+            By creating an account, you agree to OpenBio's{' '}
             <a href="https://linktr.ee/s/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">Terms of Service</a> and{' '}
             <a href="https://linktr.ee/s/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">Privacy Policy</a>.
           </p>

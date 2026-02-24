@@ -29,8 +29,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-1 text-black font-bold text-xl tracking-tight">
-            Linktree
-            <span className="text-2xl leading-none">*</span>
+            OpenBio
           </Link>
 
           {/* Desktop Nav Links */}
@@ -58,7 +57,7 @@ export default function Navbar() {
                   to="/create"
                   className="px-5 py-2 text-sm font-medium text-white bg-[#1f1f23] hover:bg-black rounded-full transition-colors"
                 >
-                  My Linktree
+                  My OpenBio
                 </Link>
                 <div className="relative">
                   <button
@@ -148,7 +147,7 @@ export default function Navbar() {
               {isLoggedIn ? (
                 <>
                   <Link to="/create" onClick={() => setMobileOpen(false)} className="block text-center px-5 py-2.5 text-sm font-medium text-white bg-[#1f1f23] hover:bg-black rounded-full transition-colors">
-                    My Linktree
+                    My OpenBio
                   </Link>
                   <button
                     onClick={() => { logout(); setMobileOpen(false); navigate('/'); }}

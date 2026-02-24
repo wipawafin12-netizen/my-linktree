@@ -9,13 +9,13 @@ import {
 // ── Sidebar Menu ──
 const sidebarItems = [
   { icon: LayoutGrid, label: 'Resources' },
-  { icon: HelpCircle, label: 'How to use Linktree' },
+  { icon: HelpCircle, label: 'How to use OpenBio' },
 ];
 
 // ── Resource Links ──
 const resourceLinks = [
   { title: 'Read our blog', desc: 'All the latest tips, tricks and growth strategies', icon: BookOpen },
-  { title: 'Success Stories', desc: 'Real people, real results on Linktree', icon: Trophy },
+  { title: 'Success Stories', desc: 'Real people, real results on OpenBio', icon: Trophy },
   { title: 'Creator Toolkit', desc: 'Free tools and guides to level up your content', icon: Lightbulb },
   { title: 'Community Forum', desc: 'Connect with other creators and share ideas', icon: Users },
 ];
@@ -71,7 +71,7 @@ const blogPosts = [
   },
   {
     title: 'Design Tips for a Standout Profile',
-    excerpt: 'Make your Linktree page look professional and on-brand.',
+    excerpt: 'Make your OpenBio page look professional and on-brand.',
     image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&q=80',
     category: 'Design',
     readTime: '4 min read',
@@ -105,9 +105,9 @@ const blogPosts = [
 
 // ── How-To Guides ──
 const guides = [
-  { title: 'Getting Started with Linktree', desc: 'Set up your profile in under 5 minutes.', icon: Play, time: '3 min' },
+  { title: 'Getting Started with OpenBio', desc: 'Set up your profile in under 5 minutes.', icon: Play, time: '3 min' },
   { title: 'Adding & Managing Links', desc: 'Organize your links for maximum engagement.', icon: LayoutGrid, time: '4 min' },
-  { title: 'Customizing Your Theme', desc: 'Match your Linktree to your personal brand.', icon: Palette, time: '5 min' },
+  { title: 'Customizing Your Theme', desc: 'Match your OpenBio to your personal brand.', icon: Palette, time: '5 min' },
   { title: 'Installing Link Apps', desc: 'Supercharge your page with marketplace integrations.', icon: LayoutGrid, time: '3 min' },
   { title: 'Reading Your Analytics', desc: 'Understand clicks, views, and audience insights.', icon: BarChart3, time: '6 min' },
   { title: 'Monetization Setup', desc: 'Start accepting payments and tips.', icon: DollarSign, time: '4 min' },
@@ -136,7 +136,7 @@ export default function LearnPage() {
           className="text-center mb-14"
         >
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-            Learn with <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500">Linktree</span>
+            Learn with <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500">OpenBio</span>
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
             Resources, guides, and courses to help you create, grow, and earn from your online presence.
@@ -182,7 +182,7 @@ export default function LearnPage() {
               className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
             >
               <div className="p-4">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Learn with Linktree</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">Learn with OpenBio</h3>
                 <div className="rounded-xl overflow-hidden relative group cursor-pointer">
                   <img
                     src={courses[0].image}
@@ -342,15 +342,15 @@ export default function LearnPage() {
               </motion.div>
             )}
 
-            {/* ══ How to use Linktree Tab ══ */}
+            {/* ══ How to use OpenBio Tab ══ */}
             {activeTab === 'how-to' && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-lg font-bold text-gray-900 mb-2">How to use Linktree</h2>
-                <p className="text-sm text-gray-500 mb-8">Step-by-step guides to get the most out of your Linktree.</p>
+                <h2 className="text-lg font-bold text-gray-900 mb-2">How to use OpenBio</h2>
+                <p className="text-sm text-gray-500 mb-8">Step-by-step guides to get the most out of your OpenBio.</p>
 
                 <div className="space-y-4">
                   {guides.map((guide, i) => (
@@ -396,7 +396,7 @@ export default function LearnPage() {
                     <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/30 transition-colors mb-4">
                       <Play size={28} className="text-white ml-1" />
                     </div>
-                    <h3 className="text-white font-bold text-lg">Watch: Getting Started with Linktree</h3>
+                    <h3 className="text-white font-bold text-lg">Watch: Getting Started with OpenBio</h3>
                     <p className="text-white/70 text-sm mt-1">A complete walkthrough in under 10 minutes</p>
                   </div>
                 </motion.div>

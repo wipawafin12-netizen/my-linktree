@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { Instagram, Music2, Twitter, Youtube, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const categories = [
   'All', 'Fashion', 'Health and Fitness', 'Influencer and Creator', 'Marketing',
@@ -307,7 +308,7 @@ const templates = [
   },
 ];
 
-function TemplateCard({ t, index }: { t: typeof templates[0]; index: number }) {
+function TemplateCard({ t, index, onUse }: { t: typeof templates[0]; index: number; onUse: () => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -366,7 +367,10 @@ function TemplateCard({ t, index }: { t: typeof templates[0]; index: number }) {
 
       {/* Use Template Button */}
       <div className="relative z-10 px-5 pb-5">
-        <button className="w-full py-2 rounded-lg bg-white/20 backdrop-blur-sm text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white/30">
+        <button
+          onClick={onUse}
+          className="w-full py-2 rounded-lg bg-white/20 backdrop-blur-sm text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white/30"
+        >
           Use this template
         </button>
       </div>
@@ -375,6 +379,7 @@ function TemplateCard({ t, index }: { t: typeof templates[0]; index: number }) {
 }
 
 export default function TemplatesPage() {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -400,7 +405,7 @@ export default function TemplatesPage() {
             Find your perfect <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">template</span>
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            Browse beautiful templates to kickstart your Linktree. Customize any template to match your brand.
+            Browse beautiful templates to kickstart your OpenBio. Customize any template to match your brand.
           </p>
         </motion.div>
 
@@ -457,7 +462,12 @@ export default function TemplatesPage() {
         {/* Templates Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
           {filtered.map((t, i) => (
-            <TemplateCard key={t.name} t={t} index={i} />
+            <TemplateCard
+              key={t.name}
+              t={t}
+              index={i}
+              onUse={() => { navigate('/create', { state: { template: t } }); }}
+            />
           ))}
         </div>
 

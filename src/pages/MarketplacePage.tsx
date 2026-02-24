@@ -18,7 +18,7 @@ const apps = [
   // ── Share Your Content ──
   {
     name: 'Spotify',
-    desc: 'Share tracks, albums, and playlists directly on your Linktree.',
+    desc: 'Share tracks, albums, and playlists directly on your OpenBio.',
     category: 'content',
     icon: Headphones,
     color: '#1DB954',
@@ -46,7 +46,7 @@ const apps = [
   },
   {
     name: 'TikTok',
-    desc: 'Feature your best TikTok videos on your Linktree.',
+    desc: 'Feature your best TikTok videos on your OpenBio.',
     category: 'content',
     icon: Video,
     color: '#000000',
@@ -90,7 +90,7 @@ const apps = [
   // ── Make & Collect Money ──
   {
     name: 'Shopify',
-    desc: 'Sell products directly from your Linktree profile.',
+    desc: 'Sell products directly from your OpenBio profile.',
     category: 'money',
     icon: ShoppingBag,
     color: '#96BF48',
@@ -323,10 +323,10 @@ export default function MarketplacePage() {
             <Sparkles size={14} /> Marketplace
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-            Supercharge your <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500">Linktree</span>
+            Supercharge your <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500">OpenBio</span>
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            Browse Link Apps and integrations to share content, make money, and grow your audience — all from your Linktree.
+            Browse Link Apps and integrations to share content, make money, and grow your audience — all from your OpenBio.
           </p>
         </motion.div>
 
@@ -455,7 +455,7 @@ export default function MarketplacePage() {
                 Build your own Link App
               </h2>
               <p className="text-white/70 text-base max-w-lg">
-                Partner with Linktree and reach millions of creators. Build integrations that help creators share, sell, and grow.
+                Partner with OpenBio and reach millions of creators. Build integrations that help creators share, sell, and grow.
               </p>
             </div>
             <a

@@ -1,5 +1,5 @@
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useState, useRef } from 'react';
 import {
   Plus, Trash2, GripVertical, ExternalLink, Image, Eye, EyeOff,
   Instagram, Youtube, Twitter, Music2, Globe, Github, Twitch, Facebook,
@@ -8,15 +8,15 @@ import {
   MessageSquare, Link2, Scissors, Lightbulb, Archive, FolderOpen,
   Check, Upload, Pencil, X, Search, Heart, Play, Phone, FileText,
   ShoppingBag, Grid3x3, Tag, ClipboardList, Download, Mail,
-  Copy, CheckCircle2,
+  Copy, CheckCircle2, Coins, Info, GraduationCap,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 // ── Sidebar nav items ──
 const sidebarMain = [
-  { icon: Link2, label: 'My Linktree', id: 'links' },
-  { icon: DollarSign, label: 'Earn', id: 'earn' },
+  { icon: Link2, label: 'My OpenBio', id: 'links' },
+  { icon: Coins, label: 'Earn', id: 'earn' },
   { icon: Users, label: 'Audience', id: 'audience' },
   { icon: BarChart3, label: 'Insights', id: 'insights' },
 ];
@@ -39,6 +39,83 @@ const themes = [
   { id: 'warm', label: 'Warm', bg: 'bg-gradient-to-b from-[#ffecd2] to-[#fcb69f]', card: 'bg-white/60', cardBorder: '', text: 'text-gray-800', subtext: 'text-gray-600', preview: '#ffecd2' },
   { id: 'sky', label: 'Sky', bg: 'bg-gradient-to-b from-[#a1c4fd] to-[#c2e9fb]', card: 'bg-white/50', cardBorder: '', text: 'text-gray-800', subtext: 'text-gray-600', preview: '#a1c4fd' },
   { id: 'rose', label: 'Rose', bg: 'bg-gradient-to-b from-[#fecfef] to-[#ff9a9e]', card: 'bg-white/50', cardBorder: '', text: 'text-gray-800', subtext: 'text-gray-600', preview: '#fecfef' },
+  { id: 'neon', label: 'Neon', bg: 'bg-gradient-to-b from-[#0d0d0d] to-[#1a1a2e]', card: 'bg-[#39ff14]/10', cardBorder: 'border border-[#39ff14]/20', text: 'text-[#39ff14]', subtext: 'text-[#39ff14]/50', preview: '#0d0d0d' },
+  { id: 'lavender', label: 'Lavender', bg: 'bg-gradient-to-b from-[#e6e6fa] to-[#d8bfd8]', card: 'bg-white/50', cardBorder: '', text: 'text-gray-800', subtext: 'text-gray-600', preview: '#e6e6fa' },
+  { id: 'cherry', label: 'Cherry', bg: 'bg-gradient-to-b from-[#900020] to-[#5c0015]', card: 'bg-white/15', cardBorder: 'border border-white/10', text: 'text-white', subtext: 'text-white/50', preview: '#900020' },
+  { id: 'cyber', label: 'Cyber', bg: 'bg-gradient-to-b from-[#0a0a2a] to-[#1b003b]', card: 'bg-[#00f0ff]/10', cardBorder: 'border border-[#00f0ff]/15', text: 'text-[#00f0ff]', subtext: 'text-[#00f0ff]/40', preview: '#0a0a2a' },
+  { id: 'nature', label: 'Nature', bg: 'bg-gradient-to-b from-[#f5f0e1] to-[#d4c5a9]', card: 'bg-white/60', cardBorder: '', text: 'text-[#3e3a2e]', subtext: 'text-[#3e3a2e]/60', preview: '#f5f0e1' },
+  { id: 'cream', label: 'Cream', bg: 'bg-gradient-to-b from-[#fffdd0] to-[#fdf5e6]', card: 'bg-white/70', cardBorder: '', text: 'text-gray-800', subtext: 'text-gray-500', preview: '#fffdd0' },
+  { id: 'aurora', label: 'Aurora', bg: 'bg-gradient-to-b from-[#0b0b2a] via-[#1a3a4a] to-[#0d3b2e]', card: 'bg-white/10', cardBorder: 'border border-white/5', text: 'text-white', subtext: 'text-white/40', preview: '#1a3a4a' },
+  { id: 'pastel', label: 'Pastel', bg: 'bg-gradient-to-b from-[#fef0f5] to-[#fef9e7]', card: 'bg-white/80', cardBorder: 'border border-pink-100', text: 'text-gray-800', subtext: 'text-gray-500', preview: '#fef0f5' },
+];
+
+// ── Link color palette ──
+const linkColors = [
+  { id: 'default', label: 'Default', value: '' },
+  { id: 'pink', label: 'Pink', value: '#fce4ec' },
+  { id: 'purple', label: 'Purple', value: '#e8d5f5' },
+  { id: 'mint', label: 'Mint', value: '#d5f5e3' },
+  { id: 'yellow', label: 'Yellow', value: '#fff9c4' },
+  { id: 'orange', label: 'Orange', value: '#ffe0b2' },
+  { id: 'blue', label: 'Blue', value: '#dbeafe' },
+  { id: 'peach', label: 'Peach', value: '#fde8d8' },
+];
+
+// ── Background patterns ──
+const bgPatterns = [
+  { id: 'none', label: 'None', style: {} as React.CSSProperties },
+  { id: 'gingham', label: 'Gingham', style: {
+    backgroundImage: `repeating-linear-gradient(0deg, rgba(200,150,200,0.12) 0px, rgba(200,150,200,0.12) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, rgba(200,150,200,0.12) 0px, rgba(200,150,200,0.12) 1px, transparent 1px, transparent 20px)`,
+    backgroundSize: '20px 20px',
+  } as React.CSSProperties },
+  { id: 'dots', label: 'Dots', style: {
+    backgroundImage: `radial-gradient(circle, rgba(180,140,200,0.18) 1.5px, transparent 1.5px)`,
+    backgroundSize: '16px 16px',
+  } as React.CSSProperties },
+  { id: 'stripes', label: 'Stripes', style: {
+    backgroundImage: `repeating-linear-gradient(135deg, rgba(200,150,200,0.1) 0px, rgba(200,150,200,0.1) 2px, transparent 2px, transparent 12px)`,
+  } as React.CSSProperties },
+  { id: 'confetti', label: 'Confetti', style: {
+    backgroundImage: `radial-gradient(circle, rgba(252,196,204,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(200,180,240,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(180,230,200,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(255,240,170,0.3) 2px, transparent 2px)`,
+    backgroundSize: '40px 40px, 50px 50px, 35px 45px, 45px 35px',
+    backgroundPosition: '0 0, 20px 15px, 10px 30px, 35px 5px',
+  } as React.CSSProperties },
+  { id: 'diamond', label: 'Diamond', style: {
+    backgroundImage: `repeating-linear-gradient(45deg, rgba(180,160,210,0.1) 0px, rgba(180,160,210,0.1) 1px, transparent 1px, transparent 16px), repeating-linear-gradient(-45deg, rgba(180,160,210,0.1) 0px, rgba(180,160,210,0.1) 1px, transparent 1px, transparent 16px)`,
+    backgroundSize: '22px 22px',
+  } as React.CSSProperties },
+  { id: 'zigzag', label: 'Zigzag', style: {
+    backgroundImage: `linear-gradient(135deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(225deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(315deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(45deg, rgba(200,150,180,0.12) 25%, transparent 25%)`,
+    backgroundSize: '20px 10px',
+    backgroundPosition: '0 0, 10px 0, 10px -5px, 0 5px',
+  } as React.CSSProperties },
+  { id: 'waves', label: 'Waves', style: {
+    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 14px, rgba(160,180,220,0.12) 14px, rgba(160,180,220,0.12) 16px), repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(160,180,220,0.06) 30px, rgba(160,180,220,0.06) 32px)`,
+  } as React.CSSProperties },
+  { id: 'hearts', label: 'Hearts', style: {
+    backgroundImage: `radial-gradient(circle, rgba(240,140,160,0.2) 3px, transparent 3px), radial-gradient(circle, rgba(240,140,160,0.12) 2px, transparent 2px)`,
+    backgroundSize: '30px 30px, 30px 30px',
+    backgroundPosition: '0 0, 15px 15px',
+  } as React.CSSProperties },
+  { id: 'stars', label: 'Stars', style: {
+    backgroundImage: `radial-gradient(circle, rgba(220,180,100,0.2) 1.5px, transparent 1.5px), radial-gradient(circle, rgba(220,180,100,0.15) 1px, transparent 1px), radial-gradient(circle, rgba(220,180,100,0.25) 2px, transparent 2px)`,
+    backgroundSize: '24px 24px, 36px 36px, 48px 48px',
+    backgroundPosition: '0 0, 12px 18px, 6px 36px',
+  } as React.CSSProperties },
+  { id: 'grid', label: 'Grid', style: {
+    backgroundImage: `linear-gradient(rgba(150,150,180,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(150,150,180,0.08) 1px, transparent 1px)`,
+    backgroundSize: '12px 12px',
+  } as React.CSSProperties },
+  { id: 'honeycomb', label: 'Honeycomb', style: {
+    backgroundImage: `radial-gradient(circle, transparent 7px, rgba(200,170,130,0.08) 7px, rgba(200,170,130,0.08) 8px, transparent 8px)`,
+    backgroundSize: '20px 34px',
+    backgroundPosition: '0 0, 10px 17px',
+  } as React.CSSProperties },
+  { id: 'bubbles', label: 'Bubbles', style: {
+    backgroundImage: `radial-gradient(circle, rgba(160,200,230,0.15) 6px, transparent 6px), radial-gradient(circle, rgba(200,170,220,0.12) 4px, transparent 4px), radial-gradient(circle, rgba(180,220,180,0.1) 8px, transparent 8px)`,
+    backgroundSize: '50px 50px, 38px 38px, 60px 60px',
+    backgroundPosition: '0 0, 25px 20px, 10px 35px',
+  } as React.CSSProperties },
 ];
 
 // ── Button styles ──
@@ -72,6 +149,7 @@ const socialPlatforms = [
 // ── Add modal categories ──
 const addCategories = [
   { id: 'suggested', icon: Sparkles, label: 'Suggested' },
+  { id: 'projects', icon: Grid3x3, label: 'Projects & SDK' },
   { id: 'commerce', icon: ShoppingBag, label: 'Commerce' },
   { id: 'social', icon: Heart, label: 'Social' },
   { id: 'media', icon: Play, label: 'Media' },
@@ -88,14 +166,19 @@ const addQuickCards = [
 ];
 
 const addSuggestedItems = [
+  { icon: Download, label: 'Catalog / Drawing', desc: 'Securely share PDF catalogs or CAD drawings', category: 'projects', gradient: 'from-[#2563eb] to-[#3b82f6]' },
+  { icon: ClipboardList, label: 'RFQ (Quotation)', desc: 'Professional Request for Quotation form', category: 'projects', gradient: 'from-[#059669] to-[#10b981]' },
+  { icon: Grid3x3, label: 'Project Reference', desc: 'Showcase your completed projects portfolio', category: 'projects', gradient: 'from-[#4f46e5] to-[#6366f1]' },
+  { icon: Tag, label: 'Material Datasheet', desc: 'Detailed technical specifications for spec-in', category: 'projects', gradient: 'from-[#db2777] to-[#ec4899]' },
+  { icon: Phone, label: 'Direct Site Visit', desc: 'Schedule a consultant visit to your site', category: 'projects', gradient: 'from-[#d97706] to-[#f59e0b]' },
   { icon: Instagram, label: 'Instagram', desc: 'Display your posts and reels', category: 'social', gradient: 'from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]' },
-  { icon: Music2, label: 'TikTok', desc: 'Share your TikToks on your Linktree', category: 'social', gradient: 'from-[#69C9D0] to-[#EE1D52]' },
-  { icon: Youtube, label: 'YouTube', desc: 'Share YouTube videos on your Linktree', category: 'media', gradient: 'from-[#FF0000] to-[#CC0000]' },
+  { icon: Music2, label: 'TikTok', desc: 'Share your TikToks on your OpenBio', category: 'social', gradient: 'from-[#69C9D0] to-[#EE1D52]' },
+  { icon: Youtube, label: 'YouTube', desc: 'Share YouTube videos on your OpenBio', category: 'media', gradient: 'from-[#FF0000] to-[#CC0000]' },
   { icon: Music2, label: 'Spotify', desc: 'Share your latest or favorite music', category: 'media', gradient: 'from-[#1DB954] to-[#1ed760]' },
-  { icon: Download, label: 'File downloads', desc: 'Upload files to sell on your Linktree', category: 'commerce', gradient: 'from-[#f97316] to-[#fb923c]' },
+  { icon: Download, label: 'File downloads', desc: 'Upload files to sell on your OpenBio', category: 'commerce', gradient: 'from-[#f97316] to-[#fb923c]' },
   { icon: Mail, label: 'Email signup', desc: 'Collect emails from your audience', category: 'contact', gradient: 'from-[#6366f1] to-[#818cf8]' },
   { icon: DollarSign, label: 'Tip jar', desc: 'Accept tips from your supporters', category: 'commerce', gradient: 'from-[#eab308] to-[#facc15]' },
-  { icon: ShoppingBag, label: 'Shop', desc: 'Sell products directly from Linktree', category: 'commerce', gradient: 'from-[#ec4899] to-[#f472b6]' },
+  { icon: ShoppingBag, label: 'Shop', desc: 'Sell products directly from OpenBio', category: 'commerce', gradient: 'from-[#ec4899] to-[#f472b6]' },
   { icon: Facebook, label: 'Facebook', desc: 'Link your Facebook profile or page', category: 'social', gradient: 'from-[#1877F2] to-[#4299e1]' },
   { icon: Twitter, label: 'Twitter', desc: 'Share your tweets and profile', category: 'social', gradient: 'from-[#1DA1F2] to-[#0d8bd9]' },
   { icon: Phone, label: 'Phone number', desc: 'Let visitors call you directly', category: 'contact', gradient: 'from-[#10b981] to-[#34d399]' },
@@ -108,17 +191,20 @@ const addSuggestedItems = [
   { icon: FileText, label: 'Heading', desc: 'Add a heading to organize links', category: 'text', gradient: 'from-[#374151] to-[#6b7280]' },
 ];
 
-type LinkItem = { id: string; title: string; url: string; enabled: boolean; thumbnail?: string; clicks?: number };
+type LinkItem = { id: string; title: string; url: string; enabled: boolean; thumbnail?: string; clicks?: number; color?: string };
 
 export default function CreatePage() {
   const { username, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [displayName, setDisplayName] = useState(username || '');
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('minimal');
   const [selectedButton, setSelectedButton] = useState('rounded');
   const [selectedFont, setSelectedFont] = useState('inter');
+  const [customBgColor, setCustomBgColor] = useState('#6366f1');
+  const [customBgSecondary, setCustomBgSecondary] = useState('#4f46e5');
   const [links, setLinks] = useState<LinkItem[]>([]);
   const [activeSocials, setActiveSocials] = useState<string[]>([]);
   const [activeSection, setActiveSection] = useState('links');
@@ -140,6 +226,19 @@ export default function CreatePage() {
   const [tipJarEnabled, setTipJarEnabled] = useState(false);
   const [tipAmounts, setTipAmounts] = useState([3, 5, 10, 25]);
   const [earnProducts, setEarnProducts] = useState<{ id: string; name: string; price: string }[]>([]);
+  const [memberships, setMemberships] = useState<{ id: string; title: string; price: string; period: string }[]>([]);
+
+  const scrollToSubSection = (section: string, subId: string) => {
+    setActiveSection(section);
+    setSidebarOpen(false);
+    // Use a small timeout to allow the section to render/switch before scrolling
+    setTimeout(() => {
+      const el = document.getElementById(subId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
 
   // Audience section
   const [subscribers, setSubscribers] = useState<{ email: string; date: string }[]>([]);
@@ -155,7 +254,7 @@ export default function CreatePage() {
   const [newPostPlatform, setNewPostPlatform] = useState('instagram');
   const [newPostDate, setNewPostDate] = useState('');
   const [newPostTime, setNewPostTime] = useState('');
-  const [autoReplyMessage, setAutoReplyMessage] = useState('Thanks for reaching out! Check out my Linktree for all my links.');
+  const [autoReplyMessage, setAutoReplyMessage] = useState('Thanks for reaching out! Check out my OpenBio for all my links.');
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [autoReplyKeywords, setAutoReplyKeywords] = useState('link, links, website, url');
   const [shortenerInput, setShortenerInput] = useState('');
@@ -163,8 +262,53 @@ export default function CreatePage() {
   const [expandedSidebar, setExpandedSidebar] = useState<string | null>(null);
   const [sidebarUserMenu, setSidebarUserMenu] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [earnSubTab, setEarnSubTab] = useState<'overview' | 'earnings'>('overview');
+  const [selectedPattern, setSelectedPattern] = useState('none');
+  const [showAllThemes, setShowAllThemes] = useState(false);
 
-  const theme = themes.find((t) => t.id === selectedTheme) || themes[0];
+  // Apply template data from TemplatesPage navigation
+  useEffect(() => {
+    const state = location.state as { template?: { name: string; bio: string; links: string[]; avatarBg: string; avatarText?: string; overlay: string } } | null;
+    if (state?.template) {
+      const t = state.template;
+      setDisplayName(t.name);
+      setBio(t.bio);
+      setLinks(
+        t.links.map((title, i) => ({
+          id: `tpl-${Date.now()}-${i}`,
+          title,
+          url: '',
+          enabled: true,
+          clicks: 0,
+        }))
+      );
+      // Clear the state so refreshing doesn't re-apply
+      window.history.replaceState({}, '');
+    }
+  }, []);
+
+  const isLightColor = (hex: string) => {
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    return 0.299 * r + 0.587 * g + 0.114 * b > 0.55;
+  };
+
+  const isCustom = selectedTheme === 'custom';
+  const light = isLightColor(customBgColor);
+  const customTheme = {
+    id: 'custom', label: 'Custom', preview: customBgColor,
+    bg: '', card: '', cardBorder: '', text: '', subtext: '',
+    bgStyle: { background: `linear-gradient(to bottom, ${customBgColor}, ${customBgSecondary})` } as React.CSSProperties,
+    cardStyle: {
+      backgroundColor: light ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.12)',
+      border: light ? 'none' : '1px solid rgba(255,255,255,0.08)',
+    } as React.CSSProperties,
+    textColor: light ? '#1f2937' : '#ffffff',
+    subtextColor: light ? '#6b7280' : 'rgba(255,255,255,0.5)',
+  };
+
+  const theme = isCustom ? customTheme : (themes.find((t) => t.id === selectedTheme) || themes[0]);
   const btnStyle = buttonStyles.find((b) => b.id === selectedButton) || buttonStyles[0];
   const fontStyle = fontOptions.find((f) => f.id === selectedFont) || fontOptions[0];
 
@@ -179,7 +323,7 @@ export default function CreatePage() {
     setAddModalSearch('');
   };
   const removeLink = (id: string) => setLinks(links.filter((l) => l.id !== id));
-  const updateLink = (id: string, field: 'title' | 'url', value: string) => {
+  const updateLink = (id: string, field: 'title' | 'url' | 'color', value: string) => {
     setLinks(links.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
   };
   const toggleLink = (id: string) => {
@@ -248,7 +392,7 @@ export default function CreatePage() {
       showToast('Add social icons to complete setup');
       return;
     }
-    showToast('Setup complete! Your Linktree is ready');
+    showToast('Setup complete! Your OpenBio is ready');
   };
 
   const visibleLinks = showArchive ? links : links.filter((l) => l.enabled);
@@ -312,11 +456,10 @@ export default function CreatePage() {
                       setExpandedSidebar(expandedSidebar === item.id ? null : item.id);
                     }
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                    activeSection === item.id
-                      ? 'bg-gray-100 text-gray-900 font-medium'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activeSection === item.id
+                    ? 'bg-gray-100 text-gray-900 font-medium'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
                 >
                   <item.icon size={18} />
                   {item.label}
@@ -326,18 +469,28 @@ export default function CreatePage() {
                 </button>
                 {/* Sub-menu for Earn */}
                 {item.id === 'earn' && expandedSidebar === 'earn' && (
-                  <div className="ml-8 mt-0.5 space-y-0.5">
-                    <button onClick={() => { setActiveSection('earn'); setSidebarOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Tip Jar</button>
-                    <button onClick={() => { setActiveSection('earn'); setSidebarOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Products</button>
-                    <button onClick={() => { setActiveSection('earn'); setSidebarOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Memberships</button>
+                  <div className="ml-8 mt-2 space-y-2 relative before:absolute before:left-[-15px] before:top-[-10px] before:bottom-3 before:w-[1.5px] before:bg-gray-100">
+                    <button
+                      onClick={() => { setEarnSubTab('overview'); scrollToSubSection('earn', 'revenue-overview'); }}
+                      className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors ${earnSubTab === 'overview' ? 'bg-[#f3f3f1] text-gray-900' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
+                    >
+                      Overview
+                    </button>
+                    <button
+                      onClick={() => { setEarnSubTab('earnings'); scrollToSubSection('earn', 'revenue-overview'); }}
+                      className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center justify-between ${earnSubTab === 'earnings' ? 'bg-[#f3f3f1] text-gray-900' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
+                    >
+                      <span>Earnings</span>
+                      <span>US$0.00</span>
+                    </button>
                   </div>
                 )}
                 {/* Sub-menu for Audience */}
                 {item.id === 'audience' && expandedSidebar === 'audience' && (
                   <div className="ml-8 mt-0.5 space-y-0.5">
-                    <button onClick={() => { setActiveSection('audience'); setSidebarOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Subscribers</button>
-                    <button onClick={() => { setActiveSection('audience'); setSidebarOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Email forms</button>
-                    <button onClick={() => { setActiveSection('audience'); setSidebarOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Campaigns</button>
+                    <button onClick={() => scrollToSubSection('audience', 'subscribers')} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Subscribers</button>
+                    <button onClick={() => scrollToSubSection('audience', 'email-forms')} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Email forms</button>
+                    <button onClick={() => scrollToSubSection('audience', 'campaigns')} className="w-full text-left px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50">Campaigns</button>
                   </div>
                 )}
               </div>
@@ -352,11 +505,10 @@ export default function CreatePage() {
                 <button
                   key={item.id}
                   onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                    activeSection === item.id
-                      ? 'bg-gray-100 text-gray-900 font-medium'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activeSection === item.id
+                    ? 'bg-gray-100 text-gray-900 font-medium'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
                 >
                   <item.icon size={18} />
                   {item.label}
@@ -455,128 +607,160 @@ export default function CreatePage() {
                 >
                   {/* ── Earn Section ── */}
                   {activeSection === 'earn' && (
-                    <>
-                      {/* Tip Jar Card */}
-                      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-yellow-50 flex items-center justify-center">
-                              <DollarSign size={20} className="text-yellow-500" />
+                    <div id="revenue-overview" className="scroll-mt-24">
+
+                      {/* === Overview Sub-tab === */}
+                      {earnSubTab === 'overview' && (
+                        <div>
+                          {/* Page Title */}
+                          <h1 className="text-2xl font-bold text-gray-900 mb-6">Earn</h1>
+
+                          {/* Overview Tab */}
+                          <div className="mb-8">
+                            <div className="border-b border-gray-200">
+                              <button className="px-1 pb-3 text-sm font-medium text-gray-500 border-b-2 border-gray-400">
+                                Overview
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Info Notice */}
+                          <div className="bg-[#fef9e7] rounded-2xl p-5 mb-8">
+                            <p className="text-sm font-semibold text-[#856404] mb-1">Selling is not enabled in your country</p>
+                            <p className="text-sm text-[#856404]/80">
+                              Currently you can only offer free digital products at this time. <button className="underline font-semibold text-[#856404]">Learn more</button>
+                            </p>
+                          </div>
+
+                          {/* Free digital products */}
+                          <h2 className="text-lg font-bold text-gray-900 mb-5 px-2">Free digital products</h2>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                            {/* Courses */}
+                            <button className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
+                              <div className="w-12 h-12 bg-[#e9d5ff] rounded-xl flex items-center justify-center flex-shrink-0">
+                                <GraduationCap size={22} className="text-[#7c3aed]" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold text-gray-900">Courses</p>
+                                <p className="text-sm text-gray-500">Share your expertise with an online course.</p>
+                              </div>
+                              <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
+                            </button>
+
+                            {/* Digital products */}
+                            <button className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
+                              <div className="w-12 h-12 bg-[#fee2e2] rounded-xl flex items-center justify-center flex-shrink-0">
+                                <Download size={22} className="text-[#ef4444]" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold text-gray-900">Digital products</p>
+                                <p className="text-sm text-gray-500">Share downloadable content.</p>
+                              </div>
+                              <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
+                            </button>
+
+                            {/* Bookings */}
+                            <button className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
+                              <div className="w-12 h-12 bg-[#f3e8ff] rounded-xl flex items-center justify-center flex-shrink-0">
+                                <Calendar size={22} className="text-[#7c3aed]" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold text-gray-900">Bookings</p>
+                                <p className="text-sm text-gray-500">Get booked for sessions, calls, or coaching.</p>
+                              </div>
+                              <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
+                            </button>
+                          </div>
+
+                          {/* Got Ideas Footer */}
+                          <div className="flex items-center gap-4 pt-6">
+                            <div className="w-11 h-11 bg-[#16bc51] rounded-full flex items-center justify-center text-white flex-shrink-0">
+                              <Sparkles size={18} />
                             </div>
                             <div>
-                              <h3 className="text-sm font-semibold text-gray-900">Tip Jar</h3>
-                              <p className="text-[11px] text-gray-400">Accept tips from supporters</p>
+                              <p className="text-sm font-bold text-gray-900">Got ideas?</p>
+                              <p className="text-sm text-gray-500">We're listening! <button className="underline font-semibold text-gray-900">Share feedback</button></p>
                             </div>
                           </div>
-                          <button
-                            onClick={() => setTipJarEnabled(!tipJarEnabled)}
-                            className={`relative w-10 h-6 rounded-full transition-colors ${tipJarEnabled ? 'bg-green-500' : 'bg-gray-200'}`}
-                          >
-                            <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${tipJarEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
-                          </button>
                         </div>
-                        {tipJarEnabled && (
-                          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-                            <p className="text-xs text-gray-500">Set tip amounts</p>
-                            <div className="flex gap-2">
-                              {tipAmounts.map((amt, i) => (
-                                <div key={i} className="flex-1">
-                                  <div className="flex items-center gap-1 px-3 py-2 bg-gray-50 rounded-lg border border-gray-200">
-                                    <span className="text-xs text-gray-400">$</span>
-                                    <input
-                                      type="number"
-                                      value={amt}
-                                      onChange={(e) => { const n = [...tipAmounts]; n[i] = Number(e.target.value); setTipAmounts(n); }}
-                                      className="w-full bg-transparent text-sm font-medium text-gray-900 focus:outline-none"
-                                    />
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                            <button
-                              onClick={() => { addLink('Tip Jar'); setActiveSection('links'); showToast('Tip Jar added to your Linktree!'); }}
-                              className="w-full py-2.5 bg-yellow-500 text-white text-sm font-semibold rounded-full hover:bg-yellow-600 transition-colors"
-                            >
-                              Add Tip Jar to Linktree
-                            </button>
-                          </motion.div>
-                        )}
-                      </div>
+                      )}
 
-                      {/* Products Card */}
-                      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center">
-                            <ShoppingBag size={20} className="text-pink-500" />
+                      {/* === Earnings Sub-tab === */}
+                      {earnSubTab === 'earnings' && (
+                        <div>
+                          {/* Page Title */}
+                          <h1 className="text-2xl font-bold text-gray-900 mb-6">Earnings</h1>
+
+                          {/* Balance Card */}
+                          <div className="bg-white rounded-[24px] p-8 border border-gray-100 shadow-sm mb-8">
+                            <div className="flex items-center gap-1.5 mb-1 text-gray-500">
+                              <span className="text-sm font-medium">Balance</span>
+                              <Info size={14} className="text-gray-300" />
+                            </div>
+                            <h2 className="text-4xl font-black text-gray-900">$0.00</h2>
                           </div>
-                          <div>
-                            <h3 className="text-sm font-semibold text-gray-900">Products</h3>
-                            <p className="text-[11px] text-gray-400">Sell digital or physical products</p>
-                          </div>
-                        </div>
-                        {earnProducts.length > 0 && (
-                          <div className="space-y-2 mb-4">
-                            {earnProducts.map((p) => (
-                              <div key={p.id} className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
-                                <input
-                                  type="text"
-                                  value={p.name}
-                                  onChange={(e) => setEarnProducts(earnProducts.map(x => x.id === p.id ? { ...x, name: e.target.value } : x))}
-                                  className="flex-1 text-sm text-gray-700 bg-transparent focus:outline-none focus:bg-white focus:px-2 focus:py-1 focus:rounded-md focus:border focus:border-gray-200 transition-all"
-                                />
-                                <div className="flex items-center gap-1 flex-shrink-0">
-                                  <span className="text-sm text-gray-400">$</span>
-                                  <input
-                                    type="text"
-                                    value={p.price}
-                                    onChange={(e) => setEarnProducts(earnProducts.map(x => x.id === p.id ? { ...x, price: e.target.value } : x))}
-                                    className="w-16 text-sm font-semibold text-gray-900 bg-transparent focus:outline-none focus:bg-white focus:px-2 focus:py-1 focus:rounded-md focus:border focus:border-gray-200 transition-all text-right"
-                                  />
-                                </div>
-                                <button onClick={() => { addLink(p.name); showToast(`"${p.name}" added to Linktree!`); }} className="text-green-400 hover:text-green-600" title="Add to Linktree"><Plus size={14} /></button>
-                                <button onClick={() => setEarnProducts(earnProducts.filter(x => x.id !== p.id))} className="text-gray-300 hover:text-red-400"><X size={14} /></button>
+
+                          {/* Start earning */}
+                          <h2 className="text-lg font-bold text-gray-900 mb-5 px-1">Start earning on OpenBio</h2>
+                          <div className="space-y-4 mb-10">
+                            {/* Offer your time */}
+                            <button className="w-full flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
+                              <div className="w-12 h-12 bg-[#f3f3f1] rounded-xl flex items-center justify-center flex-shrink-0">
+                                <Calendar size={20} className="text-[#7c3aed]" />
                               </div>
-                            ))}
-                          </div>
-                        )}
-                        <button
-                          onClick={() => {
-                            const name = `Product ${earnProducts.length + 1}`;
-                            setEarnProducts([...earnProducts, { id: Date.now().toString(), name, price: '9.99' }]);
-                            showToast('Product added! Edit the name and price.');
-                          }}
-                          className="w-full py-2.5 bg-pink-500 text-white text-sm font-semibold rounded-full hover:bg-pink-600 transition-colors flex items-center justify-center gap-2"
-                        >
-                          <Plus size={16} /> Add product
-                        </button>
-                      </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-bold text-gray-900">Offer your time</p>
+                                <p className="text-sm text-gray-500">Get booked for sessions, calls, or coaching</p>
+                              </div>
+                              <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
+                            </button>
 
-                      {/* Revenue Overview */}
-                      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-4">Revenue overview</h3>
-                        <div className="grid grid-cols-3 gap-4">
-                          <div className="bg-green-50 rounded-xl p-4 text-center">
-                            <p className="text-2xl font-bold text-green-600">$0</p>
-                            <p className="text-[11px] text-gray-500 mt-1">Total earned</p>
+                            {/* Sell digital products */}
+                            <button className="w-full flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
+                              <div className="w-12 h-12 bg-[#f3f3f1] rounded-xl flex items-center justify-center flex-shrink-0">
+                                <ShoppingBag size={20} className="text-[#7c3aed]" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-bold text-gray-900">Sell digital products</p>
+                                <p className="text-sm text-gray-500">Share guides, music, templates, and more</p>
+                              </div>
+                              <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
+                            </button>
+
+                            {/* Teach a course */}
+                            <button className="w-full flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
+                              <div className="w-12 h-12 bg-[#f3f3f1] rounded-xl flex items-center justify-center flex-shrink-0">
+                                <GraduationCap size={20} className="text-[#7c3aed]" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-bold text-gray-900">Teach a course</p>
+                                <p className="text-sm text-gray-500">Turn your expertise into an online course</p>
+                              </div>
+                              <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
+                            </button>
                           </div>
-                          <div className="bg-blue-50 rounded-xl p-4 text-center">
-                            <p className="text-2xl font-bold text-blue-600">{earnProducts.length}</p>
-                            <p className="text-[11px] text-gray-500 mt-1">Products</p>
-                          </div>
-                          <div className="bg-yellow-50 rounded-xl p-4 text-center">
-                            <p className="text-2xl font-bold text-yellow-600">0</p>
-                            <p className="text-[11px] text-gray-500 mt-1">Tips received</p>
+
+                          {/* Got Ideas Footer */}
+                          <div className="flex items-center gap-4 pt-6 border-t border-gray-50">
+                            <div className="w-11 h-11 bg-[#16bc51] rounded-full flex items-center justify-center text-white flex-shrink-0">
+                              <Sparkles size={18} />
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-gray-900">Got ideas?</p>
+                              <p className="text-sm text-gray-500">We're listening! <button className="underline font-semibold text-gray-900">Share feedback</button></p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </>
+                      )}
+
+                    </div>
                   )}
 
                   {/* ── Audience Section ── */}
                   {activeSection === 'audience' && (
-                    <>
+                    <div className="space-y-6">
                       {/* Stats */}
-                      <div className="grid grid-cols-3 gap-4">
+                      <div id="subscribers" className="grid grid-cols-3 gap-4 scroll-mt-24">
                         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-center">
                           <p className="text-3xl font-bold text-gray-900">{subscribers.length}</p>
                           <p className="text-xs text-gray-400 mt-1">Subscribers</p>
@@ -592,7 +776,7 @@ export default function CreatePage() {
                       </div>
 
                       {/* Email Form Setup */}
-                      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                      <div id="email-forms" className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm scroll-mt-24">
                         <div className="flex items-center gap-3 mb-4">
                           <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
                             <Mail size={20} className="text-blue-500" />
@@ -616,20 +800,23 @@ export default function CreatePage() {
                             onClick={() => { addLink(emailFormTitle); setActiveSection('links'); showToast('Email form added!'); }}
                             className="w-full py-2.5 bg-blue-500 text-white text-sm font-semibold rounded-full hover:bg-blue-600 transition-colors"
                           >
-                            Add to Linktree
+                            Add to OpenBio
                           </button>
                         </div>
                       </div>
 
-                      {/* Test Subscriber */}
-                      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-3">Add test subscriber</h3>
-                        <div className="flex gap-2">
+                      {/* Test Subscriber / Campaigns */}
+                      <div id="campaigns" className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm scroll-mt-24">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-sm font-semibold text-gray-900">Lead management (B2B CRM)</h3>
+                          <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full border border-blue-100 uppercase tracking-tight">Project Focused</span>
+                        </div>
+                        <div className="flex gap-2 mb-4">
                           <input
                             type="email"
                             value={newSubscriberEmail}
                             onChange={(e) => setNewSubscriberEmail(e.target.value)}
-                            placeholder="email@example.com"
+                            placeholder="Enter business email..."
                             className="flex-1 px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
                           />
                           <button
@@ -637,29 +824,48 @@ export default function CreatePage() {
                               if (newSubscriberEmail) {
                                 setSubscribers([...subscribers, { email: newSubscriberEmail, date: new Date().toISOString() }]);
                                 setNewSubscriberEmail('');
-                                showToast('Subscriber added!');
+                                showToast('Lead added to Project List!');
                               }
                             }}
-                            className="px-4 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors"
+                            className="px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                           >
-                            Add
+                            Add Lead
                           </button>
                         </div>
-                        {subscribers.length > 0 && (
-                          <div className="mt-4 space-y-1.5">
+                        {subscribers.length > 0 ? (
+                          <div className="space-y-1.5">
                             {subscribers.map((s, i) => (
-                              <div key={i} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg">
-                                <span className="text-sm text-gray-700">{s.email}</span>
+                              <div key={i} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg group transition-all hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-100">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-[10px] font-bold">
+                                    {s.email.substring(0, 2).toUpperCase()}
+                                  </div>
+                                  <div>
+                                    <span className="text-sm font-medium text-gray-700 block">{s.email}</span>
+                                    <span className="text-[10px] text-gray-400">Project: High-Rise Condo (Sample)</span>
+                                  </div>
+                                </div>
                                 <div className="flex items-center gap-2">
                                   <span className="text-[11px] text-gray-400">{new Date(s.date).toLocaleDateString()}</span>
-                                  <button onClick={() => setSubscribers(subscribers.filter((_, idx) => idx !== i))} className="text-gray-300 hover:text-red-400"><X size={14} /></button>
+                                  <button onClick={() => setSubscribers(subscribers.filter((_, idx) => idx !== i))} className="text-gray-300 hover:text-red-400 transition-colors"><Trash2 size={14} /></button>
                                 </div>
                               </div>
                             ))}
                           </div>
+                        ) : (
+                          <div className="text-center py-8 border-2 border-dashed border-gray-100 rounded-2xl">
+                            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                              <Users size={20} className="text-gray-300" />
+                            </div>
+                            <p className="text-sm text-gray-400 font-medium">No active leads</p>
+                            <p className="text-[11px] text-gray-300 max-w-[200px] mx-auto">Start collecting leads from your project quotation forms</p>
+                          </div>
                         )}
+                        <button className="w-full mt-4 py-3 bg-gray-50 text-gray-500 text-xs font-semibold rounded-xl border border-gray-100 hover:bg-gray-100 hover:text-gray-700 transition-all flex items-center justify-center gap-2">
+                          <Download size={14} /> Export CSV for CRM (Salesforce/Hubspot)
+                        </button>
                       </div>
-                    </>
+                    </div>
                   )}
 
                   {/* ── Insights Section ── */}
@@ -829,7 +1035,7 @@ export default function CreatePage() {
                           </div>
                           <div>
                             <h3 className="text-sm font-semibold text-gray-900">Instagram auto-reply</h3>
-                            <p className="text-[11px] text-gray-400">Auto-respond to DMs with your Linktree</p>
+                            <p className="text-[11px] text-gray-400">Auto-respond to DMs with your OpenBio</p>
                           </div>
                         </div>
                         <button
@@ -957,7 +1163,7 @@ export default function CreatePage() {
                           { emoji: '🎁', title: 'Run a giveaway for your followers', desc: 'Boost engagement and attract new followers with free value' },
                           { emoji: '📊', title: 'Share a milestone or achievement', desc: 'Celebrate wins publicly to build social proof and community' },
                           { emoji: '❓', title: 'Ask your audience a question', desc: 'Drive comments and learn about your audience preferences' },
-                          { emoji: '🔗', title: 'Promote your newest Linktree link', desc: 'Drive traffic to your latest content or product' },
+                          { emoji: '🔗', title: 'Promote your newest OpenBio link', desc: 'Drive traffic to your latest content or product' },
                           { emoji: '📹', title: 'Create a quick tutorial or how-to', desc: 'Educational content gets saved and shared the most' },
                         ].map((idea, i) => (
                           <button
@@ -984,394 +1190,486 @@ export default function CreatePage() {
               )}
 
               {activeSection === 'links' && <>
-              {/* Hidden file inputs */}
-              <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
-              <input ref={linkImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleLinkImageUpload} />
+                {/* Hidden file inputs */}
+                <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+                <input ref={linkImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleLinkImageUpload} />
 
-              {/* Profile Card */}
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm mb-5">
-                <div className="flex items-center gap-4">
-                  <div className="relative group">
-                    <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                      {avatar ? (
-                        <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
-                      ) : (
-                        <User size={24} className="text-gray-300" />
-                      )}
-                    </div>
-                    <button
-                      onClick={() => avatarInputRef.current?.click()}
-                      className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
-                    >
-                      <Upload size={16} className="text-white" />
-                    </button>
-                  </div>
-                  <div className="flex-1 space-y-2">
-                    <input
-                      type="text"
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder="Add your name"
-                      className="w-full text-sm font-semibold text-gray-900 placeholder-gray-300 bg-transparent focus:outline-none"
-                    />
-                    <input
-                      type="text"
-                      value={bio}
-                      onChange={(e) => setBio(e.target.value)}
-                      placeholder="Add bio"
-                      className="w-full text-sm text-gray-500 placeholder-gray-300 bg-transparent focus:outline-none"
-                    />
-                  </div>
-                </div>
-                {/* Add social icons */}
-                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-50">
-                  {socialPlatforms.slice(0, 5).map((p) => {
-                    const isActive = activeSocials.includes(p.id);
-                    return (
+                {/* Profile Card */}
+                <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm mb-5">
+                  <div className="flex items-center gap-4">
+                    <div className="relative group">
+                      <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                        {avatar ? (
+                          <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                          <User size={24} className="text-gray-300" />
+                        )}
+                      </div>
                       <button
-                        key={p.id}
-                        onClick={() => toggleSocial(p.id)}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                          isActive
+                        onClick={() => avatarInputRef.current?.click()}
+                        className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                      >
+                        <Upload size={16} className="text-white" />
+                      </button>
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <input
+                        type="text"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        placeholder="Add your name"
+                        className="w-full text-sm font-semibold text-gray-900 placeholder-gray-300 bg-transparent focus:outline-none"
+                      />
+                      <input
+                        type="text"
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        placeholder="Add bio"
+                        className="w-full text-sm text-gray-500 placeholder-gray-300 bg-transparent focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  {/* Add social icons */}
+                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-50">
+                    {socialPlatforms.slice(0, 5).map((p) => {
+                      const isActive = activeSocials.includes(p.id);
+                      return (
+                        <button
+                          key={p.id}
+                          onClick={() => toggleSocial(p.id)}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isActive
                             ? 'bg-gray-900 text-white'
                             : 'bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600'
-                        }`}
-                        title={p.label}
+                            }`}
+                          title={p.label}
+                        >
+                          <p.icon size={14} />
+                        </button>
+                      );
+                    })}
+                    <button
+                      onClick={() => setShowSocialPicker(!showSocialPicker)}
+                      className="w-8 h-8 rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 flex items-center justify-center transition-all"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                  {/* Social Picker Dropdown */}
+                  <AnimatePresence>
+                    {showSocialPicker && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mt-3 pt-3 border-t border-gray-50 overflow-hidden"
                       >
-                        <p.icon size={14} />
-                      </button>
-                    );
-                  })}
+                        <p className="text-[11px] text-gray-400 mb-2">All platforms</p>
+                        <div className="flex flex-wrap gap-2">
+                          {socialPlatforms.map((p) => {
+                            const isActive = activeSocials.includes(p.id);
+                            return (
+                              <button
+                                key={p.id}
+                                onClick={() => toggleSocial(p.id)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${isActive
+                                  ? 'bg-gray-900 text-white'
+                                  : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                                  }`}
+                              >
+                                <p.icon size={12} />
+                                {p.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Add Button */}
+                <button
+                  onClick={() => setAddModalOpen(true)}
+                  className="w-full py-4 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-full flex items-center justify-center gap-2 transition-colors border border-gray-200 shadow-sm mb-5"
+                >
+                  <Plus size={20} /> Add
+                </button>
+
+                {/* Actions row */}
+                <div className="flex items-center justify-between mb-5">
                   <button
-                    onClick={() => setShowSocialPicker(!showSocialPicker)}
-                    className="w-8 h-8 rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 flex items-center justify-center transition-all"
+                    onClick={() => {
+                      const id = Date.now().toString();
+                      setLinks([...links, { id, title: 'Collection', url: '', enabled: true, clicks: 0 }]);
+                      showToast('Collection added');
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-500 bg-white border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
                   >
-                    <Plus size={14} />
+                    <FolderOpen size={15} /> Add collection
+                  </button>
+                  <button
+                    onClick={() => setShowArchive(!showArchive)}
+                    className={`flex items-center gap-2 text-sm transition-colors ${showArchive ? 'text-purple-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    <Archive size={15} /> {showArchive ? 'Hide archive' : 'View archive'} <ChevronRight size={14} className={`transition-transform ${showArchive ? 'rotate-90' : ''}`} />
                   </button>
                 </div>
-                {/* Social Picker Dropdown */}
-                <AnimatePresence>
-                  {showSocialPicker && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="mt-3 pt-3 border-t border-gray-50 overflow-hidden"
-                    >
-                      <p className="text-[11px] text-gray-400 mb-2">All platforms</p>
-                      <div className="flex flex-wrap gap-2">
+
+                {/* Link Cards */}
+                <div className="space-y-3 mb-6">
+                  <AnimatePresence>
+                    {visibleLinks.map((link) => (
+                      <motion.div
+                        key={link.id}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className={`bg-white rounded-2xl border shadow-sm overflow-hidden ${!link.enabled ? 'border-gray-200 opacity-60' : 'border-gray-100'}`}
+                      >
+                        <div className="flex items-start gap-1 p-4">
+                          <div className="mt-1 text-gray-300 cursor-grab hover:text-gray-400 p-1">
+                            <GripVertical size={16} />
+                          </div>
+                          {link.thumbnail && (
+                            <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 mr-2">
+                              <img src={link.thumbnail} alt="" className="w-full h-full object-cover" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <input
+                                type="text"
+                                value={link.title}
+                                onChange={(e) => updateLink(link.id, 'title', e.target.value)}
+                                placeholder="Title"
+                                className="flex-1 text-sm font-semibold text-gray-900 placeholder-gray-300 bg-transparent focus:outline-none"
+                              />
+                              <button
+                                onClick={() => setEditingLinkId(editingLinkId === link.id ? null : link.id)}
+                                className={`p-1 transition-colors ${editingLinkId === link.id ? 'text-purple-500' : 'text-gray-300 hover:text-gray-500'}`}
+                              >
+                                <Pencil size={13} />
+                              </button>
+                            </div>
+                            <input
+                              type="url"
+                              value={link.url}
+                              onChange={(e) => updateLink(link.id, 'url', e.target.value)}
+                              placeholder="URL"
+                              className="w-full text-xs text-gray-400 placeholder-gray-300 bg-transparent focus:outline-none"
+                            />
+                            {/* Expanded edit area */}
+                            <AnimatePresence>
+                              {editingLinkId === link.id && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: 'auto' }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  className="mt-3 pt-3 border-t border-gray-100 space-y-2 overflow-hidden"
+                                >
+                                  <label className="block text-[11px] text-gray-400">Title</label>
+                                  <input
+                                    type="text"
+                                    value={link.title}
+                                    onChange={(e) => updateLink(link.id, 'title', e.target.value)}
+                                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300"
+                                  />
+                                  <label className="block text-[11px] text-gray-400">URL</label>
+                                  <input
+                                    type="url"
+                                    value={link.url}
+                                    onChange={(e) => updateLink(link.id, 'url', e.target.value)}
+                                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300"
+                                  />
+                                  <label className="block text-[11px] text-gray-400">Button Color</label>
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    {linkColors.map((c) => (
+                                      <button
+                                        key={c.id}
+                                        onClick={() => updateLink(link.id, 'color', c.value)}
+                                        className={`w-7 h-7 rounded-full border-2 transition-all flex items-center justify-center ${link.color === c.value ? 'border-gray-900 scale-110' : 'border-gray-200 hover:border-gray-300'}`}
+                                        style={{ backgroundColor: c.value || '#f3f4f6' }}
+                                        title={c.label}
+                                      >
+                                        {link.color === c.value && <Check size={12} className="text-gray-600" />}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                          <div className="flex items-center gap-2 ml-2">
+                            {/* Toggle */}
+                            <button
+                              onClick={() => toggleLink(link.id)}
+                              className={`relative w-10 h-6 rounded-full transition-colors ${link.enabled ? 'bg-green-500' : 'bg-gray-200'
+                                }`}
+                            >
+                              <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${link.enabled ? 'translate-x-[18px]' : 'translate-x-0.5'
+                                }`} />
+                            </button>
+                          </div>
+                        </div>
+                        {/* Card footer */}
+                        <div className="flex items-center justify-between px-4 py-2 bg-gray-50/50 border-t border-gray-50">
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => { setImageTargetLinkId(link.id); linkImageInputRef.current?.click(); }}
+                              className="text-gray-300 hover:text-gray-500 transition-colors"
+                              title="Add thumbnail"
+                            >
+                              <Image size={14} />
+                            </button>
+                            <button
+                              onClick={() => showToast(`${link.clicks || 0} clicks`)}
+                              className="flex items-center gap-1 text-gray-300 hover:text-gray-500 transition-colors"
+                              title="View stats"
+                            >
+                              <BarChart3 size={14} />
+                              {(link.clicks ?? 0) > 0 && <span className="text-[10px] text-gray-400">{link.clicks}</span>}
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => removeLink(link.id)}
+                            className="text-gray-300 hover:text-red-400 transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+
+                {/* Tabs: Add links / Settings */}
+                <div className="border-b border-gray-200 mb-6">
+                  <div className="flex">
+                    {(['add', 'settings'] as const).map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => setMainTab(tab)}
+                        className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${mainTab === tab
+                          ? 'border-gray-900 text-gray-900'
+                          : 'border-transparent text-gray-400 hover:text-gray-600'
+                          }`}
+                      >
+                        {tab === 'add' ? 'Add links' : 'Settings'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {mainTab === 'settings' ? (
+                  <div className="space-y-6 pb-10">
+                    {/* Themes */}
+                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <Palette size={16} /> Themes
+                      </h2>
+                      <div className="grid grid-cols-3 gap-3">
+                        {(showAllThemes ? themes : themes.slice(0, 6)).map((t) => (
+                          <button
+                            key={t.id}
+                            onClick={() => setSelectedTheme(t.id)}
+                            className={`relative p-1 rounded-2xl border-2 transition-all ${selectedTheme === t.id ? 'border-gray-900' : 'border-transparent hover:border-gray-200'
+                              }`}
+                          >
+                            <div className={`h-20 rounded-xl ${t.bg} flex items-center justify-center`}>
+                              <div className="space-y-1.5">
+                                <div className="w-6 h-6 rounded-full bg-white/30 mx-auto" />
+                                <div className="w-12 h-1.5 rounded-full bg-white/30" />
+                                <div className="w-10 h-1.5 rounded-full bg-white/20" />
+                              </div>
+                            </div>
+                            <span className="block text-[11px] font-medium text-gray-500 mt-1.5 text-center">{t.label}</span>
+                            {selectedTheme === t.id && (
+                              <motion.div layoutId="themeCheck" className="absolute -top-1 -right-1 w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center">
+                                <Check size={11} className="text-white" />
+                              </motion.div>
+                            )}
+                          </button>
+                        ))}
+                        {/* Custom theme tile - always visible */}
+                        {showAllThemes && (
+                          <button
+                            onClick={() => setSelectedTheme('custom')}
+                            className={`relative p-1 rounded-2xl border-2 transition-all ${isCustom ? 'border-gray-900' : 'border-transparent hover:border-gray-200'}`}
+                          >
+                            <div className="h-20 rounded-xl flex items-center justify-center" style={customTheme.bgStyle}>
+                              <div className="space-y-1.5">
+                                <div className="w-6 h-6 rounded-full bg-white/30 mx-auto" />
+                                <div className="w-12 h-1.5 rounded-full bg-white/30" />
+                                <div className="w-10 h-1.5 rounded-full bg-white/20" />
+                              </div>
+                            </div>
+                            <span className="block text-[11px] font-medium text-gray-500 mt-1.5 text-center">Custom</span>
+                            {isCustom && (
+                              <motion.div layoutId="themeCheck" className="absolute -top-1 -right-1 w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center">
+                                <Check size={11} className="text-white" />
+                              </motion.div>
+                            )}
+                          </button>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => setShowAllThemes(!showAllThemes)}
+                        className="w-full mt-3 py-2 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center justify-center gap-1"
+                      >
+                        <ChevronDown size={14} className={`transition-transform ${showAllThemes ? 'rotate-180' : ''}`} />
+                        {showAllThemes ? 'Show less' : `Show all (${themes.length + 1})`}
+                      </button>
+
+                      {/* Custom color picker */}
+                      <AnimatePresence>
+                        {isCustom && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="mt-4 p-4 bg-gray-50 rounded-xl space-y-3">
+                              <div className="flex items-center gap-3">
+                                <label className="text-xs font-medium text-gray-600 w-24">Primary</label>
+                                <input
+                                  type="color"
+                                  value={customBgColor}
+                                  onChange={(e) => setCustomBgColor(e.target.value)}
+                                  className="w-8 h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5"
+                                />
+                                <span className="text-xs text-gray-400 font-mono">{customBgColor}</span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <label className="text-xs font-medium text-gray-600 w-24">Secondary</label>
+                                <input
+                                  type="color"
+                                  value={customBgSecondary}
+                                  onChange={(e) => setCustomBgSecondary(e.target.value)}
+                                  className="w-8 h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5"
+                                />
+                                <span className="text-xs text-gray-400 font-mono">{customBgSecondary}</span>
+                              </div>
+                              <p className="text-[10px] text-gray-400">สีตัวอักษรและการ์ดจะปรับอัตโนมัติตามความสว่างของ background</p>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Background Pattern */}
+                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <Grid3x3 size={16} /> Background Pattern
+                      </h2>
+                      <div className="grid grid-cols-5 gap-2">
+                        {bgPatterns.map((p) => (
+                          <button
+                            key={p.id}
+                            onClick={() => setSelectedPattern(p.id)}
+                            className={`relative p-1 rounded-xl border-2 transition-all ${selectedPattern === p.id ? 'border-gray-900' : 'border-transparent hover:border-gray-200'}`}
+                          >
+                            <div
+                              className="h-12 rounded-lg bg-gray-100"
+                              style={p.id !== 'none' ? p.style : undefined}
+                            />
+                            <span className="block text-[10px] font-medium text-gray-500 mt-1 text-center">{p.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-[10px] text-gray-400 mt-2">ลายจะแสดงทับ background ของธีมใน Preview</p>
+                    </div>
+
+                    {/* Button Style */}
+                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <Type size={16} /> Button Style
+                      </h2>
+                      <div className="grid grid-cols-5 gap-2">
+                        {buttonStyles.map((style) => (
+                          <button
+                            key={style.id}
+                            onClick={() => setSelectedButton(style.id)}
+                            className={`p-3 rounded-xl border-2 transition-all ${selectedButton === style.id ? 'border-gray-900' : 'border-gray-100 hover:border-gray-200'
+                              }`}
+                          >
+                            <div className={`h-7 bg-gray-300 ${style.cls} mb-1.5`} />
+                            <span className="text-[10px] font-medium text-gray-500">{style.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Font */}
+                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <Type size={16} /> Font
+                      </h2>
+                      <div className="grid grid-cols-3 gap-3">
+                        {fontOptions.map((f) => (
+                          <button
+                            key={f.id}
+                            onClick={() => setSelectedFont(f.id)}
+                            className={`p-4 rounded-xl border-2 transition-all ${selectedFont === f.id ? 'border-gray-900' : 'border-gray-100 hover:border-gray-200'
+                              }`}
+                          >
+                            <span className={`text-lg ${f.cls} text-gray-700`}>Aa</span>
+                            <span className="block text-[11px] font-medium text-gray-400 mt-1">{f.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Social Icons */}
+                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <Globe size={16} /> Social Icons
+                      </h2>
+                      <div className="grid grid-cols-4 gap-2">
                         {socialPlatforms.map((p) => {
                           const isActive = activeSocials.includes(p.id);
                           return (
                             <button
                               key={p.id}
                               onClick={() => toggleSocial(p.id)}
-                              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                                isActive
-                                  ? 'bg-gray-900 text-white'
-                                  : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
-                              }`}
+                              className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all ${isActive ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                                }`}
                             >
-                              <p.icon size={12} />
-                              {p.label}
+                              <p.icon size={18} />
+                              <span className="text-[10px] font-medium">{p.label}</span>
                             </button>
                           );
                         })}
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Add Button */}
-              <button
-                onClick={() => setAddModalOpen(true)}
-                className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-full flex items-center justify-center gap-2 transition-colors shadow-lg shadow-purple-200/50 mb-5"
-              >
-                <Plus size={20} /> Add
-              </button>
-
-              {/* Actions row */}
-              <div className="flex items-center justify-between mb-5">
-                <button
-                  onClick={() => {
-                    const id = Date.now().toString();
-                    setLinks([...links, { id, title: 'Collection', url: '', enabled: true, clicks: 0 }]);
-                    showToast('Collection added');
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-500 bg-white border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
-                >
-                  <FolderOpen size={15} /> Add collection
-                </button>
-                <button
-                  onClick={() => setShowArchive(!showArchive)}
-                  className={`flex items-center gap-2 text-sm transition-colors ${showArchive ? 'text-purple-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  <Archive size={15} /> {showArchive ? 'Hide archive' : 'View archive'} <ChevronRight size={14} className={`transition-transform ${showArchive ? 'rotate-90' : ''}`} />
-                </button>
-              </div>
-
-              {/* Link Cards */}
-              <div className="space-y-3 mb-6">
-                <AnimatePresence>
-                  {visibleLinks.map((link) => (
-                    <motion.div
-                      key={link.id}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className={`bg-white rounded-2xl border shadow-sm overflow-hidden ${!link.enabled ? 'border-gray-200 opacity-60' : 'border-gray-100'}`}
-                    >
-                      <div className="flex items-start gap-1 p-4">
-                        <div className="mt-1 text-gray-300 cursor-grab hover:text-gray-400 p-1">
-                          <GripVertical size={16} />
-                        </div>
-                        {link.thumbnail && (
-                          <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 mr-2">
-                            <img src={link.thumbnail} alt="" className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <input
-                              type="text"
-                              value={link.title}
-                              onChange={(e) => updateLink(link.id, 'title', e.target.value)}
-                              placeholder="Title"
-                              className="flex-1 text-sm font-semibold text-gray-900 placeholder-gray-300 bg-transparent focus:outline-none"
-                            />
-                            <button
-                              onClick={() => setEditingLinkId(editingLinkId === link.id ? null : link.id)}
-                              className={`p-1 transition-colors ${editingLinkId === link.id ? 'text-purple-500' : 'text-gray-300 hover:text-gray-500'}`}
-                            >
-                              <Pencil size={13} />
-                            </button>
-                          </div>
-                          <input
-                            type="url"
-                            value={link.url}
-                            onChange={(e) => updateLink(link.id, 'url', e.target.value)}
-                            placeholder="URL"
-                            className="w-full text-xs text-gray-400 placeholder-gray-300 bg-transparent focus:outline-none"
-                          />
-                          {/* Expanded edit area */}
-                          <AnimatePresence>
-                            {editingLinkId === link.id && (
-                              <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                                className="mt-3 pt-3 border-t border-gray-100 space-y-2 overflow-hidden"
-                              >
-                                <label className="block text-[11px] text-gray-400">Title</label>
-                                <input
-                                  type="text"
-                                  value={link.title}
-                                  onChange={(e) => updateLink(link.id, 'title', e.target.value)}
-                                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300"
-                                />
-                                <label className="block text-[11px] text-gray-400">URL</label>
-                                <input
-                                  type="url"
-                                  value={link.url}
-                                  onChange={(e) => updateLink(link.id, 'url', e.target.value)}
-                                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300"
-                                />
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                        <div className="flex items-center gap-2 ml-2">
-                          {/* Toggle */}
-                          <button
-                            onClick={() => toggleLink(link.id)}
-                            className={`relative w-10 h-6 rounded-full transition-colors ${
-                              link.enabled ? 'bg-green-500' : 'bg-gray-200'
-                            }`}
-                          >
-                            <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                              link.enabled ? 'translate-x-[18px]' : 'translate-x-0.5'
-                            }`} />
-                          </button>
-                        </div>
-                      </div>
-                      {/* Card footer */}
-                      <div className="flex items-center justify-between px-4 py-2 bg-gray-50/50 border-t border-gray-50">
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => { setImageTargetLinkId(link.id); linkImageInputRef.current?.click(); }}
-                            className="text-gray-300 hover:text-gray-500 transition-colors"
-                            title="Add thumbnail"
-                          >
-                            <Image size={14} />
-                          </button>
-                          <button
-                            onClick={() => showToast(`${link.clicks || 0} clicks`)}
-                            className="flex items-center gap-1 text-gray-300 hover:text-gray-500 transition-colors"
-                            title="View stats"
-                          >
-                            <BarChart3 size={14} />
-                            {(link.clicks ?? 0) > 0 && <span className="text-[10px] text-gray-400">{link.clicks}</span>}
-                          </button>
-                        </div>
-                        <button
-                          onClick={() => removeLink(link.id)}
-                          className="text-gray-300 hover:text-red-400 transition-colors"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-
-              {/* Tabs: Add links / Settings */}
-              <div className="border-b border-gray-200 mb-6">
-                <div className="flex">
-                  {(['add', 'settings'] as const).map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setMainTab(tab)}
-                      className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-                        mainTab === tab
-                          ? 'border-gray-900 text-gray-900'
-                          : 'border-transparent text-gray-400 hover:text-gray-600'
-                      }`}
-                    >
-                      {tab === 'add' ? 'Add links' : 'Settings'}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {mainTab === 'settings' ? (
-                <div className="space-y-6 pb-10">
-                  {/* Themes */}
-                  <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                    <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Palette size={16} /> Themes
-                    </h2>
-                    <div className="grid grid-cols-3 gap-3">
-                      {themes.map((t) => (
-                        <button
-                          key={t.id}
-                          onClick={() => setSelectedTheme(t.id)}
-                          className={`relative p-1 rounded-2xl border-2 transition-all ${
-                            selectedTheme === t.id ? 'border-purple-500' : 'border-transparent hover:border-gray-200'
-                          }`}
-                        >
-                          <div className={`h-20 rounded-xl ${t.bg} flex items-center justify-center`}>
-                            <div className="space-y-1.5">
-                              <div className="w-6 h-6 rounded-full bg-white/30 mx-auto" />
-                              <div className="w-12 h-1.5 rounded-full bg-white/30" />
-                              <div className="w-10 h-1.5 rounded-full bg-white/20" />
-                            </div>
-                          </div>
-                          <span className="block text-[11px] font-medium text-gray-500 mt-1.5 text-center">{t.label}</span>
-                          {selectedTheme === t.id && (
-                            <motion.div layoutId="themeCheck" className="absolute -top-1 -right-1 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
-                              <Check size={11} className="text-white" />
-                            </motion.div>
-                          )}
-                        </button>
-                      ))}
                     </div>
                   </div>
-
-                  {/* Button Style */}
-                  <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                    <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Type size={16} /> Button Style
-                    </h2>
-                    <div className="grid grid-cols-5 gap-2">
-                      {buttonStyles.map((style) => (
-                        <button
-                          key={style.id}
-                          onClick={() => setSelectedButton(style.id)}
-                          className={`p-3 rounded-xl border-2 transition-all ${
-                            selectedButton === style.id ? 'border-purple-500' : 'border-gray-100 hover:border-gray-200'
-                          }`}
-                        >
-                          <div className={`h-7 bg-gray-300 ${style.cls} mb-1.5`} />
-                          <span className="text-[10px] font-medium text-gray-500">{style.label}</span>
-                        </button>
-                      ))}
-                    </div>
+                ) : (
+                  /* Add links tab - suggestion cards */
+                  <div className="grid grid-cols-2 gap-3 pb-10">
+                    {[
+                      { icon: ExternalLink, label: 'Link', desc: 'Add a URL' },
+                      { icon: Image, label: 'Header', desc: 'Add a text header' },
+                      { icon: Music2, label: 'Music', desc: 'Embed a song' },
+                      { icon: Youtube, label: 'Video', desc: 'Embed a video' },
+                      { icon: DollarSign, label: 'Store', desc: 'Sell products' },
+                      { icon: Calendar, label: 'Event', desc: 'Promote events' },
+                    ].map((item) => (
+                      <button
+                        key={item.label}
+                        onClick={() => addLink(item.label)}
+                        className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all text-left"
+                      >
+                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
+                          <item.icon size={18} className="text-gray-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{item.label}</p>
+                          <p className="text-[11px] text-gray-400">{item.desc}</p>
+                        </div>
+                      </button>
+                    ))}
                   </div>
-
-                  {/* Font */}
-                  <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                    <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Type size={16} /> Font
-                    </h2>
-                    <div className="grid grid-cols-3 gap-3">
-                      {fontOptions.map((f) => (
-                        <button
-                          key={f.id}
-                          onClick={() => setSelectedFont(f.id)}
-                          className={`p-4 rounded-xl border-2 transition-all ${
-                            selectedFont === f.id ? 'border-purple-500' : 'border-gray-100 hover:border-gray-200'
-                          }`}
-                        >
-                          <span className={`text-lg ${f.cls} text-gray-700`}>Aa</span>
-                          <span className="block text-[11px] font-medium text-gray-400 mt-1">{f.label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Social Icons */}
-                  <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                    <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Globe size={16} /> Social Icons
-                    </h2>
-                    <div className="grid grid-cols-4 gap-2">
-                      {socialPlatforms.map((p) => {
-                        const isActive = activeSocials.includes(p.id);
-                        return (
-                          <button
-                            key={p.id}
-                            onClick={() => toggleSocial(p.id)}
-                            className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all ${
-                              isActive ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
-                            }`}
-                          >
-                            <p.icon size={18} />
-                            <span className="text-[10px] font-medium">{p.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                /* Add links tab - suggestion cards */
-                <div className="grid grid-cols-2 gap-3 pb-10">
-                  {[
-                    { icon: ExternalLink, label: 'Link', desc: 'Add a URL' },
-                    { icon: Image, label: 'Header', desc: 'Add a text header' },
-                    { icon: Music2, label: 'Music', desc: 'Embed a song' },
-                    { icon: Youtube, label: 'Video', desc: 'Embed a video' },
-                    { icon: DollarSign, label: 'Store', desc: 'Sell products' },
-                    { icon: Calendar, label: 'Event', desc: 'Promote events' },
-                  ].map((item) => (
-                    <button
-                      key={item.label}
-                      onClick={() => addLink(item.label)}
-                      className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all text-left"
-                    >
-                      <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
-                        <item.icon size={18} className="text-gray-500" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{item.label}</p>
-                        <p className="text-[11px] text-gray-400">{item.desc}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
+                )}
               </>}
             </div>
 
@@ -1396,38 +1694,48 @@ export default function CreatePage() {
                     <div className="relative">
                       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-white rounded-b-2xl z-10" />
                     </div>
-                    <div className={`rounded-[2.3rem] overflow-hidden ${theme.bg} min-h-[460px] flex flex-col ${fontStyle.cls}`}>
-                      {/* Linktree logo */}
-                      <div className="pt-3 flex justify-center">
-                        <span className={`text-lg ${theme.text} opacity-20`}>*</span>
+                    <div
+                      className={`rounded-[2.3rem] overflow-hidden ${!isCustom ? theme.bg : ''} min-h-[460px] flex flex-col ${fontStyle.cls} relative`}
+                      style={isCustom ? customTheme.bgStyle : undefined}
+                    >
+                      {/* Pattern overlay */}
+                      {selectedPattern !== 'none' && (
+                        <div
+                          className="absolute inset-0 pointer-events-none z-0 rounded-[2.3rem]"
+                          style={bgPatterns.find((p) => p.id === selectedPattern)?.style}
+                        />
+                      )}
+                      {/* OpenBio logo */}
+                      <div className="pt-3 flex justify-center relative z-[1]">
+                        <span className={`text-xs ${!isCustom ? theme.text : ''} opacity-20`} style={isCustom ? { color: customTheme.textColor } : undefined}>OpenBio</span>
                       </div>
 
                       {/* Profile */}
-                      <div className="pt-4 pb-3 flex flex-col items-center px-6">
+                      <div className="pt-4 pb-3 flex flex-col items-center px-6 relative z-[1]">
                         <div className="w-[68px] h-[68px] rounded-full bg-gray-300/20 flex items-center justify-center mb-2.5 overflow-hidden">
                           {avatar ? (
                             <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
                           ) : (
-                            <User size={22} className={`${theme.text} opacity-25`} />
+                            <User size={22} className={`${!isCustom ? theme.text : ''} opacity-25`} style={isCustom ? { color: customTheme.textColor } : undefined} />
                           )}
                         </div>
-                        <h3 className={`font-bold text-sm ${theme.text}`}>
+                        <h3 className={`font-bold text-sm ${!isCustom ? theme.text : ''}`} style={isCustom ? { color: customTheme.textColor } : undefined}>
                           {displayName || 'username'}
                         </h3>
                         {bio && (
-                          <p className={`text-[11px] mt-0.5 ${theme.subtext} text-center`}>{bio}</p>
+                          <p className={`text-[11px] mt-0.5 ${!isCustom ? theme.subtext : ''} text-center`} style={isCustom ? { color: customTheme.subtextColor } : undefined}>{bio}</p>
                         )}
                       </div>
 
                       {/* Social Row */}
                       {activeSocials.length > 0 && (
-                        <div className="px-5 pb-3 flex items-center justify-center gap-3">
+                        <div className="px-5 pb-3 flex items-center justify-center gap-3 relative z-[1]">
                           {activeSocials.map((id) => {
                             const p = socialPlatforms.find((s) => s.id === id);
                             if (!p) return null;
                             return (
-                              <div key={id} className={`w-7 h-7 rounded-full ${theme.card} flex items-center justify-center`}>
-                                <p.icon size={12} className={`${theme.text} opacity-50`} />
+                              <div key={id} className={`w-7 h-7 rounded-full ${!isCustom ? theme.card : ''} flex items-center justify-center`} style={isCustom ? customTheme.cardStyle : undefined}>
+                                <p.icon size={12} className={`${!isCustom ? theme.text : ''} opacity-50`} style={isCustom ? { color: customTheme.textColor } : undefined} />
                               </div>
                             );
                           })}
@@ -1435,9 +1743,9 @@ export default function CreatePage() {
                       )}
 
                       {/* Links */}
-                      <div className="px-4 pb-4 space-y-2 flex-1">
+                      <div className="px-4 pb-4 space-y-2 flex-1 relative z-[1]">
                         {links.filter((l) => l.title && l.enabled).length === 0 && (
-                          <div className={`text-center py-6 ${theme.text} opacity-15`}>
+                          <div className={`text-center py-6 ${!isCustom ? theme.text : ''} opacity-15`} style={isCustom ? { color: customTheme.textColor } : undefined}>
                             <ExternalLink size={20} className="mx-auto mb-1.5" />
                             <p className="text-[10px]">Add links above</p>
                           </div>
@@ -1450,20 +1758,15 @@ export default function CreatePage() {
                               layout
                               initial={{ opacity: 0, scale: 0.95 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              className={`${theme.card} ${theme.cardBorder} ${btnStyle.cls} px-4 py-2.5 text-center`}
+                              className={`${!link.color && !isCustom ? `${theme.card} ${theme.cardBorder}` : ''} ${btnStyle.cls} px-4 py-2.5 text-center relative z-[1]`}
+                              style={link.color
+                                ? { backgroundColor: link.color, border: '1px solid rgba(0,0,0,0.06)' }
+                                : isCustom ? customTheme.cardStyle : undefined
+                              }
                             >
-                              <span className={`text-[11px] font-medium ${theme.text}`}>{link.title}</span>
+                              <span className={`text-[11px] font-medium ${!link.color && !isCustom ? theme.text : ''}`} style={link.color ? { color: '#374151' } : isCustom ? { color: customTheme.textColor } : undefined}>{link.title}</span>
                             </motion.div>
                           ))}
-                      </div>
-
-                      {/* Join badge */}
-                      <div className="pb-4 flex justify-center">
-                        <div className={`flex items-center gap-1.5 px-3 py-1.5 ${theme.card} rounded-full`}>
-                          <span className={`text-[10px] font-medium ${theme.text} opacity-50`}>
-                            Join {displayName || 'username'} on Linktree
-                          </span>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -1528,11 +1831,10 @@ export default function CreatePage() {
                     <button
                       key={cat.id}
                       onClick={() => setAddModalCategory(cat.id)}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                        addModalCategory === cat.id
-                          ? 'bg-gray-100 text-gray-900 font-medium'
-                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                      }`}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${addModalCategory === cat.id
+                        ? 'bg-gray-100 text-gray-900 font-medium'
+                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                        }`}
                     >
                       <cat.icon size={16} />
                       {cat.label}
@@ -1624,11 +1926,11 @@ export default function CreatePage() {
                       if (addModalCategory === 'suggested') return true;
                       return item.category === addModalCategory;
                     }).length === 0 && (
-                      <div className="text-center py-6">
-                        <Search size={24} className="text-gray-300 mx-auto mb-2" />
-                        <p className="text-sm text-gray-400">No items found</p>
-                      </div>
-                    )}
+                        <div className="text-center py-6">
+                          <Search size={24} className="text-gray-300 mx-auto mb-2" />
+                          <p className="text-sm text-gray-400">No items found</p>
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>

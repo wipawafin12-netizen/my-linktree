@@ -1,74 +1,66 @@
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowRight, Zap, Instagram, Music2, Youtube, Twitter,
-  Headphones, Play, Facebook, QrCode, User,
+  ArrowRight, Link2, BarChart3, Palette, Globe, QrCode,
+  Zap, DollarSign, Instagram, Youtube, Twitter, Music2,
+  Facebook, Linkedin, Paintbrush, TrendingUp, Check,
 } from 'lucide-react';
 
-// ── Phone Mockup Component ──
-function PhoneMockup() {
+// ── Trusted By logos ──
+const trustedBy = [
+  'Spotify', 'YouTube', 'TikTok', 'Instagram', 'Shopify', 'Twitch',
+];
+
+// ── Mini Bar Chart ──
+function MiniBarChart() {
+  const bars = [
+    { h: 'h-8', color: 'bg-[#3CC8DB]' },
+    { h: 'h-14', color: 'bg-[#4DC89F]' },
+    { h: 'h-6', color: 'bg-[#3CC8DB]' },
+    { h: 'h-18', color: 'bg-[#5BBD6B]' },
+    { h: 'h-10', color: 'bg-[#4DC89F]' },
+  ];
+  return (
+    <div className="flex items-end gap-2 mt-auto">
+      {bars.map((bar, i) => (
+        <motion.div
+          key={i}
+          className={`w-5 rounded-t-md ${bar.h} ${bar.color}`}
+          initial={{ scaleY: 0 }}
+          whileInView={{ scaleY: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 + i * 0.1 }}
+          style={{ transformOrigin: 'bottom' }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ── Mini Phone Mockup for Customize card ──
+function MiniPhoneMockup() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.3 }}
-      className="relative w-[260px] sm:w-[280px]"
+      animate={{ y: [0, -8, 0] }}
+      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+      className="w-[140px] mx-auto"
     >
-      {/* Phone Frame */}
-      <div className="rounded-[2.5rem] bg-white p-2.5 shadow-xl shadow-gray-200/80 border border-gray-100">
-        {/* Notch */}
-        <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-24 h-6 bg-white rounded-b-2xl z-10" />
-        <div className="rounded-[2rem] overflow-hidden bg-gradient-to-b from-[#1a1a2e] to-[#16213e]">
-          {/* Profile Section */}
-          <div className="pt-12 pb-5 flex flex-col items-center">
-            <div className="w-[72px] h-[72px] rounded-full overflow-hidden ring-2 ring-white/10 mb-3">
-              <img
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80"
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <h3 className="text-white font-bold text-base tracking-tight">@billie</h3>
-            <p className="text-white/40 text-[11px] mt-0.5">Creative director & photographer</p>
-          </div>
-
+      <div className="rounded-[1.2rem] bg-white/10 p-1.5 border border-white/10">
+        <div className="rounded-[0.9rem] overflow-hidden bg-gradient-to-b from-[#3CC8DB]/30 to-[#5BBD6B]/30 py-4 px-3">
+          {/* Avatar */}
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#3CC8DB] to-[#5BBD6B] mx-auto mb-2" />
+          <div className="w-14 h-1.5 bg-white/40 rounded-full mx-auto mb-1" />
+          <div className="w-10 h-1 bg-white/20 rounded-full mx-auto mb-3" />
           {/* Links */}
-          <div className="px-4 pb-3 space-y-2">
-            <div className="flex items-center gap-3 bg-white rounded-xl px-4 py-3">
-              <Headphones size={15} className="text-gray-700" />
-              <span className="text-gray-800 text-xs font-medium">Fall reading list</span>
-            </div>
-            <div className="flex items-center gap-3 bg-white/10 border border-white/10 rounded-xl px-4 py-3">
-              <Zap size={15} className="text-white/70" />
-              <span className="text-white/80 text-xs font-medium">Swell report</span>
-            </div>
+          <div className="space-y-1.5">
+            <div className="h-5 bg-white/20 rounded-lg" />
+            <div className="h-5 bg-white/15 rounded-lg" />
+            <div className="h-5 bg-white/10 rounded-lg" />
           </div>
-
-          {/* Video Card */}
-          <div className="px-4 pb-5">
-            <div className="rounded-xl overflow-hidden relative">
-              <img
-                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80"
-                alt="Video"
-                className="w-full h-24 object-cover"
-              />
-              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                <div className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center">
-                  <Play size={14} className="text-gray-800 ml-0.5" />
-                </div>
-              </div>
-              <div className="absolute bottom-2 left-3">
-                <span className="text-white text-[10px] font-medium">June on film</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Social Row */}
-          <div className="px-4 pb-5 flex items-center justify-center gap-4">
-            {[Instagram, Music2, Youtube].map((Icon, i) => (
-              <div key={i} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                <Icon size={14} className="text-white/50" />
-              </div>
+          {/* Social */}
+          <div className="flex justify-center gap-1.5 mt-3">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="w-4 h-4 rounded-full bg-white/15" />
             ))}
           </div>
         </div>
@@ -77,59 +69,71 @@ function PhoneMockup() {
   );
 }
 
-// ── Trusted By logos ──
-const trustedBy = [
-  'Spotify', 'YouTube', 'TikTok', 'Instagram', 'Shopify', 'Twitch',
-];
-
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans">
 
       {/* ══════ Hero Section ══════ */}
-      <section className="relative overflow-hidden bg-white min-h-[85vh] flex items-center">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 w-full">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+      <section className="relative overflow-hidden bg-white pt-32 pb-20">
+        {/* Background gradient blob */}
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.2 }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#3CC8DB]/15 to-[#5BBD6B]/15 blur-3xl pointer-events-none"
+        />
 
-            {/* Left - Phone Mockup */}
-            <div className="flex-shrink-0 flex justify-center">
-              <PhoneMockup />
-            </div>
+        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
 
-            {/* Right - Hero Text */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex-1 text-center lg:text-left"
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-[1.05] tracking-tight mb-6"
+          >
+            Everything starts with your{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3CC8DB] to-[#5BBD6B]">
+              OpenBio
+            </span>
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed"
+          >
+            One link to share everything you create, curate, and sell from your
+            Instagram, TikTok, Twitter, and beyond.
+          </motion.p>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <Link
+              to="/create"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#3CC8DB] to-[#5BBD6B] text-white font-bold text-base rounded-full hover:shadow-lg hover:shadow-[#3CC8DB]/25 transition-all"
             >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-[1.1] mb-6">
-                Create and customize your Linktree in minutes
-              </h1>
-              <p className="text-gray-500 text-base sm:text-lg max-w-lg mb-8 leading-relaxed">
-                Connect all your content across social media, websites, stores and more in
-                one link in bio. Customize every detail or let Linktree automatically enhance it
-                to match your brand and drive more clicks.
-              </p>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.6 }}
-              >
-                <Link
-                  to="/create"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-[#43E660] text-gray-900 font-bold text-base rounded-full hover:bg-[#5AEC74] transition-colors shadow-lg shadow-green-200/50"
-                >
-                  Get started for free
-                </Link>
-              </motion.div>
-            </motion.div>
-          </div>
+              Get started for free <ArrowRight size={18} />
+            </Link>
+            <Link
+              to="/templates"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-700 font-semibold text-base rounded-full border border-gray-200 hover:bg-gray-50 transition-colors shadow-sm"
+            >
+              Browse templates
+            </Link>
+          </motion.div>
         </div>
       </section>
 
       {/* ══════ Trusted By ══════ */}
-      <section className="bg-white border-y border-gray-100 py-5">
+      <section className="bg-gray-50 border-y border-gray-100 py-5">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-8 sm:gap-14 overflow-hidden">
           {trustedBy.map((name, i) => (
             <motion.span
@@ -137,7 +141,7 @@ export default function HomePage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3, delay: 0.1 * i }}
-              className="text-gray-400 text-sm font-semibold whitespace-nowrap"
+              className="text-gray-400 text-sm font-semibold tracking-wide uppercase whitespace-nowrap"
             >
               {name}
             </motion.span>
@@ -145,173 +149,256 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════ Share Anywhere Section ══════ */}
-      <section className="py-24 bg-white overflow-hidden">
+      {/* ══════ Bento Grid ══════ */}
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
-
-            {/* Left - Text */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="flex-1"
-            >
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-[1.15] mb-6 italic">
-                Share your Linktree anywhere you like!
-              </h2>
-              <p className="text-gray-500 text-base sm:text-lg max-w-lg mb-8 leading-relaxed">
-                Add your unique Linktree URL to all the platforms and places you find your
-                audience. Then use your QR code to drive your offline traffic back to your link
-                in bio.
-              </p>
-              <Link
-                to="/create"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 text-white font-bold text-base rounded-full hover:bg-gray-800 transition-colors"
-              >
-                Get started for free
-              </Link>
-            </motion.div>
-
-            {/* Right - Stacked Social Cards */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative w-[340px] sm:w-[400px] h-[320px] sm:h-[360px] flex-shrink-0"
-            >
-              {/* Card 4 - Blue / Facebook */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                className="absolute top-0 right-0 w-[180px] sm:w-[200px] h-[140px] sm:h-[160px] rounded-2xl bg-[#1877F2] shadow-xl flex items-start justify-end p-4"
-              >
-                <Facebook size={32} className="text-white" />
-              </motion.div>
-
-              {/* Card 3 - Purple / Instagram */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="absolute top-[40px] sm:top-[50px] right-[50px] sm:right-[60px] w-[180px] sm:w-[200px] h-[140px] sm:h-[160px] rounded-2xl bg-gradient-to-br from-[#833AB4] via-[#C13584] to-[#E1306C] shadow-xl flex flex-col items-end justify-between p-4"
-              >
-                <Instagram size={28} className="text-white" />
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-[#c8f542] flex items-center justify-center">
-                    <User size={14} className="text-gray-800" />
-                  </div>
-                  <div className="w-6 h-6 rounded bg-white/30 flex items-center justify-center">
-                    <User size={12} className="text-white" />
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Card 2 - Pink / TikTok */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="absolute top-[90px] sm:top-[110px] right-[100px] sm:right-[120px] w-[180px] sm:w-[200px] h-[140px] sm:h-[160px] rounded-2xl bg-[#ff0050] shadow-xl flex flex-col justify-between p-4"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-full bg-[#c8f542] flex items-center justify-center">
-                    <User size={16} className="text-gray-800" />
-                  </div>
-                  <Music2 size={26} className="text-white" />
-                </div>
-                <div className="space-y-1.5">
-                  <div className="w-16 h-1.5 bg-white/40 rounded-full" />
-                  <div className="w-12 h-1.5 bg-white/25 rounded-full" />
-                </div>
-              </motion.div>
-
-              {/* Card 1 - Gray / Front card */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="absolute top-[140px] sm:top-[160px] right-[140px] sm:right-[170px] w-[200px] sm:w-[220px] h-[150px] sm:h-[170px] rounded-2xl bg-[#4a4a4a] shadow-2xl flex flex-col justify-between p-5"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 rounded-full bg-[#c8f542] flex items-center justify-center">
-                    <User size={18} className="text-gray-800" />
-                  </div>
-                  <QrCode size={24} className="text-white/60" />
-                </div>
-                <div className="space-y-2">
-                  <div className="w-20 h-2 bg-white/30 rounded-full" />
-                  <div className="w-14 h-2 bg-white/20 rounded-full" />
-                </div>
-              </motion.div>
-
-              {/* Username badge */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.8 }}
-                className="absolute bottom-[10px] sm:bottom-[20px] left-[20px] sm:left-[30px] bg-white rounded-full px-5 py-2.5 shadow-lg flex items-center gap-2"
-              >
-                <span className="text-black font-bold text-lg">*</span>
-                <span className="text-gray-800 text-sm font-semibold">/averyclothing</span>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════ CTA Section ══════ */}
-      <section className="py-24 bg-white relative overflow-hidden border-t border-gray-100">
-
-        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+          {/* Section Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            className="text-center mb-14"
           >
-            <h2 className="text-3xl sm:text-5xl font-bold text-gray-900 mb-6">
-              Join 70M+ people using Linktree
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
+              Everything you need,{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3CC8DB] to-[#5BBD6B]">
+                one platform
+              </span>
             </h2>
-            <p className="text-gray-500 text-lg max-w-2xl mx-auto mb-10">
-              The fastest way to create a page that connects all your content. Start for free, upgrade anytime.
+            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+              Powerful features to help you grow your audience, monetize your content, and build your brand.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                to="/create"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-[#43E660] text-gray-900 font-bold rounded-full hover:bg-[#5AEC74] transition-colors shadow-lg shadow-green-200/50"
-              >
-                Get started for free <ArrowRight size={18} />
-              </Link>
-              <Link
-                to="/templates"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-700 font-semibold rounded-full hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm"
-              >
-                Browse templates
-              </Link>
-            </div>
           </motion.div>
+
+          {/* Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+
+            {/* Card A - All Your Links (2 col, brand gradient) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.5, delay: 0 }}
+              className="md:col-span-2 rounded-3xl overflow-hidden relative group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-gradient-to-br from-[#3CC8DB] to-[#5BBD6B] p-7 lg:p-8 min-h-[260px] flex flex-col"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-1">All Your Links, One Place</h3>
+                  <p className="text-white/70 text-sm">Share everything you create with a single link in your bio.</p>
+                </div>
+                <Link2 size={28} className="text-white/50 flex-shrink-0" />
+              </div>
+              {/* Mini link mockup */}
+              <div className="mt-auto bg-white/15 rounded-2xl p-4 backdrop-blur-sm">
+                <div className="space-y-2">
+                  <div className="h-8 bg-white/30 rounded-xl flex items-center px-3">
+                    <div className="w-3 h-3 rounded-full bg-white/60 mr-2" />
+                    <div className="w-20 h-2 bg-white/50 rounded-full" />
+                  </div>
+                  <div className="h-8 bg-white/20 rounded-xl flex items-center px-3">
+                    <div className="w-3 h-3 rounded-full bg-white/50 mr-2" />
+                    <div className="w-24 h-2 bg-white/40 rounded-full" />
+                  </div>
+                  <div className="h-8 bg-white/15 rounded-xl flex items-center px-3">
+                    <div className="w-3 h-3 rounded-full bg-white/40 mr-2" />
+                    <div className="w-16 h-2 bg-white/30 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Card B - Analytics (1 col, dark) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.5, delay: 0.08 }}
+              className="rounded-3xl overflow-hidden relative group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-gray-900 p-6 min-h-[260px] flex flex-col"
+            >
+              <BarChart3 size={24} className="text-white mb-3" />
+              <h3 className="text-lg font-bold text-white mb-1">Real-Time Analytics</h3>
+              <p className="text-white/50 text-sm">Track clicks, views, and audience insights.</p>
+              <MiniBarChart />
+            </motion.div>
+
+            {/* Card C - Templates (1 col, white) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.5, delay: 0.16 }}
+              className="rounded-3xl overflow-hidden relative group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white border border-gray-100 p-6 min-h-[260px] flex flex-col"
+            >
+              <Palette size={24} className="text-gray-700 mb-3" />
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Beautiful Templates</h3>
+              <p className="text-gray-500 text-sm">Pick from dozens of stunning designs.</p>
+              {/* Overlapping template cards */}
+              <div className="relative mt-auto h-24 flex items-end justify-center">
+                <div className="absolute w-16 h-20 rounded-xl bg-gradient-to-b from-[#f093fb] to-[#f5576c] shadow-md -rotate-6 left-1/2 -translate-x-10" />
+                <div className="absolute w-16 h-20 rounded-xl bg-gradient-to-b from-[#667eea] to-[#764ba2] shadow-md rotate-3 left-1/2 -translate-x-3" />
+                <div className="absolute w-16 h-20 rounded-xl bg-gradient-to-b from-[#3CC8DB] to-[#5BBD6B] shadow-md rotate-0 left-1/2 translate-x-4" />
+              </div>
+            </motion.div>
+
+            {/* Card D - Custom Domains (1 col, light green) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.5, delay: 0.24 }}
+              className="rounded-3xl overflow-hidden relative group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-[#f0fdf4] p-6 min-h-[260px] flex flex-col"
+            >
+              <Globe size={24} className="text-[#5BBD6B] mb-3" />
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Custom Domains</h3>
+              <p className="text-gray-500 text-sm">Use your own branded URL for your page.</p>
+              {/* URL bar mockup */}
+              <div className="mt-auto">
+                <div className="bg-white rounded-full px-4 py-2.5 shadow-sm border border-gray-100 flex items-center gap-2">
+                  <Check size={14} className="text-[#5BBD6B]" />
+                  <span className="text-sm font-medium text-gray-700">yourname.bio</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Card E - Social Integration (1 col, white) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.5, delay: 0.32 }}
+              className="rounded-3xl overflow-hidden relative group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white border border-gray-100 p-6 min-h-[260px] flex flex-col"
+            >
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Social Integration</h3>
+              <p className="text-gray-500 text-sm mb-4">Connect all your platforms seamlessly.</p>
+              {/* Social icons grid */}
+              <div className="grid grid-cols-3 gap-2 mt-auto">
+                {[
+                  { Icon: Instagram, bg: 'bg-gradient-to-br from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]', color: 'text-white' },
+                  { Icon: Youtube, bg: 'bg-red-500', color: 'text-white' },
+                  { Icon: Twitter, bg: 'bg-sky-500', color: 'text-white' },
+                  { Icon: Music2, bg: 'bg-black', color: 'text-white' },
+                  { Icon: Facebook, bg: 'bg-[#1877F2]', color: 'text-white' },
+                  { Icon: Linkedin, bg: 'bg-[#0A66C2]', color: 'text-white' },
+                ].map(({ Icon, bg, color }, i) => (
+                  <div key={i} className={`w-full aspect-square rounded-xl ${bg} flex items-center justify-center`}>
+                    <Icon size={18} className={color} />
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Card F - QR Code (2 col, gray) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="md:col-span-2 lg:col-span-2 rounded-3xl overflow-hidden relative group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-gray-50 border border-gray-100 p-7 min-h-[220px] flex items-center"
+            >
+              <div className="flex-1">
+                <QrCode size={28} className="text-gray-700 mb-3" />
+                <h3 className="text-xl font-bold text-gray-900 mb-1">QR Code Sharing</h3>
+                <p className="text-gray-500 text-sm max-w-xs">
+                  Drive offline traffic online. Generate a unique QR code for your page instantly.
+                </p>
+              </div>
+              <div className="flex-shrink-0 ml-6">
+                <QrCode size={100} className="text-gray-200" strokeWidth={1} />
+              </div>
+            </motion.div>
+
+            {/* Card G - Customize (2 col, 2 row, dark) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.5, delay: 0.48 }}
+              className="md:col-span-2 lg:col-span-2 lg:row-span-2 rounded-3xl overflow-hidden relative group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-gradient-to-b from-gray-900 to-gray-800 p-7 lg:p-8 min-h-[440px] lg:min-h-[530px] flex flex-col"
+            >
+              <Paintbrush size={28} className="text-white/60 mb-4" />
+              <h3 className="text-2xl font-bold text-white mb-2">Customize Everything</h3>
+              <p className="text-white/50 text-sm max-w-xs mb-6">
+                Fonts, colors, layouts, buttons — make your page truly yours with complete creative control.
+              </p>
+              <div className="mt-auto">
+                <MiniPhoneMockup />
+              </div>
+              {/* Color swatches */}
+              <div className="flex items-center justify-center gap-2 mt-5">
+                {['#3CC8DB', '#5BBD6B', '#f093fb', '#667eea', '#f5576c', '#fbbf24'].map((c) => (
+                  <div
+                    key={c}
+                    className="w-5 h-5 rounded-full ring-2 ring-white/10"
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Card H - Monetization (2 col, amber) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.5, delay: 0.56 }}
+              className="md:col-span-2 lg:col-span-2 rounded-3xl overflow-hidden relative group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100/50 p-7 min-h-[220px] lg:min-h-[260px] flex flex-col"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <DollarSign size={28} className="text-amber-600 mb-2" />
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">Monetization Tools</h3>
+                  <p className="text-gray-500 text-sm">Accept tips, sell products, and grow your revenue.</p>
+                </div>
+              </div>
+              {/* Revenue display */}
+              <div className="mt-auto flex items-end gap-3">
+                <span className="text-4xl font-extrabold text-gray-900">$1,284</span>
+                <div className="flex items-center gap-1 text-[#5BBD6B] mb-1.5">
+                  <TrendingUp size={16} />
+                  <span className="text-sm font-semibold">+24%</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Card I - Lightning Fast (2 col, white) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.5, delay: 0.64 }}
+              className="md:col-span-2 lg:col-span-2 rounded-3xl overflow-hidden relative group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white border border-gray-100 p-7 min-h-[220px] lg:min-h-[260px] flex flex-col"
+            >
+              <Zap size={28} className="text-[#3CC8DB] mb-3" />
+              <h3 className="text-xl font-bold text-gray-900 mb-1">Lightning Fast</h3>
+              <p className="text-gray-500 text-sm mb-6">Your page loads in under 300ms. Every millisecond counts.</p>
+              {/* Speed gauge */}
+              <div className="mt-auto">
+                <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+                  <span>0ms</span>
+                  <span className="text-[#3CC8DB] font-bold text-sm">297ms</span>
+                  <span>1000ms</span>
+                </div>
+                <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-[#3CC8DB] to-[#5BBD6B] rounded-full"
+                    initial={{ width: 0 }}
+                    whileInView={{ width: '30%' }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: 0.3 }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+
+          </div>
         </div>
       </section>
 
-      {/* ══════ Social Proof ══════ */}
-      <section className="py-20 bg-white">
+      {/* ══════ Stats ══════ */}
+      <section className="py-24 bg-gradient-to-r from-[#3CC8DB]/5 to-[#5BBD6B]/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="grid sm:grid-cols-3 gap-8 text-center"
-          >
+          <div className="grid sm:grid-cols-3 gap-8 text-center">
             {[
               { value: '70M+', label: 'Users worldwide' },
               { value: '1.2B+', label: 'Monthly link clicks' },
@@ -323,11 +410,48 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
+                className={i < 2 ? 'sm:border-r sm:border-gray-200' : ''}
               >
-                <div className="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-2">{stat.value}</div>
-                <div className="text-gray-500 text-sm">{stat.label}</div>
+                <div className="text-5xl sm:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#3CC8DB] to-[#5BBD6B] mb-2">
+                  {stat.value}
+                </div>
+                <div className="text-gray-500 text-sm font-medium">{stat.label}</div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════ CTA Banner ══════ */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="rounded-3xl bg-gradient-to-br from-[#3CC8DB] to-[#5BBD6B] p-12 sm:p-16 text-center"
+          >
+            <h2 className="text-3xl sm:text-5xl font-bold text-white mb-4">
+              Ready to build your OpenBio?
+            </h2>
+            <p className="text-white/80 text-lg max-w-2xl mx-auto mb-10">
+              Join 70M+ people already on board. Create your page in seconds — it's free.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                to="/create"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 font-bold rounded-full hover:bg-gray-100 transition-colors shadow-lg"
+              >
+                Get started for free <ArrowRight size={18} />
+              </Link>
+              <Link
+                to="/templates"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white/20 text-white font-semibold rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/30 transition-colors"
+              >
+                Browse templates
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -336,15 +460,16 @@ export default function HomePage() {
       <footer className="bg-white border-t border-gray-100 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-1 text-black font-bold text-xl">
-              Linktree<span className="text-2xl">*</span>
+            <div className="flex items-center gap-2 text-black font-bold text-xl">
+              <img src="/openbio.png" alt="OpenBio" className="w-7 h-7 object-contain" />
+              OpenBio
             </div>
             <div className="flex items-center gap-4">
               {[
-                { Icon: Instagram, url: 'https://www.instagram.com/linktree/' },
-                { Icon: Music2, url: 'https://www.tiktok.com/@linktree' },
-                { Icon: Twitter, url: 'https://twitter.com/Linktree_' },
-                { Icon: Youtube, url: 'https://www.youtube.com/@linktree' },
+                { Icon: Instagram, url: 'https://www.instagram.com/openbio/' },
+                { Icon: Music2, url: 'https://www.tiktok.com/@openbio' },
+                { Icon: Twitter, url: 'https://twitter.com/OpenBio_' },
+                { Icon: Youtube, url: 'https://www.youtube.com/@openbio' },
               ].map(({ Icon, url }) => (
                 <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-200 transition-colors">
                   <Icon size={18} />
@@ -353,11 +478,11 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-8 pt-6 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400">
-            <span>&copy; 2026 Linktree. All rights reserved.</span>
+            <span>&copy; 2026 OpenBio. All rights reserved.</span>
             <div className="flex items-center gap-6">
-              <a href="https://linktr.ee/s/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-gray-700 transition-colors">Privacy</a>
-              <a href="https://linktr.ee/s/terms" target="_blank" rel="noopener noreferrer" className="hover:text-gray-700 transition-colors">Terms</a>
-              <a href="https://linktr.ee/s/cookie-policy" target="_blank" rel="noopener noreferrer" className="hover:text-gray-700 transition-colors">Cookies</a>
+              <a href="#" className="hover:text-gray-700 transition-colors">Privacy</a>
+              <a href="#" className="hover:text-gray-700 transition-colors">Terms</a>
+              <a href="#" className="hover:text-gray-700 transition-colors">Cookies</a>
             </div>
           </div>
         </div>
