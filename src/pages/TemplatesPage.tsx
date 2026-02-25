@@ -1,6 +1,6 @@
-import { motion } from 'motion/react';
-import { useState } from 'react';
-import { Instagram, Music2, Twitter, Youtube, Search } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { useState, useRef } from 'react';
+import { Instagram, Music2, Twitter, Youtube, Search, Star, TrendingUp, Sparkles, ChevronLeft, ChevronRight, Rocket, Palette } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const categories = [
@@ -22,6 +22,7 @@ const templates = [
     linkStyle: 'bg-[#c8c3b4]/80 text-[#3d3d3d]',
     textColor: 'text-white',
     bioColor: 'text-white/70',
+    tag: 'Popular',
   },
   {
     name: 'Katy Delma',
@@ -59,6 +60,7 @@ const templates = [
     linkStyle: 'bg-white/15 text-white border border-white/20',
     textColor: 'text-white',
     bioColor: 'text-white/60',
+    tag: 'Trending',
   },
   {
     name: 'Bella Rose',
@@ -71,6 +73,7 @@ const templates = [
     linkStyle: 'bg-white/90 text-[#880e4f]',
     textColor: 'text-[#880e4f]',
     bioColor: 'text-[#ad1457]',
+    tag: 'Popular',
   },
   {
     name: 'FitCore',
@@ -97,6 +100,7 @@ const templates = [
     linkStyle: 'bg-[#d4a0a0]/25 text-[#8b5e5e] border border-[#d4a0a0]/40',
     textColor: 'text-[#5e3a3a]',
     bioColor: 'text-[#8b5e5e]',
+    tag: 'New',
   },
   {
     name: 'DJ Nexus',
@@ -110,6 +114,7 @@ const templates = [
     linkStyle: 'bg-[#7b2ff7]/25 text-white border border-[#7b2ff7]/40',
     textColor: 'text-white',
     bioColor: 'text-purple-300/70',
+    tag: 'Trending',
   },
   {
     name: 'GreenLeaf',
@@ -136,6 +141,7 @@ const templates = [
     linkStyle: 'bg-[#38bdf8]/15 text-[#38bdf8] border border-[#38bdf8]/30',
     textColor: 'text-white',
     bioColor: 'text-slate-400',
+    tag: 'Popular',
   },
   {
     name: 'Nomad Tales',
@@ -162,6 +168,7 @@ const templates = [
     linkStyle: 'bg-white/25 text-white border border-white/30',
     textColor: 'text-white',
     bioColor: 'text-white/70',
+    tag: 'New',
   },
   {
     name: 'Velvet Records',
@@ -188,6 +195,7 @@ const templates = [
     linkStyle: 'bg-[#8d6e63]/15 text-[#5d4037] border border-[#8d6e63]/20',
     textColor: 'text-[#3e2723]',
     bioColor: 'text-[#6d4c41]',
+    tag: 'Trending',
   },
   {
     name: 'Mindful Maya',
@@ -214,6 +222,7 @@ const templates = [
     linkStyle: 'bg-[#64ffda]/12 text-[#64ffda] border border-[#64ffda]/20',
     textColor: 'text-white',
     bioColor: 'text-[#8892b0]',
+    tag: 'New',
   },
   {
     name: 'Neon Nights',
@@ -308,20 +317,37 @@ const templates = [
   },
 ];
 
+const tagConfig: Record<string, { icon: typeof Star; bg: string; text: string }> = {
+  Popular: { icon: Star, bg: 'bg-amber-400/90', text: 'text-amber-900' },
+  Trending: { icon: TrendingUp, bg: 'bg-rose-500/90', text: 'text-white' },
+  New: { icon: Sparkles, bg: 'bg-emerald-500/90', text: 'text-white' },
+};
+
 function TemplateCard({ t, index, onUse }: { t: typeof templates[0]; index: number; onUse: () => void }) {
+  const tag = t.tag ? tagConfig[t.tag] : null;
+  const TagIcon = tag?.icon;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.04 }}
-      className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl cursor-pointer group transition-all duration-300 hover:-translate-y-1 relative"
+      className="rounded-2xl overflow-hidden shadow-md hover:shadow-2xl cursor-pointer group transition-all duration-300 hover:-translate-y-1.5 relative"
     >
+      {/* Tag Badge */}
+      {tag && TagIcon && (
+        <div className={`absolute top-3 right-3 z-20 ${tag.bg} ${tag.text} backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1 shadow-lg`}>
+          <TagIcon size={11} />
+          <span className="text-[10px] font-bold tracking-wide">{t.tag}</span>
+        </div>
+      )}
+
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
           src={t.bgImage}
           alt=""
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
         <div className={`absolute inset-0 bg-gradient-to-b ${t.overlay}`} />
@@ -331,7 +357,7 @@ function TemplateCard({ t, index, onUse }: { t: typeof templates[0]; index: numb
       <div className="relative z-10 px-5 pt-7 pb-6 flex flex-col items-center text-center">
         {/* Avatar */}
         <div
-          className="w-16 h-16 rounded-full flex items-center justify-center mb-3 ring-2 ring-white/20 group-hover:ring-white/40 transition-all shadow-lg"
+          className="w-16 h-16 rounded-full flex items-center justify-center mb-3 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300 shadow-lg group-hover:shadow-xl"
           style={{ backgroundColor: t.avatarBg }}
         >
           {t.avatarText ? (
@@ -365,11 +391,11 @@ function TemplateCard({ t, index, onUse }: { t: typeof templates[0]; index: numb
         </div>
       </div>
 
-      {/* Use Template Button */}
-      <div className="relative z-10 px-5 pb-5">
+      {/* Hover Overlay with Use Button */}
+      <div className="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-end justify-center pb-5 px-5">
         <button
           onClick={onUse}
-          className="w-full py-2 rounded-lg bg-white/20 backdrop-blur-sm text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white/30"
+          className="w-full py-2.5 rounded-xl bg-white text-gray-900 text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-gray-50"
         >
           Use this template
         </button>
@@ -382,6 +408,7 @@ export default function TemplatesPage() {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const filtered = templates.filter((t) => {
     const matchCat = activeCategory === 'All' || t.category === activeCategory;
@@ -389,6 +416,14 @@ export default function TemplatesPage() {
       t.bio.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCat && matchSearch;
   });
+
+  const featuredTemplates = templates.filter((t) => t.tag === 'Popular');
+
+  const scrollCategories = (dir: 'left' | 'right') => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: dir === 'left' ? -200 : 200, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#fafaf9]">
@@ -399,7 +434,7 @@ export default function TemplatesPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="text-center mb-14"
         >
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
             Find your perfect <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">template</span>
@@ -408,6 +443,31 @@ export default function TemplatesPage() {
             Browse beautiful templates to kickstart your OpenBio. Customize any template to match your brand.
           </p>
         </motion.div>
+
+        {/* Featured Section */}
+        {activeCategory === 'All' && !searchQuery && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="mb-14"
+          >
+            <div className="flex items-center gap-2 mb-5">
+              <Star size={18} className="text-amber-500 fill-amber-500" />
+              <h2 className="text-lg font-bold text-gray-900">Popular templates</h2>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+              {featuredTemplates.map((t, i) => (
+                <TemplateCard
+                  key={`featured-${t.name}`}
+                  t={t}
+                  index={i}
+                  onUse={() => { navigate('/create', { state: { template: t } }); }}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Search Bar */}
         <motion.div
@@ -423,70 +483,152 @@ export default function TemplatesPage() {
               placeholder="Search templates..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-400 transition-all"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-400 transition-all shadow-sm"
             />
           </div>
         </motion.div>
 
-        {/* Category Filter */}
+        {/* Category Filter - Scrollable on mobile */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.15 }}
-          className="flex flex-wrap justify-center gap-2 mb-12"
+          className="relative mb-12"
         >
-          {categories.map((cat, i) => (
-            <motion.button
-              key={cat}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.2, delay: 0.2 + i * 0.02 }}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 cursor-pointer ${
-                activeCategory === cat
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-900 hover:text-white hover:border-gray-900'
-              }`}
-            >
-              {cat}
-            </motion.button>
-          ))}
+          {/* Scroll arrows for mobile */}
+          <button
+            onClick={() => scrollCategories('left')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-900 shadow-sm sm:hidden"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            onClick={() => scrollCategories('right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-900 shadow-sm sm:hidden"
+          >
+            <ChevronRight size={16} />
+          </button>
+
+          <div
+            ref={scrollRef}
+            className="flex sm:flex-wrap sm:justify-center gap-2 overflow-x-auto scrollbar-hide px-8 sm:px-0 pb-2 sm:pb-0"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {categories.map((cat, i) => {
+              const count = cat === 'All' ? templates.length : templates.filter(t => t.category === cat).length;
+              return (
+                <motion.button
+                  key={cat}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.2, delay: 0.2 + i * 0.02 }}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 cursor-pointer ${
+                    activeCategory === cat
+                      ? 'bg-gray-900 text-white border-gray-900 shadow-md'
+                      : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-900 hover:text-white hover:border-gray-900'
+                  }`}
+                >
+                  {cat}
+                  <span className={`ml-1.5 text-xs ${activeCategory === cat ? 'text-gray-400' : 'text-gray-400'}`}>
+                    {count}
+                  </span>
+                </motion.button>
+              );
+            })}
+          </div>
         </motion.div>
 
-        {/* Templates Count */}
-        <div className="text-sm text-gray-500 mb-6">
-          {filtered.length} template{filtered.length !== 1 ? 's' : ''} found
-          {activeCategory !== 'All' && <span> in <strong>{activeCategory}</strong></span>}
+        {/* Templates Count + Active Filters */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-sm text-gray-500">
+            {filtered.length} template{filtered.length !== 1 ? 's' : ''} found
+            {activeCategory !== 'All' && <span> in <strong>{activeCategory}</strong></span>}
+          </div>
+          {(activeCategory !== 'All' || searchQuery) && (
+            <button
+              onClick={() => { setActiveCategory('All'); setSearchQuery(''); }}
+              className="text-sm font-medium text-purple-600 hover:text-purple-700 cursor-pointer"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
 
         {/* Templates Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-          {filtered.map((t, i) => (
-            <TemplateCard
-              key={t.name}
-              t={t}
-              index={i}
-              onUse={() => { navigate('/create', { state: { template: t } }); }}
-            />
-          ))}
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeCategory + searchQuery}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3 }}
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5"
+          >
+            {filtered.map((t, i) => (
+              <TemplateCard
+                key={t.name}
+                t={t}
+                index={i}
+                onUse={() => { navigate('/create', { state: { template: t } }); }}
+              />
+            ))}
+          </motion.div>
+        </AnimatePresence>
 
         {/* Empty State */}
         {filtered.length === 0 && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
             className="text-center py-20"
           >
-            <p className="text-gray-400 text-lg">No templates found</p>
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Search size={24} className="text-gray-400" />
+            </div>
+            <p className="text-gray-900 text-lg font-semibold">No templates found</p>
+            <p className="text-gray-400 text-sm mt-1">Try adjusting your search or filters</p>
             <button
               onClick={() => { setActiveCategory('All'); setSearchQuery(''); }}
-              className="mt-4 text-sm font-medium text-purple-600 hover:text-purple-700 cursor-pointer"
+              className="mt-5 px-6 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-full hover:bg-gray-800 transition-colors cursor-pointer"
             >
-              Clear filters
+              View all templates
             </button>
           </motion.div>
         )}
+
+        {/* Bottom CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mt-20 text-center"
+        >
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl px-8 py-14 relative overflow-hidden">
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 right-0 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <Rocket size={24} className="text-white" />
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+                Can't find what you need?
+              </h2>
+              <p className="text-gray-400 max-w-md mx-auto mb-8">
+                Start from scratch and build your own unique page with our powerful editor.
+              </p>
+              <button
+                onClick={() => navigate('/create')}
+                className="px-8 py-3 bg-white text-gray-900 text-sm font-bold rounded-full hover:bg-gray-100 transition-colors shadow-lg cursor-pointer"
+              >
+                Create from scratch
+              </button>
+            </div>
+          </div>
+        </motion.div>
 
       </div>
     </div>

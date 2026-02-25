@@ -136,9 +136,9 @@ export default function AudienceContactsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] text-gray-900 font-sans">
+    <div className="min-h-screen bg-[#f9f9f9] text-gray-900 font-sans pt-16">
       {/* Top Header */}
-      <div className="border-b border-gray-200 bg-white sticky top-0 z-10">
+      <div className="border-b border-gray-200 bg-white sticky top-16 z-10">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-6">
             <h1 className="text-lg font-bold text-gray-900">Audience</h1>

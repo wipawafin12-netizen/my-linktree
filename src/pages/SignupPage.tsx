@@ -28,8 +28,8 @@ export default function SignupPage() {
       >
         {/* Logo */}
         <div className="text-center mb-10">
-          <Link to="/" className="inline-flex items-center gap-1 text-black font-bold text-2xl">
-            OpenBio
+          <Link to="/" className="inline-flex items-center gap-1">
+            <img src="/linkcenter.png" alt="LinkCenter" className="h-10" />
           </Link>
           <p className="text-gray-400 text-sm mt-2">Create your free account in seconds.</p>
         </div>

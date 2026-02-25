@@ -1914,13 +1914,8 @@ export default function CreatePage() {
                           style={bgPatterns.find((p) => p.id === selectedPattern)?.style}
                         />
                       )}
-                      {/* OpenBio logo */}
-                      <div className="pt-8 flex justify-center relative z-[1]">
-                        <span className={`text-xs font-medium ${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-30`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>OpenBio</span>
-                      </div>
-
                       {/* Profile */}
-                      <div className="pt-4 pb-3 flex flex-col items-center px-6 relative z-[1]">
+                      <div className="pt-8 pb-3 flex flex-col items-center px-6 relative z-[1]">
                         <div className="w-[68px] h-[68px] rounded-full bg-gray-300/20 flex items-center justify-center mb-2.5 overflow-hidden">
                           {avatar ? (
                             <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
