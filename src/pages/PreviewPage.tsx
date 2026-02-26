@@ -44,6 +44,42 @@ const fontClasses: Record<string, string> = {
   caveat: 'font-caveat', dancing: 'font-dancing', pacifico: 'font-pacifico', satisfy: 'font-satisfy',
 };
 
+const bgPatterns: Record<string, React.CSSProperties> = {
+  gingham: {
+    backgroundImage: `repeating-linear-gradient(0deg, rgba(200,150,200,0.12) 0px, rgba(200,150,200,0.12) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, rgba(200,150,200,0.12) 0px, rgba(200,150,200,0.12) 1px, transparent 1px, transparent 20px)`,
+    backgroundSize: '20px 20px',
+  },
+  dots: {
+    backgroundImage: `radial-gradient(circle, rgba(180,140,200,0.18) 1.5px, transparent 1.5px)`,
+    backgroundSize: '16px 16px',
+  },
+  stripes: {
+    backgroundImage: `repeating-linear-gradient(135deg, rgba(200,150,200,0.1) 0px, rgba(200,150,200,0.1) 2px, transparent 2px, transparent 12px)`,
+  },
+  confetti: {
+    backgroundImage: `radial-gradient(circle, rgba(252,196,204,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(200,180,240,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(180,230,200,0.3) 2px, transparent 2px), radial-gradient(circle, rgba(255,240,170,0.3) 2px, transparent 2px)`,
+    backgroundSize: '40px 40px, 50px 50px, 35px 45px, 45px 35px',
+    backgroundPosition: '0 0, 20px 15px, 10px 30px, 35px 5px',
+  },
+  diamond: {
+    backgroundImage: `repeating-linear-gradient(45deg, rgba(180,160,210,0.1) 0px, rgba(180,160,210,0.1) 1px, transparent 1px, transparent 16px), repeating-linear-gradient(-45deg, rgba(180,160,210,0.1) 0px, rgba(180,160,210,0.1) 1px, transparent 1px, transparent 16px)`,
+    backgroundSize: '22px 22px',
+  },
+  zigzag: {
+    backgroundImage: `linear-gradient(135deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(225deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(315deg, rgba(200,150,180,0.12) 25%, transparent 25%), linear-gradient(45deg, rgba(200,150,180,0.12) 25%, transparent 25%)`,
+    backgroundSize: '20px 10px',
+    backgroundPosition: '0 0, 10px 0, 10px -5px, 0 5px',
+  },
+  waves: {
+    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 14px, rgba(160,180,220,0.12) 14px, rgba(160,180,220,0.12) 16px), repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(160,180,220,0.06) 30px, rgba(160,180,220,0.06) 32px)`,
+  },
+  hearts: {
+    backgroundImage: `radial-gradient(circle, rgba(240,140,160,0.2) 3px, transparent 3px), radial-gradient(circle, rgba(240,140,160,0.12) 2px, transparent 2px)`,
+    backgroundSize: '30px 30px, 30px 30px',
+    backgroundPosition: '0 0, 15px 15px',
+  },
+};
+
 const socialIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   instagram: Instagram, youtube: Youtube, twitter: Twitter, tiktok: Music2,
   facebook: Facebook, twitch: Twitch, github: Github, website: Globe,
@@ -86,7 +122,7 @@ export default function PreviewPage() {
 
   const { displayName, bio, avatar, selectedTheme, selectedButton, selectedFont,
     customTextColor, customBgColor, customBgSecondary,
-    links, activeSocials, socialUrls } = data;
+    links, activeSocials, socialUrls, selectedPattern } = data;
 
   const isCustom = selectedTheme === 'custom';
   const theme = themes.find(t => t.id === selectedTheme) || themes[0];
@@ -107,13 +143,23 @@ export default function PreviewPage() {
 
   const enabledLinks = links.filter(l => l.title && l.enabled);
 
+  const patternStyle = selectedPattern && selectedPattern !== 'none' ? bgPatterns[selectedPattern] : undefined;
+
   return (
     <div
-      className={`min-h-screen flex flex-col items-center ${!isCustom ? theme.bg : ''} ${fontCls}`}
+      className={`min-h-screen flex flex-col items-center relative ${!isCustom ? theme.bg : ''} ${fontCls}`}
       style={customBgStyle}
     >
+      {/* Pattern overlay */}
+      {patternStyle && (
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={patternStyle}
+        />
+      )}
+
       {/* Profile */}
-      <div className="pt-14 pb-4 flex flex-col items-center px-6 w-full max-w-md">
+      <div className="pt-14 pb-4 flex flex-col items-center px-6 w-full max-w-md relative z-[1]">
         <div className="w-20 h-20 rounded-full bg-gray-300/20 flex items-center justify-center mb-3 overflow-hidden">
           {avatar ? (
             <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
@@ -139,7 +185,7 @@ export default function PreviewPage() {
 
       {/* Social icons */}
       {activeSocials.length > 0 && (
-        <div className="flex items-center justify-center gap-3 pb-5">
+        <div className="flex items-center justify-center gap-3 pb-5 relative z-[1]">
           {activeSocials.map((id) => {
             const Icon = socialIcons[id];
             if (!Icon) return null;
@@ -160,7 +206,7 @@ export default function PreviewPage() {
       )}
 
       {/* Links */}
-      <div className="px-5 pb-10 space-y-3 w-full max-w-md">
+      <div className="px-5 pb-10 space-y-3 w-full max-w-md relative z-[1]">
         {enabledLinks.length === 0 && (
           <div className={`text-center py-10 ${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-20`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
             <ExternalLink size={24} className="mx-auto mb-2" />
@@ -190,7 +236,7 @@ export default function PreviewPage() {
       </div>
 
       {/* Footer */}
-      <div className="mt-auto pb-6">
+      <div className="mt-auto pb-6 relative z-[1]">
         <a href="/" className="text-xs opacity-30 hover:opacity-50 transition-opacity" style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
           LinkCenter
         </a>

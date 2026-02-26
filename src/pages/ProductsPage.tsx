@@ -18,7 +18,7 @@ const sidebarItems = [
 const productItems = [
   { title: 'Link in bio', desc: 'Customize your OpenBio', icon: '🔗', to: '/create' },
   { title: 'Link shortener', desc: 'Create trackable, shareable short links', icon: '✂️', to: '/create' },
-  { title: 'QR code generator', desc: 'Turn links into scannable QR codes', icon: '📱', to: '/create' },
+  { title: 'QR code generator', desc: 'Turn links into scannable QR codes', icon: '📱', to: '/qr-code' },
   { title: 'Canva Background Editor', desc: 'Import your custom designs from Canva into your profile', icon: '🎨', to: '/create' },
   { title: 'OpenBio for every social platform', desc: 'Grow and engage your audience everywhere', icon: '🌐', to: '/create' },
 ];

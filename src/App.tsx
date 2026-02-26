@@ -11,6 +11,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import AudienceContactsPage from './pages/AudienceContactsPage';
 import PreviewPage from './pages/PreviewPage';
+import QRCodePage from './pages/QRCodePage';
 
 function MainLayout() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="/learn" element={<LearnPage />} />
             <Route path="/admin/audience/contacts" element={<AudienceContactsPage />} />
+            <Route path="/qr-code" element={<QRCodePage />} />
           </Route>
         </Routes>
       </BrowserRouter>
