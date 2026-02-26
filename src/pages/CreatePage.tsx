@@ -394,7 +394,7 @@ export default function CreatePage() {
   const [earnSubTab, setEarnSubTab] = useState<'overview' | 'earnings'>('overview');
   const [selectedPattern, setSelectedPattern] = useState('none');
   const [patternDropdownOpen, setPatternDropdownOpen] = useState(false);
-  const [showAllThemes, setShowAllThemes] = useState(false);
+  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
 
   // Apply template data from TemplatesPage navigation
   useEffect(() => {
@@ -488,11 +488,17 @@ export default function CreatePage() {
     }
   };
 
+  const previewUrl = `${window.location.origin}/preview`;
+
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(`linkc.ee/${displayName || 'username'}`);
+    navigator.clipboard.writeText(previewUrl);
     setCopied(true);
     showToast('Link copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleOpenPreview = () => {
+    window.open(previewUrl, '_blank');
   };
 
 
@@ -516,6 +522,17 @@ export default function CreatePage() {
 
   const visibleLinks = showArchive ? links : links.filter((l) => l.enabled);
 
+  // Save preview data to localStorage so PreviewPage can read it
+  useEffect(() => {
+    localStorage.setItem('openbio_preview', JSON.stringify({
+      displayName, bio, avatar, selectedTheme, selectedButton, selectedFont,
+      customTextColor, customBgColor, customBgSecondary,
+      links, activeSocials, socialUrls, selectedPattern,
+    }));
+  }, [displayName, bio, avatar, selectedTheme, selectedButton, selectedFont,
+      customTextColor, customBgColor, customBgSecondary,
+      links, activeSocials, socialUrls, selectedPattern]);
+
   return (
     <div
       className="min-h-screen bg-[#f8f7ff] pt-16 relative overflow-hidden"
@@ -524,12 +541,7 @@ export default function CreatePage() {
         backgroundSize: '24px 24px',
       }}
     >
-      {/* Floating gradient orbs for visual depth */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-violet-200/25 via-purple-200/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
-        <div className="absolute top-1/3 -left-32 w-80 h-80 bg-gradient-to-br from-indigo-200/20 via-blue-200/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '2s' }} />
-        <div className="absolute bottom-20 right-1/4 w-72 h-72 bg-gradient-to-br from-purple-200/15 via-violet-200/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '4s' }} />
-      </div>
+      {/* Background removed */}
       <div className="flex">
 
         {/* ══════ Sidebar ══════ */}
@@ -703,7 +715,7 @@ export default function CreatePage() {
                   <span className="hidden sm:inline">Share</span>
                 </button>
                 <button
-                  onClick={() => window.open(`/preview/${displayName || 'username'}`, '_blank')}
+                  onClick={handleOpenPreview}
                   className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-[#7c3aed] to-[#a78bfa] rounded-full shadow-sm shadow-[#7c3aed]/20 hover:shadow-md hover:shadow-[#7c3aed]/30 transition-all hover:-translate-y-px"
                 >
                   <Eye size={13} />
@@ -1314,273 +1326,292 @@ export default function CreatePage() {
                 <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
                 <input ref={linkImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleLinkImageUpload} />
 
-                {/* Profile Card */}
+                {/* ── Profile Settings Card (row-based like settings page) ── */}
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="relative bg-white rounded-3xl border border-gray-100/60 shadow-sm mb-5 group/profile hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-500 overflow-hidden"
+                  className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/60 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.06)] mb-6 overflow-hidden"
                 >
-                  {/* Gradient banner */}
-                  <div className="h-14 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-indigo-500" />
-                    <motion.div
-                      animate={{ x: [0, 30, 0], y: [0, -6, 0], scale: [1, 1.2, 1] }}
-                      transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                      className="absolute top-1/2 left-1/4 w-16 h-16 bg-pink-400/30 rounded-full blur-2xl"
-                    />
-                    <motion.div
-                      animate={{ x: [0, -20, 0], y: [0, 10, 0], scale: [1.1, 0.9, 1.1] }}
-                      transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                      className="absolute top-0 right-1/4 w-14 h-14 bg-cyan-300/25 rounded-full blur-2xl"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+                  <div className="px-6 py-4 border-b border-gray-100/80">
+                    <h2 className="text-lg font-bold text-gray-800">Profile</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">Manage your public profile info</p>
                   </div>
 
-                  {/* Profile content - centered layout */}
-                  <div className="flex flex-col items-center -mt-7 pb-1 px-4">
-                    {/* Avatar with glowing ring */}
-                    <div className="relative group flex-shrink-0 mb-1.5">
-                      <div className="absolute -inset-1 bg-gradient-to-br from-violet-400 via-fuchsia-400 to-indigo-400 rounded-full opacity-0 group-hover:opacity-70 blur-md transition-all duration-500" />
-                      <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-white to-gray-50 flex items-center justify-center overflow-hidden ring-[3px] ring-white shadow-md transition-all duration-300">
-                        {avatar ? (
-                          <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-violet-50 via-fuchsia-50 to-indigo-50 flex items-center justify-center">
-                            <User size={20} className="text-violet-300" />
-                          </div>
-                        )}
+                  {/* Avatar row */}
+                  <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 hover:bg-gray-50/40 transition-colors">
+                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">Picture</span>
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="relative group">
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100 ring-2 ring-white shadow-sm">
+                          {avatar ? (
+                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <User size={18} className="text-pink-300" />
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => avatarInputRef.current?.click()}
+                          className="absolute inset-0 rounded-full bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                        >
+                          <Camera size={14} className="text-white" />
+                        </button>
                       </div>
                       <button
                         onClick={() => avatarInputRef.current?.click()}
-                        className="absolute inset-0 rounded-full bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 scale-90 group-hover:scale-100"
+                        className="text-xs font-medium text-pink-500 hover:text-pink-600 transition-colors"
                       >
-                        <Upload size={13} className="text-white" />
+                        Upload new picture
                       </button>
-                      <div className="absolute -bottom-px -right-px w-3.5 h-3.5 bg-emerald-400 rounded-full ring-2 ring-white" />
-                    </div>
-                    {/* Name & Bio - centered */}
-                    <div className="w-full text-center mb-2">
-                      <input
-                        type="text"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
-                        placeholder="Your name"
-                        className="w-full text-center text-sm font-bold text-gray-900 placeholder-gray-300 bg-transparent focus:outline-none"
-                      />
-                      <input
-                        type="text"
-                        value={bio}
-                        onChange={(e) => setBio(e.target.value)}
-                        placeholder="Write something about you..."
-                        className="w-full text-center text-[11px] text-gray-400 placeholder-gray-300 bg-transparent focus:outline-none"
-                      />
                     </div>
                   </div>
 
-                  {/* Social icons */}
-                  <div className="mx-4 pt-1.5 pb-2 border-t border-gray-100/60">
-                    <div className="flex items-center justify-center gap-1.5">
-                      {socialPlatforms.slice(0, 5).map((p) => {
-                        const isActive = activeSocials.includes(p.id);
-                        return (
-                          <motion.button
-                            key={p.id}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.93 }}
-                            onClick={() => toggleSocial(p.id)}
-                            className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${isActive
-                              ? 'bg-gradient-to-br from-violet-100 to-fuchsia-100 text-violet-600 shadow-sm shadow-violet-200/50'
-                              : 'bg-gray-50/80 text-gray-400 hover:bg-violet-50 hover:text-violet-500'
-                              }`}
-                            title={p.label}
-                          >
-                            <p.icon size={13} />
-                          </motion.button>
-                        );
-                      })}
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.93 }}
-                        onClick={() => setShowSocialPicker(!showSocialPicker)}
-                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 border-2 border-dashed ${showSocialPicker ? 'border-violet-300 bg-violet-50 text-violet-600 rotate-45' : 'border-gray-200 text-gray-400 hover:border-violet-300 hover:text-violet-500'}`}
-                      >
-                        <Plus size={14} />
-                      </motion.button>
-                    </div>
+                  {/* Name row */}
+                  <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 hover:bg-gray-50/40 transition-colors">
+                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">Name</span>
+                    <input
+                      type="text"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder="Your name"
+                      className="flex-1 text-sm font-medium text-gray-800 placeholder-gray-300 bg-transparent focus:outline-none"
+                    />
+                    <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
                   </div>
 
-                  {/* Active social URL inputs */}
-                  {activeSocials.length > 0 && (
-                    <div className="mx-4 pt-2 pb-1 border-t border-gray-100/60 space-y-1.5">
-                      {activeSocials.map((id) => {
-                        const p = socialPlatforms.find((s) => s.id === id);
-                        if (!p) return null;
-                        return (
-                          <div key={id} className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-md bg-violet-100 text-violet-600 flex items-center justify-center flex-shrink-0">
-                              <p.icon size={11} />
-                            </div>
-                            <input
-                              type="url"
-                              value={socialUrls[id] || ''}
-                              onChange={(e) => setSocialUrls({ ...socialUrls, [id]: e.target.value })}
-                              placeholder={`${p.label} URL`}
-                              className="flex-1 text-[11px] text-gray-600 placeholder-gray-300 bg-gray-50/80 border border-gray-100 rounded-md px-2.5 py-1.5 focus:outline-none focus:border-violet-300 transition-all"
-                            />
+                  {/* Bio row */}
+                  <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 hover:bg-gray-50/40 transition-colors">
+                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">Bio</span>
+                    <input
+                      type="text"
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      placeholder="Write something about you..."
+                      className="flex-1 text-sm text-gray-600 placeholder-gray-300 bg-transparent focus:outline-none"
+                    />
+                    <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
+                  </div>
+
+                  {/* Social row */}
+                  <div className="px-6 py-4">
+                    <div className="flex items-center gap-4 mb-3">
+                      <span className="text-sm text-gray-500 w-28 flex-shrink-0">Socials</span>
+                      <div className="flex items-center gap-2 flex-1 flex-wrap">
+                        {socialPlatforms.slice(0, 5).map((p) => {
+                          const isActive = activeSocials.includes(p.id);
+                          return (
                             <button
-                              onClick={() => toggleSocial(id)}
-                              className="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"
-                              title="Remove"
+                              key={p.id}
+                              onClick={() => toggleSocial(p.id)}
+                              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${isActive
+                                ? 'bg-pink-50 text-pink-500 ring-1 ring-pink-200'
+                                : 'bg-gray-50 text-gray-400 hover:bg-pink-50 hover:text-pink-400'
+                                }`}
+                              title={p.label}
                             >
-                              <X size={11} />
+                              <p.icon size={14} />
                             </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {/* Social Picker Dropdown */}
-                  <AnimatePresence>
-                    {showSocialPicker && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mx-4 mt-1 pt-2 pb-2 border-t border-gray-100/60 overflow-hidden"
-                      >
-                        <p className="text-[10px] font-medium text-gray-400 mb-2 uppercase tracking-wider">All platforms</p>
-                        <div className="flex flex-wrap gap-1">
-                          {socialPlatforms.map((p) => {
-                            const isActive = activeSocials.includes(p.id);
-                            return (
-                              <button
-                                key={p.id}
-                                onClick={() => toggleSocial(p.id)}
-                                className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all duration-200 ${isActive
-                                  ? 'bg-violet-100 text-violet-600'
-                                  : 'bg-gray-50 text-gray-500 hover:bg-violet-50 hover:text-violet-600'
-                                  }`}
-                              >
-                                <p.icon size={11} />
-                                {p.label}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                  <div className="pb-0.5" />
-                </motion.div>
-
-                {/* Add Button */}
-                <div className="relative mb-5">
-                  {/* Glow behind button */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#7c3aed]/30 via-[#a78bfa]/20 to-purple-400/20 rounded-2xl blur-xl scale-95 opacity-60" />
-                  <motion.button
-                    whileHover={{ scale: 1.015, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setAddModalOpen(true)}
-                    className="relative w-full py-4 bg-gradient-to-r from-[#7c3aed] via-[#a78bfa] to-[#7c3aed] text-white font-bold rounded-2xl flex items-center justify-center gap-2.5 shadow-lg shadow-[#7c3aed]/25 hover:shadow-xl hover:shadow-[#7c3aed]/35 transition-all duration-300 overflow-hidden group"
-                    style={{ backgroundSize: '200% 100%' }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                    <div className="relative z-[1] w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                      <Plus size={16} />
-                    </div>
-                    <span className="relative z-[1] text-base">Add new link</span>
-                  </motion.button>
-                </div>
-
-                {/* Actions row */}
-                <div className="flex items-center justify-between mb-5">
-                  <button
-                    onClick={() => {
-                      const id = Date.now().toString();
-                      setLinks([...links, { id, title: 'Collection', url: '', enabled: true, clicks: 0 }]);
-                      showToast('Collection added');
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray-500 bg-white/90 backdrop-blur-sm border border-gray-200/80 rounded-xl hover:bg-[#f5f3ff]/50 hover:border-[#a78bfa]/30 hover:text-[#6d28d9] transition-all duration-200 shadow-sm"
-                  >
-                    <FolderOpen size={14} /> Add collection
-                  </button>
-                  <button
-                    onClick={() => setShowArchive(!showArchive)}
-                    className={`flex items-center gap-2 text-xs font-medium px-3 py-2 rounded-xl transition-all ${showArchive ? 'text-[#7c3aed] bg-[#f5f3ff]/50 border border-[#e0e7ff]/50' : 'text-gray-400 hover:text-[#6d28d9] hover:bg-gray-50'}`}
-                  >
-                    <Archive size={14} /> {showArchive ? 'Hide archive' : 'Archive'} <ChevronRight size={12} className={`transition-transform duration-200 ${showArchive ? 'rotate-90' : ''}`} />
-                  </button>
-                </div>
-
-                {/* Link Cards */}
-                <div className="space-y-3 mb-8">
-                  {/* Empty state */}
-                  {visibleLinks.length === 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-center py-12 px-6 border-2 border-dashed border-gray-200/80 rounded-3xl bg-gradient-to-b from-white/60 to-gray-50/40"
-                    >
-                      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#f5f3ff] to-[#ede9fe] flex items-center justify-center">
-                        <Link2 size={24} className="text-[#7c3aed]" />
+                          );
+                        })}
+                        <button
+                          onClick={() => setShowSocialPicker(!showSocialPicker)}
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 border border-dashed ${showSocialPicker ? 'border-pink-300 bg-pink-50 text-pink-500 rotate-45' : 'border-gray-200 text-gray-400 hover:border-pink-300 hover:text-pink-400'}`}
+                        >
+                          <Plus size={14} />
+                        </button>
                       </div>
-                      <h3 className="text-base font-bold text-gray-900 mb-1.5">No links yet</h3>
-                      <p className="text-sm text-gray-400 mb-5 max-w-[250px] mx-auto">Add your first link to start building your OpenBio page</p>
-                      <button
-                        onClick={() => setAddModalOpen(true)}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#7c3aed] to-[#a78bfa] text-white text-sm font-semibold rounded-xl shadow-sm shadow-[#7c3aed]/20 hover:shadow-md hover:shadow-[#7c3aed]/30 transition-all hover:-translate-y-0.5"
-                      >
-                        <Plus size={16} /> Add your first link
-                      </button>
-                    </motion.div>
-                  )}
-                  <AnimatePresence>
-                    {visibleLinks.map((link, linkIndex) => (
-                      <motion.div
-                        key={link.id}
-                        initial={{ opacity: 0, y: -10, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.98 }}
-                        whileHover={{ y: -2, boxShadow: '0 12px 40px -12px rgba(124,58,237,0.18)' }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                        className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all duration-300 ${!link.enabled ? 'border-gray-200 opacity-50 grayscale-[30%]' : 'border-gray-100/80 hover:border-[#a78bfa]/40'}`}
-                      >
-                        <div className="flex items-start gap-1 p-3">
-                          {/* Colored accent bar */}
-                          <div className={`w-1 self-stretch rounded-full flex-shrink-0 mr-1 ${!link.enabled ? 'bg-gray-200' : ''}`} style={{ backgroundColor: link.enabled ? (link.color || ['#7c3aed', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ec4899'][linkIndex % 6]) : undefined }} />
-                          <div className="mt-1 text-gray-300 cursor-grab hover:text-gray-400 p-1 active:text-[#7c3aed] transition-colors">
-                            <GripVertical size={16} />
-                          </div>
-                          {link.thumbnail && (
-                            <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 mr-2 ring-1 ring-gray-100">
-                              <img src={link.thumbnail} alt="" className="w-full h-full object-cover" />
-                            </div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1.5">
+                    </div>
+
+                    {/* Active social URL inputs */}
+                    {activeSocials.length > 0 && (
+                      <div className="ml-32 space-y-2 mb-3">
+                        {activeSocials.map((id) => {
+                          const p = socialPlatforms.find((s) => s.id === id);
+                          if (!p) return null;
+                          return (
+                            <div key={id} className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-md bg-pink-50 text-pink-400 flex items-center justify-center flex-shrink-0">
+                                <p.icon size={11} />
+                              </div>
                               <input
-                                type="text"
-                                value={link.title}
-                                onChange={(e) => updateLink(link.id, 'title', e.target.value)}
-                                placeholder="Title"
-                                className="flex-1 text-sm font-semibold text-gray-900 placeholder-gray-300 bg-transparent focus:outline-none"
+                                type="url"
+                                value={socialUrls[id] || ''}
+                                onChange={(e) => setSocialUrls({ ...socialUrls, [id]: e.target.value })}
+                                placeholder={`${p.label} URL`}
+                                className="flex-1 text-xs text-gray-600 placeholder-gray-300 bg-gray-50/80 border border-gray-100 rounded-lg px-3 py-1.5 focus:outline-none focus:border-pink-300 transition-all"
                               />
                               <button
-                                onClick={() => setEditingLinkId(editingLinkId === link.id ? null : link.id)}
-                                className={`p-1.5 rounded-lg transition-all ${editingLinkId === link.id ? 'text-[#7c3aed] bg-[#f5f3ff]' : 'text-gray-300 hover:text-gray-500 hover:bg-gray-50'}`}
+                                onClick={() => toggleSocial(id)}
+                                className="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"
                               >
-                                <Pencil size={13} />
+                                <X size={11} />
                               </button>
                             </div>
-                            <input
-                              type="url"
-                              value={link.url}
-                              onChange={(e) => updateLink(link.id, 'url', e.target.value)}
-                              placeholder="URL"
-                              className="w-full text-xs text-gray-400 placeholder-gray-300 bg-transparent focus:outline-none"
-                            />
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Social Picker */}
+                    <AnimatePresence>
+                      {showSocialPicker && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="ml-32 pt-2 pb-1 overflow-hidden"
+                        >
+                          <p className="text-[10px] font-medium text-gray-400 mb-2 uppercase tracking-wider">All platforms</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {socialPlatforms.map((p) => {
+                              const isActive = activeSocials.includes(p.id);
+                              return (
+                                <button
+                                  key={p.id}
+                                  onClick={() => toggleSocial(p.id)}
+                                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${isActive
+                                    ? 'bg-pink-100 text-pink-600'
+                                    : 'bg-gray-50 text-gray-500 hover:bg-pink-50 hover:text-pink-500'
+                                    }`}
+                                >
+                                  <p.icon size={11} />
+                                  {p.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+
+                {/* ── My Links Card ── */}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
+                  className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/60 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.06)] mb-6 overflow-hidden"
+                >
+                  <div className="px-4 py-2.5 border-b border-gray-100/80 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-sm font-bold text-gray-800">My Links</h2>
+                      <span className="text-[10px] text-gray-400">{visibleLinks.length} added</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => {
+                          const id = Date.now().toString();
+                          setLinks([...links, { id, title: 'Collection', url: '', enabled: true, clicks: 0 }]);
+                          showToast('Collection added');
+                        }}
+                        className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium text-gray-500 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
+                      >
+                        <FolderOpen size={10} /> Collection
+                      </button>
+                      <button
+                        onClick={() => setShowArchive(!showArchive)}
+                        className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium rounded-md transition-colors ${showArchive ? 'text-pink-600 bg-pink-50' : 'text-gray-500 bg-gray-50 hover:bg-gray-100'}`}
+                      >
+                        <Archive size={10} /> Archive
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Add new link button inside card */}
+                  <button
+                    onClick={() => setAddModalOpen(true)}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 border-b border-gray-100/80 text-pink-500 hover:bg-pink-50/40 transition-colors group"
+                  >
+                    <div className="w-6 h-6 rounded-md bg-pink-50 flex items-center justify-center group-hover:bg-pink-100 transition-colors">
+                      <Plus size={13} className="text-pink-500" />
+                    </div>
+                    <span className="text-xs font-semibold">Add new link</span>
+                  </button>
+
+                  {/* Link list */}
+                  {visibleLinks.length === 0 ? (
+                    <div className="text-center py-8 px-4">
+                      <div className="w-10 h-10 mx-auto mb-2.5 rounded-xl bg-gray-50 flex items-center justify-center">
+                        <Link2 size={16} className="text-gray-300" />
+                      </div>
+                      <h3 className="text-xs font-bold text-gray-700 mb-0.5">No links yet</h3>
+                      <p className="text-[11px] text-gray-400 max-w-[200px] mx-auto">Add your first link to start building your OpenBio page</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <AnimatePresence>
+                        {visibleLinks.map((link, linkIndex) => (
+                          <motion.div
+                            key={link.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className={`border-b border-gray-50 last:border-b-0 transition-colors ${!link.enabled ? 'opacity-40' : 'hover:bg-gray-50/40'}`}
+                          >
+                            <div className="flex items-center gap-3 px-6 py-3.5">
+                              <div className="text-gray-300 cursor-grab hover:text-gray-400 active:text-pink-500 transition-colors">
+                                <GripVertical size={14} />
+                              </div>
+                              <div
+                                className="w-1.5 h-8 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: link.color || ['#ec4899', '#a855f7', '#6366f1', '#10b981', '#f59e0b', '#f43f5e'][linkIndex % 6] }}
+                              />
+                              {link.thumbnail && (
+                                <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 ring-1 ring-gray-100">
+                                  <img src={link.thumbnail} alt="" className="w-full h-full object-cover" />
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <input
+                                  type="text"
+                                  value={link.title}
+                                  onChange={(e) => updateLink(link.id, 'title', e.target.value)}
+                                  placeholder="Title"
+                                  className="block w-full text-sm font-medium text-gray-800 placeholder-gray-300 bg-transparent focus:outline-none"
+                                />
+                                <input
+                                  type="url"
+                                  value={link.url}
+                                  onChange={(e) => updateLink(link.id, 'url', e.target.value)}
+                                  placeholder="URL"
+                                  className="block w-full text-[11px] text-gray-400 placeholder-gray-300 bg-transparent focus:outline-none mt-0.5"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1.5 flex-shrink-0">
+                                <button
+                                  onClick={() => setEditingLinkId(editingLinkId === link.id ? null : link.id)}
+                                  className={`p-1.5 rounded-lg transition-all ${editingLinkId === link.id ? 'text-pink-500 bg-pink-50' : 'text-gray-300 hover:text-gray-500'}`}
+                                >
+                                  <Pencil size={13} />
+                                </button>
+                                <button
+                                  onClick={() => { setImageTargetLinkId(link.id); linkImageInputRef.current?.click(); }}
+                                  className="p-1.5 rounded-lg text-gray-300 hover:text-pink-500 transition-colors"
+                                >
+                                  <Image size={13} />
+                                </button>
+                                <button
+                                  onClick={() => showToast(`${link.clicks || 0} clicks`)}
+                                  className="p-1.5 rounded-lg text-gray-300 hover:text-purple-500 transition-colors"
+                                >
+                                  <BarChart3 size={13} />
+                                </button>
+                                <button
+                                  onClick={() => toggleLink(link.id)}
+                                  className={`relative w-9 h-5 rounded-full transition-colors ${link.enabled ? 'bg-pink-400' : 'bg-gray-200'}`}
+                                >
+                                  <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${link.enabled ? 'translate-x-[16px]' : 'translate-x-0.5'}`} />
+                                </button>
+                                <button
+                                  onClick={() => removeLink(link.id)}
+                                  className="p-1.5 rounded-lg text-gray-300 hover:text-red-400 transition-colors"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </div>
+                            </div>
                             {/* Expanded edit area */}
                             <AnimatePresence>
                               {editingLinkId === link.id && (
@@ -1588,97 +1619,68 @@ export default function CreatePage() {
                                   initial={{ opacity: 0, height: 0 }}
                                   animate={{ opacity: 1, height: 'auto' }}
                                   exit={{ opacity: 0, height: 0 }}
-                                  className="mt-4 pt-4 border-t border-gray-100 space-y-4 overflow-hidden"
+                                  className="px-6 pb-4 overflow-hidden"
                                 >
-                                  <label className="block text-[11px] text-gray-400">Title</label>
-                                  <input
-                                    type="text"
-                                    value={link.title}
-                                    onChange={(e) => updateLink(link.id, 'title', e.target.value)}
-                                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300"
-                                  />
-                                  <label className="block text-[11px] text-gray-400">URL</label>
-                                  <input
-                                    type="url"
-                                    value={link.url}
-                                    onChange={(e) => updateLink(link.id, 'url', e.target.value)}
-                                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300"
-                                  />
-                                  <label className="block text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-1">Button Color</label>
-                                  <div className="grid grid-cols-10 gap-1.5 w-fit">
-                                    {linkColors.map((c) => (
-                                      <button
-                                        key={c.id}
-                                        onClick={() => updateLink(link.id, 'color', c.value)}
-                                        className={`w-5 h-5 rounded-full border transition-all flex items-center justify-center ${link.color === c.value ? 'border-gray-900 scale-110 shadow-sm' : 'border-gray-100 hover:border-gray-200'}`}
-                                        style={{ backgroundColor: c.value || '#f3f4f6' }}
-                                        title={c.label}
-                                      >
-                                        {link.color === c.value && <Check size={8} className={c.value && parseInt(c.value.slice(1), 16) < 0x808080 ? 'text-white' : 'text-gray-900'} />}
-                                      </button>
-                                    ))}
+                                  <div className="ml-9 pl-4 border-l-2 border-pink-100 space-y-3 pt-1">
+                                    <div>
+                                      <label className="block text-[11px] text-gray-400 mb-1">Title</label>
+                                      <input
+                                        type="text"
+                                        value={link.title}
+                                        onChange={(e) => updateLink(link.id, 'title', e.target.value)}
+                                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-[11px] text-gray-400 mb-1">URL</label>
+                                      <input
+                                        type="url"
+                                        value={link.url}
+                                        onChange={(e) => updateLink(link.id, 'url', e.target.value)}
+                                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-1.5">Button Color</label>
+                                      <div className="grid grid-cols-10 gap-1.5 w-fit">
+                                        {linkColors.map((c) => (
+                                          <button
+                                            key={c.id}
+                                            onClick={() => updateLink(link.id, 'color', c.value)}
+                                            className={`w-5 h-5 rounded-full border transition-all flex items-center justify-center ${link.color === c.value ? 'border-gray-900 scale-110 shadow-sm' : 'border-gray-100 hover:border-gray-200'}`}
+                                            style={{ backgroundColor: c.value || '#f3f4f6' }}
+                                            title={c.label}
+                                          >
+                                            {link.color === c.value && <Check size={8} className={c.value && parseInt(c.value.slice(1), 16) < 0x808080 ? 'text-white' : 'text-gray-900'} />}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </div>
                                   </div>
                                 </motion.div>
                               )}
                             </AnimatePresence>
-                          </div>
-                          <div className="flex items-center gap-2 ml-2">
-                            {/* Toggle */}
-                            <button
-                              onClick={() => toggleLink(link.id)}
-                              className={`relative w-10 h-6 rounded-full transition-colors ${link.enabled ? 'bg-green-500' : 'bg-gray-200'
-                                }`}
-                            >
-                              <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${link.enabled ? 'translate-x-[18px]' : 'translate-x-0.5'
-                                }`} />
-                            </button>
-                          </div>
-                        </div>
-                        {/* Card footer */}
-                        <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-gray-50/80 to-gray-50/40 border-t border-gray-100/60">
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => { setImageTargetLinkId(link.id); linkImageInputRef.current?.click(); }}
-                              className="p-1.5 rounded-lg text-gray-300 hover:text-[#7c3aed] hover:bg-[#f5f3ff] transition-all"
-                              title="Add thumbnail"
-                            >
-                              <Image size={14} />
-                            </button>
-                            <button
-                              onClick={() => showToast(`${link.clicks || 0} clicks`)}
-                              className="flex items-center gap-1 p-1.5 rounded-lg text-gray-300 hover:text-[#8b5cf6] hover:bg-purple-50 transition-all"
-                              title="View stats"
-                            >
-                              <BarChart3 size={14} />
-                              {(link.clicks ?? 0) > 0 && <span className="text-[10px] font-medium text-gray-400">{link.clicks}</span>}
-                            </button>
-                          </div>
-                          <button
-                            onClick={() => removeLink(link.id)}
-                            className="p-1.5 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-50 transition-all"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                </motion.div>
 
                 {/* Tabs: Add links / Settings */}
                 <div className="mb-6">
-                  <div className="flex bg-gray-100/80 rounded-2xl p-1 gap-1">
+                  <div className="inline-flex bg-gray-100/80 rounded-full p-0.5 gap-0.5">
                     {(['add', 'settings'] as const).map((tab) => (
                       <button
                         key={tab}
                         onClick={() => setMainTab(tab)}
-                        className={`relative flex-1 py-2.5 text-sm font-medium rounded-xl transition-all duration-300 ${mainTab === tab
-                          ? 'bg-white text-[#6d28d9] shadow-sm'
+                        className={`relative px-5 py-2 text-xs font-medium rounded-full transition-all duration-300 ${mainTab === tab
+                          ? 'bg-white text-gray-900 shadow-sm'
                           : 'text-gray-400 hover:text-gray-600'
                           }`}
                       >
-                        <span className="flex items-center justify-center gap-2">
-                          {tab === 'add' ? <><Plus size={14} /> Add links</> : <><Settings size={14} /> Appearance</>}
+                        <span className="flex items-center gap-1.5">
+                          {tab === 'add' ? <><Plus size={12} /> Add links</> : <><Settings size={12} /> Appearance</>}
                         </span>
                       </button>
                     ))}
@@ -1686,72 +1688,76 @@ export default function CreatePage() {
                 </div>
 
                 {mainTab === 'settings' ? (
-                  <div className="space-y-6 pb-10">
+                  <div className="space-y-5 pb-10">
                     {/* Themes */}
                     <motion.div
-                      initial={{ opacity: 0, y: 15 }}
+                      initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.05 }}
-                      className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border border-gray-100/60 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/5 transition-all duration-500"
+                      className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/60 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.06)] overflow-hidden relative"
                     >
-                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-                          <Palette size={14} className="text-purple-500" />
-                        </div>
-                        Themes
-                      </h2>
-                      <div className="grid grid-cols-3 gap-3">
-                        {(showAllThemes ? themes : themes.slice(0, 6)).map((t) => (
-                          <button
-                            key={t.id}
-                            onClick={() => setSelectedTheme(t.id)}
-                            className={`relative p-1 rounded-2xl border-2 transition-all ${selectedTheme === t.id ? 'border-gray-400' : 'border-transparent hover:border-gray-200'
-                              }`}
-                          >
-                            <div className={`h-20 rounded-xl ${t.bg} flex items-center justify-center`}>
-                              <div className="space-y-1.5">
-                                <div className="w-6 h-6 rounded-full bg-white/30 mx-auto" />
-                                <div className="w-12 h-1.5 rounded-full bg-white/30" />
-                                <div className="w-10 h-1.5 rounded-full bg-white/20" />
-                              </div>
-                            </div>
-                            <span className="block text-[11px] font-medium text-gray-500 mt-1.5 text-center">{t.label}</span>
-                            {selectedTheme === t.id && (
-                              <motion.div layoutId="themeCheck" className="absolute -top-1 -right-1 w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center">
-                                <Check size={11} className="text-white" />
-                              </motion.div>
-                            )}
-                          </button>
-                        ))}
-                        {/* Custom theme tile - always visible */}
-                        {showAllThemes && (
-                          <button
-                            onClick={() => setSelectedTheme('custom')}
-                            className={`relative p-1 rounded-2xl border-2 transition-all ${isCustom ? 'border-gray-400' : 'border-transparent hover:border-gray-200'}`}
-                          >
-                            <div className="h-20 rounded-xl flex items-center justify-center" style={customTheme.bgStyle}>
-                              <div className="space-y-1.5">
-                                <div className="w-6 h-6 rounded-full bg-white/30 mx-auto" />
-                                <div className="w-12 h-1.5 rounded-full bg-white/30" />
-                                <div className="w-10 h-1.5 rounded-full bg-white/20" />
-                              </div>
-                            </div>
-                            <span className="block text-[11px] font-medium text-gray-500 mt-1.5 text-center">Custom</span>
-                            {isCustom && (
-                              <motion.div layoutId="themeCheck" className="absolute -top-1 -right-1 w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center">
-                                <Check size={11} className="text-white" />
-                              </motion.div>
-                            )}
-                          </button>
-                        )}
+                      <div className="px-5 py-3 flex items-center justify-between">
+                        <h2 className="text-sm font-bold text-gray-800">Themes</h2>
                       </div>
-                      <button
-                        onClick={() => setShowAllThemes(!showAllThemes)}
-                        className="w-full mt-3 py-2 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center justify-center gap-1"
-                      >
-                        <ChevronDown size={14} className={`transition-transform ${showAllThemes ? 'rotate-180' : ''}`} />
-                        {showAllThemes ? 'Show less' : `Show all (${themes.length + 1})`}
-                      </button>
+
+                      {/* Dropdown trigger */}
+                      <div className="px-5 pb-3">
+                        <button
+                          onClick={() => setThemeDropdownOpen(!themeDropdownOpen)}
+                          className="w-full flex items-center gap-3 p-2.5 rounded-xl border border-gray-200 hover:border-gray-300 transition-all bg-gray-50/80"
+                        >
+                          <div
+                            className={`w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center ${!isCustom ? (themes.find(t => t.id === selectedTheme)?.bg || '') : ''}`}
+                            style={isCustom ? customTheme.bgStyle : undefined}
+                          >
+                            <div className="space-y-0.5">
+                              <div className="w-3 h-3 rounded-full bg-white/30 mx-auto" />
+                              <div className="w-5 h-0.5 rounded-full bg-white/25 mx-auto" />
+                            </div>
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="text-sm font-medium text-gray-700">
+                              {isCustom ? 'Custom' : (themes.find(t => t.id === selectedTheme)?.label || 'Minimal')}
+                            </span>
+                          </div>
+                          <ChevronDown size={16} className={`text-gray-400 transition-transform ${themeDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                      </div>
+
+                      {/* Dropdown panel */}
+                      {themeDropdownOpen && (
+                        <div className="mx-5 mb-4 bg-white rounded-xl border border-gray-200 shadow-lg p-3 max-h-[280px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                          <div className="grid grid-cols-4 gap-2">
+                            {themes.map((t) => (
+                              <button
+                                key={t.id}
+                                onClick={() => { setSelectedTheme(t.id); setThemeDropdownOpen(false); }}
+                                className="group"
+                              >
+                                <div className={`h-12 rounded-lg ${t.bg} flex items-center justify-center ring-2 transition-all ${selectedTheme === t.id ? 'ring-gray-700 ring-offset-2' : 'ring-transparent group-hover:ring-gray-200 group-hover:ring-offset-1'}`}>
+                                  <div className="space-y-0.5">
+                                    <div className="w-3 h-3 rounded-full bg-white/30 mx-auto" />
+                                    <div className="w-6 h-0.5 rounded-full bg-white/25 mx-auto" />
+                                  </div>
+                                </div>
+                                <span className={`block text-[9px] mt-1 text-center truncate ${selectedTheme === t.id ? 'font-semibold text-gray-700' : 'text-gray-400'}`}>{t.label}</span>
+                              </button>
+                            ))}
+                            {/* Custom */}
+                            <button
+                              onClick={() => { setSelectedTheme('custom'); setThemeDropdownOpen(false); }}
+                              className="group"
+                            >
+                              <div className={`h-12 rounded-lg flex items-center justify-center ring-2 transition-all border border-dashed border-gray-200 ${isCustom ? 'ring-gray-700 ring-offset-2' : 'ring-transparent group-hover:ring-gray-200 group-hover:ring-offset-1'}`} style={customTheme.bgStyle}>
+                                <div className="space-y-0.5">
+                                  <div className="w-3 h-3 rounded-full bg-white/30 mx-auto" />
+                                  <div className="w-6 h-0.5 rounded-full bg-white/25 mx-auto" />
+                                </div>
+                              </div>
+                              <span className={`block text-[9px] mt-1 text-center truncate ${isCustom ? 'font-semibold text-gray-700' : 'text-gray-400'}`}>Custom</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Custom color picker */}
                       <AnimatePresence>
@@ -1762,213 +1768,198 @@ export default function CreatePage() {
                             exit={{ opacity: 0, height: 0 }}
                             className="overflow-hidden"
                           >
-                            <div className="mt-4 p-4 bg-gray-50 rounded-xl space-y-3">
-                              <div className="flex items-center gap-3">
-                                <label className="text-xs font-medium text-gray-600 w-24">Primary</label>
-                                <input
-                                  type="color"
-                                  value={customBgColor}
-                                  onChange={(e) => setCustomBgColor(e.target.value)}
-                                  className="w-8 h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5"
-                                />
-                                <span className="text-xs text-gray-400 font-mono">{customBgColor}</span>
+                            <div className="px-5 pb-4 pt-1">
+                              <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                  <label className="text-[11px] font-medium text-gray-500">Primary</label>
+                                  <input type="color" value={customBgColor} onChange={(e) => setCustomBgColor(e.target.value)} className="w-7 h-7 rounded-lg cursor-pointer border border-gray-200 p-0.5" />
+                                  <span className="text-[10px] text-gray-400 font-mono">{customBgColor}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <label className="text-[11px] font-medium text-gray-500">Secondary</label>
+                                  <input type="color" value={customBgSecondary} onChange={(e) => setCustomBgSecondary(e.target.value)} className="w-7 h-7 rounded-lg cursor-pointer border border-gray-200 p-0.5" />
+                                  <span className="text-[10px] text-gray-400 font-mono">{customBgSecondary}</span>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-3">
-                                <label className="text-xs font-medium text-gray-600 w-24">Secondary</label>
-                                <input
-                                  type="color"
-                                  value={customBgSecondary}
-                                  onChange={(e) => setCustomBgSecondary(e.target.value)}
-                                  className="w-8 h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5"
-                                />
-                                <span className="text-xs text-gray-400 font-mono">{customBgSecondary}</span>
-                              </div>
-                              <p className="text-[10px] text-gray-400">สีตัวอักษรและการ์ดจะปรับอัตโนมัติตามความสว่างของ background</p>
                             </div>
                           </motion.div>
                         )}
                       </AnimatePresence>
                     </motion.div>
 
-                    {/* Background Pattern & Button Style - side by side */}
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* Background Pattern */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="bg-white/90 backdrop-blur-sm rounded-3xl p-5 border border-gray-100/60 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/5 transition-all duration-500 relative"
-                      >
-                        <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center">
-                            <Grid3x3 size={14} className="text-rose-500" />
-                          </div>
-                          Background Pattern
-                        </h2>
-                        {/* Dropdown trigger */}
-                        <button
-                          onClick={() => setPatternDropdownOpen(!patternDropdownOpen)}
-                          className="w-full flex items-center gap-3 p-2.5 rounded-xl border border-gray-200 hover:border-gray-300 transition-all bg-gray-50"
-                        >
-                          <div
-                            className="w-10 h-10 rounded-lg bg-gray-200 border border-gray-200 shrink-0"
-                            style={selectedPattern !== 'none' ? bgPatterns.find((p) => p.id === selectedPattern)?.style : undefined}
-                          />
-                          <span className="text-sm font-medium text-gray-700">
-                            {bgPatterns.find((p) => p.id === selectedPattern)?.label || 'None'}
-                          </span>
-                          <ChevronDown size={16} className={`ml-auto text-gray-400 transition-transform ${patternDropdownOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                        {/* Dropdown panel */}
-                        {patternDropdownOpen && (
-                          <div className="mt-2 bg-white rounded-xl border border-gray-200 shadow-lg p-3">
-                            <div className="grid grid-cols-4 gap-1.5 max-h-[200px] overflow-y-auto">
-                              {bgPatterns.map((p) => (
-                                <button
-                                  key={p.id}
-                                  onClick={() => { setSelectedPattern(p.id); setPatternDropdownOpen(false); }}
-                                  className={`p-1.5 rounded-lg border transition-all ${selectedPattern === p.id ? 'border-gray-400 bg-gray-50' : 'border-gray-100 hover:border-gray-200'}`}
-                                >
-                                  <div
-                                    className="h-10 rounded-md bg-gray-100"
-                                    style={p.id !== 'none' ? p.style : undefined}
-                                  />
-                                  <span className="block text-[9px] font-medium text-gray-500 mt-0.5 text-center truncate">{p.label}</span>
-                                </button>
-                              ))}
+                    {/* Background Pattern & Button Style - single row */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="bg-white/90 backdrop-blur-sm rounded-3xl p-5 border border-gray-100/60 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/5 transition-all duration-500 relative"
+                    >
+                      <div className="flex gap-5">
+                        {/* Background Pattern */}
+                        <div className="flex-1 min-w-0">
+                          <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center flex-shrink-0">
+                              <Grid3x3 size={12} className="text-rose-500" />
                             </div>
-                            <p className="text-[10px] text-gray-400 mt-2">ลายจะแสดงทับ background ของธีมใน Preview</p>
-                          </div>
-                        )}
-                      </motion.div>
-
-                      {/* Button Style */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.15 }}
-                        className="bg-white/90 backdrop-blur-sm rounded-3xl p-5 border border-gray-100/60 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/5 transition-all duration-500"
-                      >
-                        <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
-                            <Type size={14} className="text-blue-500" />
-                          </div>
-                          Button Style
-                        </h2>
-                        <div className="grid grid-cols-3 gap-2">
-                          {buttonStyles.map((style) => (
-                            <button
-                              key={style.id}
-                              onClick={() => setSelectedButton(style.id)}
-                              className={`p-3 rounded-xl border-2 transition-all ${selectedButton === style.id ? 'border-gray-400' : 'border-gray-100 hover:border-gray-200'
-                                }`}
-                            >
-                              <div className={`h-7 bg-gray-300 ${style.cls} mb-1.5`} />
-                              <span className="text-[10px] font-medium text-gray-500">{style.label}</span>
-                            </button>
-                          ))}
+                            Pattern
+                          </h2>
+                          <button
+                            onClick={() => setPatternDropdownOpen(!patternDropdownOpen)}
+                            className="w-full flex items-center gap-2 p-2 rounded-xl border border-gray-200 hover:border-gray-300 transition-all bg-gray-50"
+                          >
+                            <div
+                              className="w-8 h-8 rounded-lg bg-gray-200 border border-gray-200 shrink-0"
+                              style={selectedPattern !== 'none' ? bgPatterns.find((p) => p.id === selectedPattern)?.style : undefined}
+                            />
+                            <span className="text-xs font-medium text-gray-700 truncate">
+                              {bgPatterns.find((p) => p.id === selectedPattern)?.label || 'None'}
+                            </span>
+                            <ChevronDown size={14} className={`ml-auto text-gray-400 transition-transform flex-shrink-0 ${patternDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
                         </div>
-                      </motion.div>
-                    </div>
 
-                    {/* Font */}
+                        <div className="w-px bg-gray-100 self-stretch" />
+
+                        {/* Button Style */}
+                        <div className="flex-1 min-w-0">
+                          <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center flex-shrink-0">
+                              <Type size={12} className="text-blue-500" />
+                            </div>
+                            Button Style
+                          </h2>
+                          <div className="flex flex-wrap gap-1.5">
+                            {buttonStyles.map((style) => (
+                              <button
+                                key={style.id}
+                                onClick={() => setSelectedButton(style.id)}
+                                className={`flex-1 min-w-[52px] p-2 rounded-lg border-2 transition-all ${selectedButton === style.id ? 'border-gray-400' : 'border-gray-100 hover:border-gray-200'}`}
+                              >
+                                <div className={`h-5 bg-gray-300 ${style.cls} mb-1`} />
+                                <span className="block text-[9px] font-medium text-gray-500 text-center">{style.label}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Pattern dropdown panel */}
+                      {patternDropdownOpen && (
+                        <div className="mt-3 bg-white rounded-xl border border-gray-200 shadow-lg p-3">
+                          <div className="grid grid-cols-6 gap-1.5 max-h-[160px] overflow-y-auto">
+                            {bgPatterns.map((p) => (
+                              <button
+                                key={p.id}
+                                onClick={() => { setSelectedPattern(p.id); setPatternDropdownOpen(false); }}
+                                className={`p-1.5 rounded-lg border transition-all ${selectedPattern === p.id ? 'border-gray-400 bg-gray-50' : 'border-gray-100 hover:border-gray-200'}`}
+                              >
+                                <div
+                                  className="h-8 rounded-md bg-gray-100"
+                                  style={p.id !== 'none' ? p.style : undefined}
+                                />
+                                <span className="block text-[8px] font-medium text-gray-500 mt-0.5 text-center truncate">{p.label}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+
+                    {/* Font & Text Color - side by side */}
                     <motion.div
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
                       className="bg-white/90 backdrop-blur-sm rounded-3xl p-5 border border-gray-100/60 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/5 transition-all duration-500"
                     >
-                      <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
-                          <Type size={14} className="text-amber-600" />
-                        </div>
-                        Font
-                      </h2>
-                      {/* Category tabs */}
-                      <div className="flex gap-1 mb-2 overflow-x-auto pb-1">
-                        {['all', 'Sans-serif', 'Serif', 'Mono', 'Handwriting'].map((cat) => (
-                          <button
-                            key={cat}
-                            onClick={() => setFontCategory(cat)}
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap transition-all ${fontCategory === cat ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
-                          >
-                            {cat === 'all' ? 'All' : cat}
-                          </button>
-                        ))}
-                      </div>
-                      <div className="grid grid-cols-4 gap-1.5 max-h-[180px] overflow-y-auto pr-1">
-                        {fontOptions
-                          .filter((f) => fontCategory === 'all' || f.category === fontCategory)
-                          .map((f) => (
-                            <button
-                              key={f.id}
-                              onClick={() => setSelectedFont(f.id)}
-                              className={`p-1.5 rounded-lg border transition-all ${selectedFont === f.id ? 'border-gray-400 bg-gray-50' : 'border-gray-100 hover:border-gray-200'
-                                }`}
-                            >
-                              <span className={`text-sm ${f.cls} text-gray-700`}>Aa</span>
-                              <span className="block text-[9px] font-medium text-gray-400 mt-0.5 truncate">{f.label}</span>
-                            </button>
-                          ))}
-                      </div>
-                    </motion.div>
-
-                    {/* Text Color */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.25 }}
-                      className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border border-gray-100/60 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/5 transition-all duration-500"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
-                            <Palette size={14} className="text-green-600" />
-                          </div>
-                          Text Color
-                        </h2>
-                        {/* Auto / Custom picker */}
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="color"
-                            value={customTextColor || '#000000'}
-                            onChange={(e) => setCustomTextColor(e.target.value)}
-                            className="w-6 h-6 rounded-md cursor-pointer border border-gray-200 p-0.5"
-                          />
-                          <button
-                            onClick={() => setCustomTextColor('')}
-                            className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition-all ${!customTextColor ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-                          >
-                            Auto
-                          </button>
-                        </div>
-                      </div>
-                      {/* Preview */}
-                      <div className="rounded-xl bg-gray-50 p-3 mb-4 text-center">
-                        <span className="text-lg font-semibold" style={{ color: customTextColor || '#1f2937' }}>Preview Text</span>
-                        <p className="text-[11px] mt-0.5" style={{ color: customTextColor || '#6b7280', opacity: 0.6 }}>Subtitle looks like this</p>
-                      </div>
-                      {/* Color groups */}
-                      {textColorGroups.map((group) => (
-                        <div key={group.label} className="mb-3 last:mb-0">
-                          <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">{group.label}</p>
-                          <div className="flex items-center gap-1.5">
-                            {group.colors.map((c) => (
+                      <div className="flex gap-5">
+                        {/* Font */}
+                        <div className="flex-1 min-w-0">
+                          <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center flex-shrink-0">
+                              <Type size={12} className="text-amber-600" />
+                            </div>
+                            Font
+                          </h2>
+                          <div className="flex gap-1 mb-2 overflow-x-auto pb-1">
+                            {['all', 'Sans-serif', 'Serif', 'Mono', 'Handwriting'].map((cat) => (
                               <button
-                                key={c.id}
-                                onClick={() => setCustomTextColor(c.value)}
-                                className={`w-7 h-7 rounded-full border-2 transition-all flex items-center justify-center ${customTextColor === c.value ? 'border-gray-400 scale-110 ring-2 ring-gray-200' : 'border-transparent hover:scale-105'}`}
-                                style={{ backgroundColor: c.value }}
-                                title={c.label}
+                                key={cat}
+                                onClick={() => setFontCategory(cat)}
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap transition-all ${fontCategory === cat ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
                               >
-                                {customTextColor === c.value && (
-                                  <Check size={10} className={parseInt(c.value.slice(1), 16) < 0x808080 ? 'text-white' : 'text-gray-600'} />
-                                )}
+                                {cat === 'all' ? 'All' : cat}
                               </button>
                             ))}
                           </div>
+                          <div className="grid grid-cols-3 gap-1.5 max-h-[160px] overflow-y-auto pr-1">
+                            {fontOptions
+                              .filter((f) => fontCategory === 'all' || f.category === fontCategory)
+                              .map((f) => (
+                                <button
+                                  key={f.id}
+                                  onClick={() => setSelectedFont(f.id)}
+                                  className={`p-1.5 rounded-lg border transition-all ${selectedFont === f.id ? 'border-gray-400 bg-gray-50' : 'border-gray-100 hover:border-gray-200'}`}
+                                >
+                                  <span className={`text-sm ${f.cls} text-gray-700`}>Aa</span>
+                                  <span className="block text-[9px] font-medium text-gray-400 mt-0.5 truncate">{f.label}</span>
+                                </button>
+                              ))}
+                          </div>
                         </div>
-                      ))}
+
+                        <div className="w-px bg-gray-100 self-stretch" />
+
+                        {/* Text Color */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-3">
+                            <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-md bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center flex-shrink-0">
+                                <Palette size={12} className="text-green-600" />
+                              </div>
+                              Text Color
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              <input
+                                type="color"
+                                value={customTextColor || '#000000'}
+                                onChange={(e) => setCustomTextColor(e.target.value)}
+                                className="w-5 h-5 rounded cursor-pointer border border-gray-200 p-0.5"
+                              />
+                              <button
+                                onClick={() => setCustomTextColor('')}
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-all ${!customTextColor ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                              >
+                                Auto
+                              </button>
+                            </div>
+                          </div>
+                          <div className="rounded-xl bg-gray-50 p-2.5 mb-3 text-center">
+                            <span className="text-base font-semibold" style={{ color: customTextColor || '#1f2937' }}>Preview Text</span>
+                            <p className="text-[10px] mt-0.5" style={{ color: customTextColor || '#6b7280', opacity: 0.6 }}>Subtitle looks like this</p>
+                          </div>
+                          {textColorGroups.map((group) => (
+                            <div key={group.label} className="mb-2.5 last:mb-0">
+                              <p className="text-[9px] font-medium text-gray-400 uppercase tracking-wider mb-1.5">{group.label}</p>
+                              <div className="flex items-center gap-1 flex-wrap">
+                                {group.colors.map((c) => (
+                                  <button
+                                    key={c.id}
+                                    onClick={() => setCustomTextColor(c.value)}
+                                    className={`w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center ${customTextColor === c.value ? 'border-gray-400 scale-110 ring-2 ring-gray-200' : 'border-transparent hover:scale-105'}`}
+                                    style={{ backgroundColor: c.value }}
+                                    title={c.label}
+                                  >
+                                    {customTextColor === c.value && (
+                                      <Check size={8} className={parseInt(c.value.slice(1), 16) < 0x808080 ? 'text-white' : 'text-gray-600'} />
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </motion.div>
 
                   </div>
@@ -2005,7 +1996,7 @@ export default function CreatePage() {
                     {/* More options prompt */}
                     <button
                       onClick={() => setAddModalOpen(true)}
-                      className="w-full py-3 text-xs font-medium text-[#7c3aed] hover:text-[#6d28d9] bg-[#f5f3ff]/50 hover:bg-[#f5f3ff] rounded-xl border border-[#e0e7ff]/50 transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 text-xs font-medium text-pink-500 hover:text-pink-600 bg-pink-50/50 hover:bg-pink-50 rounded-xl border border-pink-100/50 transition-all flex items-center justify-center gap-2"
                     >
                       <Sparkles size={13} /> Browse all integrations
                       <ChevronRight size={13} />
@@ -2020,17 +2011,25 @@ export default function CreatePage() {
               <div className="sticky top-36">
                 {/* Preview header */}
                 <div className="flex items-center justify-between mb-5">
-                  <button
-                    onClick={handleCopyUrl}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-100/80 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/10 hover:border-[#a78bfa]/30 transition-all duration-300 group"
-                  >
-                    <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#7c3aed] to-[#a78bfa] flex items-center justify-center">
-                      <Globe size={10} className="text-white" />
-                    </div>
-                    <span className="text-xs text-gray-400 group-hover:text-[#7c3aed] transition-colors">linkc.ee/</span>
-                    <span className="text-xs font-bold text-gray-900">{displayName || 'username'}</span>
-                    {copied ? <CheckCircle2 size={12} className="text-green-500 ml-1" /> : <Copy size={12} className="text-gray-300 ml-1 group-hover:text-[#7c3aed] transition-colors" />}
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={handleOpenPreview}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-100/80 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/10 hover:border-[#a78bfa]/30 transition-all duration-300 group"
+                    >
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#7c3aed] to-[#a78bfa] flex items-center justify-center">
+                        <Globe size={10} className="text-white" />
+                      </div>
+                      <span className="text-xs text-gray-400 group-hover:text-[#7c3aed] transition-colors">linkc.ee/</span>
+                      <span className="text-xs font-bold text-gray-900">{displayName || 'username'}</span>
+                      <ExternalLink size={11} className="text-gray-300 ml-1 group-hover:text-[#7c3aed] transition-colors" />
+                    </button>
+                    <button
+                      onClick={handleCopyUrl}
+                      className="p-2.5 bg-white/90 backdrop-blur-sm rounded-xl border border-gray-100/80 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/10 hover:border-[#a78bfa]/30 transition-all duration-300"
+                    >
+                      {copied ? <CheckCircle2 size={13} className="text-green-500" /> : <Copy size={13} className="text-gray-300 hover:text-[#7c3aed] transition-colors" />}
+                    </button>
+                  </div>
                   <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Live Preview</span>
                 </div>
 
