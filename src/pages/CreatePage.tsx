@@ -285,10 +285,10 @@ const addCategories = [
 ];
 
 const addQuickCards = [
-  { icon: Grid3x3, label: 'Collection', color: '#c4917b' },
-  { icon: Link2, label: 'Link', color: '#c4917b' },
-  { icon: Tag, label: 'Product', color: '#c4917b' },
-  { icon: ClipboardList, label: 'Form', color: '#c4917b' },
+  { icon: Grid3x3, label: 'Collection', color: '#7c3aed' },
+  { icon: Link2, label: 'Link', color: '#7c3aed' },
+  { icon: Tag, label: 'Product', color: '#7c3aed' },
+  { icon: ClipboardList, label: 'Form', color: '#7c3aed' },
 ];
 
 const addSuggestedItems = [
@@ -334,7 +334,7 @@ export default function CreatePage() {
   const [customBgSecondary, setCustomBgSecondary] = useState('#4f46e5');
   const [links, setLinks] = useState<LinkItem[]>([]);
   const [activeSocials, setActiveSocials] = useState<string[]>([]);
-  const [socialSearch, setSocialSearch] = useState('');
+  const [socialUrls, setSocialUrls] = useState<Record<string, string>>({});
   const [fontCategory, setFontCategory] = useState('all');
   const [activeSection, setActiveSection] = useState('links');
   const [mainTab, setMainTab] = useState<'add' | 'settings'>('add');
@@ -393,6 +393,7 @@ export default function CreatePage() {
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [earnSubTab, setEarnSubTab] = useState<'overview' | 'earnings'>('overview');
   const [selectedPattern, setSelectedPattern] = useState('none');
+  const [patternDropdownOpen, setPatternDropdownOpen] = useState(false);
   const [showAllThemes, setShowAllThemes] = useState(false);
 
   // Apply template data from TemplatesPage navigation
@@ -488,25 +489,12 @@ export default function CreatePage() {
   };
 
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(`linktr.ee/${displayName || 'username'}`);
+    navigator.clipboard.writeText(`linkc.ee/${displayName || 'username'}`);
     setCopied(true);
     showToast('Link copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleEnhance = () => {
-    if (!displayName) setDisplayName(username || 'mylinktree');
-    if (!bio) setBio('Creator, dreamer & maker of cool things');
-    if (links.length === 0) {
-      setLinks([
-        { id: '1', title: 'My Website', url: 'https://example.com', enabled: true, clicks: 142 },
-        { id: '2', title: 'Follow me on Instagram', url: 'https://instagram.com', enabled: true, clicks: 89 },
-        { id: '3', title: 'Latest Video', url: 'https://youtube.com', enabled: true, clicks: 256 },
-      ]);
-    }
-    if (activeSocials.length === 0) setActiveSocials(['instagram', 'youtube', 'twitter']);
-    showToast('Profile enhanced with demo content!');
-  };
 
   const handleFinishSetup = () => {
     if (!displayName) {
@@ -530,27 +518,33 @@ export default function CreatePage() {
 
   return (
     <div
-      className="min-h-screen bg-[#faf7f5] pt-16"
+      className="min-h-screen bg-[#f8f7ff] pt-16 relative overflow-hidden"
       style={{
-        backgroundImage: `radial-gradient(circle at 1px 1px, rgba(196,145,123,0.07) 1px, transparent 0)`,
+        backgroundImage: `radial-gradient(circle at 1px 1px, rgba(124,58,237,0.07) 1px, transparent 0)`,
         backgroundSize: '24px 24px',
       }}
     >
+      {/* Floating gradient orbs for visual depth */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-violet-200/25 via-purple-200/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute top-1/3 -left-32 w-80 h-80 bg-gradient-to-br from-indigo-200/20 via-blue-200/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '2s' }} />
+        <div className="absolute bottom-20 right-1/4 w-72 h-72 bg-gradient-to-br from-purple-200/15 via-violet-200/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '4s' }} />
+      </div>
       <div className="flex">
 
         {/* ══════ Sidebar ══════ */}
-        <aside className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-[#fdf8f6] border-r border-[#f0e6e0] pt-20 lg:pt-4 pb-6 flex flex-col transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <aside className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white/70 backdrop-blur-xl border-r border-white/40 pt-20 lg:pt-4 pb-6 flex flex-col transition-all duration-300 lg:translate-x-0 shadow-[4px_0_24px_-6px_rgba(124,58,237,0.08)] ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           {/* User info */}
-          <div className="px-5 pb-4 mb-2 border-b border-[#f0e6e0] relative">
+          <div className="px-5 pb-4 mb-2 border-b border-[#e0e7ff]/50 relative">
             <button
               onClick={() => setSidebarUserMenu(!sidebarUserMenu)}
-              className="w-full flex items-center gap-3 hover:bg-[#faf0ec] rounded-lg p-1 -m-1 transition-colors"
+              className="w-full flex items-center gap-3 hover:bg-gradient-to-r hover:from-[#f5f3ff] hover:to-transparent rounded-xl p-2 -m-1 transition-all duration-200"
             >
-              <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#7c3aed] to-[#a78bfa] flex items-center justify-center overflow-hidden ring-2 ring-white shadow-md">
                 {avatar ? (
                   <img src={avatar} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <User size={16} className="text-gray-400" />
+                  <User size={16} className="text-white" />
                 )}
               </div>
               <div className="flex-1 min-w-0 text-left">
@@ -563,14 +557,14 @@ export default function CreatePage() {
             {sidebarUserMenu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setSidebarUserMenu(false)} />
-                <div className="absolute left-3 right-3 top-full mt-1 bg-white rounded-xl shadow-lg border border-[#f0e6e0] py-1.5 z-50">
-                  <div className="px-3 py-2 border-b border-[#f0e6e0]">
-                    <p className="text-xs text-gray-400">linktr.ee/{displayName || 'username'}</p>
+                <div className="absolute left-3 right-3 top-full mt-1 bg-white rounded-xl shadow-lg border border-[#e0e7ff] py-1.5 z-50">
+                  <div className="px-3 py-2 border-b border-[#e0e7ff]">
+                    <p className="text-xs text-gray-400">linkc.ee/{displayName || 'username'}</p>
                   </div>
-                  <button onClick={() => { handleCopyUrl(); setSidebarUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-[#faf0ec]">
+                  <button onClick={() => { handleCopyUrl(); setSidebarUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-[#f5f3ff]">
                     <Copy size={14} /> Copy my link
                   </button>
-                  <button onClick={() => { setActiveSection('links'); setSidebarUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-[#faf0ec]">
+                  <button onClick={() => { setActiveSection('links'); setSidebarUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-[#f5f3ff]">
                     <Settings size={14} /> Account settings
                   </button>
                   <button onClick={() => { logout(); navigate('/'); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-50">
@@ -593,15 +587,15 @@ export default function CreatePage() {
                       setExpandedSidebar(expandedSidebar === item.id ? null : item.id);
                     }
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activeSection === item.id
-                    ? 'bg-[#f5ebe6] text-[#8b6f5e] font-medium'
-                    : 'text-gray-500 hover:text-[#8b6f5e] hover:bg-[#faf0ec]'
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 ${activeSection === item.id
+                    ? 'bg-gradient-to-r from-[#ede9fe] to-[#f5f3ff]/50 text-[#6d28d9] font-medium shadow-sm border border-[#e0e7ff]/50'
+                    : 'text-gray-500 hover:text-[#6d28d9] hover:bg-[#f5f3ff]/50 hover:translate-x-0.5'
                     }`}
                 >
-                  <item.icon size={18} />
+                  <item.icon size={18} className={activeSection === item.id ? 'text-[#7c3aed]' : ''} />
                   {item.label}
                   {(item.id === 'earn' || item.id === 'audience') && (
-                    <ChevronDown size={14} className={`ml-auto text-[#d4a996] transition-transform ${expandedSidebar === item.id ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={14} className={`ml-auto text-[#a78bfa] transition-transform duration-200 ${expandedSidebar === item.id ? 'rotate-180' : ''}`} />
                   )}
                 </button>
                 {/* Sub-menu for Earn */}
@@ -609,13 +603,13 @@ export default function CreatePage() {
                   <div className="ml-8 mt-2 space-y-2 relative before:absolute before:left-[-15px] before:top-[-10px] before:bottom-3 before:w-[1.5px] before:bg-gray-100">
                     <button
                       onClick={() => { setEarnSubTab('overview'); scrollToSubSection('earn', 'revenue-overview'); }}
-                      className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors ${earnSubTab === 'overview' ? 'bg-[#f5ebe6] text-[#8b6f5e]' : 'text-gray-500 hover:text-[#8b6f5e] hover:bg-[#faf0ec]'}`}
+                      className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors ${earnSubTab === 'overview' ? 'bg-[#ede9fe] text-[#6d28d9]' : 'text-gray-500 hover:text-[#6d28d9] hover:bg-[#f5f3ff]'}`}
                     >
                       Overview
                     </button>
                     <button
                       onClick={() => { setEarnSubTab('earnings'); scrollToSubSection('earn', 'revenue-overview'); }}
-                      className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center justify-between ${earnSubTab === 'earnings' ? 'bg-[#f5ebe6] text-[#8b6f5e]' : 'text-gray-500 hover:text-[#8b6f5e] hover:bg-[#faf0ec]'}`}
+                      className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center justify-between ${earnSubTab === 'earnings' ? 'bg-[#ede9fe] text-[#6d28d9]' : 'text-gray-500 hover:text-[#6d28d9] hover:bg-[#f5f3ff]'}`}
                     >
                       <span>Earnings</span>
                       <span>US$0.00</span>
@@ -634,12 +628,12 @@ export default function CreatePage() {
                 <button
                   key={item.id}
                   onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activeSection === item.id
-                    ? 'bg-[#f5ebe6] text-[#8b6f5e] font-medium'
-                    : 'text-gray-500 hover:text-[#8b6f5e] hover:bg-[#faf0ec]'
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 ${activeSection === item.id
+                    ? 'bg-gradient-to-r from-[#ede9fe] to-[#f5f3ff]/50 text-[#6d28d9] font-medium shadow-sm border border-[#e0e7ff]/50'
+                    : 'text-gray-500 hover:text-[#6d28d9] hover:bg-[#f5f3ff]/50 hover:translate-x-0.5'
                     }`}
                 >
-                  <item.icon size={18} />
+                  <item.icon size={18} className={activeSection === item.id ? 'text-[#7c3aed]' : ''} />
                   {item.label}
                 </button>
               ))}
@@ -647,12 +641,12 @@ export default function CreatePage() {
           </div>
 
           {/* Setup checklist */}
-          <div className="mt-auto mx-3 p-4 bg-[#faf0ec] rounded-xl">
+          <div className="mt-auto mx-3 p-4 bg-gradient-to-br from-[#f5f3ff] to-[#ede9fe] rounded-2xl border border-[#e0e7ff]/50 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="relative w-10 h-10">
                 <svg className="w-10 h-10 -rotate-90" viewBox="0 0 36 36">
-                  <circle cx="18" cy="18" r="14" fill="none" stroke="#f0e6e0" strokeWidth="3" />
-                  <circle cx="18" cy="18" r="14" fill="none" stroke="#c4917b" strokeWidth="3"
+                  <circle cx="18" cy="18" r="14" fill="none" stroke="#e0e7ff" strokeWidth="3" />
+                  <circle cx="18" cy="18" r="14" fill="none" stroke="#7c3aed" strokeWidth="3"
                     strokeDasharray={`${(links.length > 0 ? 33 : 0) + (displayName ? 33 : 0) + (activeSocials.length > 0 ? 34 : 0)} 100`}
                   />
                 </svg>
@@ -669,7 +663,7 @@ export default function CreatePage() {
             </div>
             <button
               onClick={handleFinishSetup}
-              className="w-full py-2 bg-gradient-to-r from-[#c4917b] to-[#d4a996] text-white text-xs font-semibold rounded-lg hover:from-[#b8826e] hover:to-[#c99b89] transition-colors"
+              className="w-full py-2.5 bg-gradient-to-r from-[#7c3aed] to-[#a78bfa] text-white text-xs font-semibold rounded-xl hover:from-[#6d28d9] hover:to-[#8b5cf6] transition-all duration-200 hover:shadow-md hover:shadow-[#7c3aed]/25 hover:-translate-y-0.5 active:translate-y-0"
             >
               Finish setup
             </button>
@@ -684,39 +678,36 @@ export default function CreatePage() {
         {/* ══════ Main Content ══════ */}
         <main className="flex-1 min-w-0">
           {/* Top Bar */}
-          <div className="sticky top-16 z-20 bg-white/80 backdrop-blur-sm border-b border-[#f0e6e0] px-4 sm:px-6">
+          <div className="sticky top-0 z-20 bg-white/70 backdrop-blur-2xl border-b border-gray-100/60 px-4 sm:px-6 shadow-[0_1px_20px_-6px_rgba(124,58,237,0.08)]">
             <div className="flex items-center justify-between h-14">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="lg:hidden p-2 -ml-2 text-gray-500 hover:text-[#8b6f5e] rounded-lg hover:bg-[#faf0ec]"
+                  className="lg:hidden p-2 -ml-2 text-gray-500 hover:text-[#6d28d9] rounded-lg hover:bg-[#f5f3ff] transition-colors"
                 >
                   <GripVertical size={18} />
                 </button>
-                <h1 className="text-lg font-bold text-gray-900">
-                  {activeSection === 'links' ? 'Links' : [...sidebarMain, ...sidebarTools].find(s => s.id === activeSection)?.label || 'Links'}
-                </h1>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#7c3aed] to-[#a78bfa]" />
+                  <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                    {activeSection === 'links' ? 'Links' : [...sidebarMain, ...sidebarTools].find(s => s.id === activeSection)?.label || 'Links'}
+                  </h1>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={handleEnhance}
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#8b6f5e] bg-[#faf0ec] rounded-full hover:bg-[#f5ebe6] transition-colors"
-                >
-                  <Sparkles size={15} /> Enhance
-                </button>
-                <button
-                  onClick={() => setMainTab('settings')}
-                  className="p-2 text-gray-500 hover:text-[#8b6f5e] rounded-lg hover:bg-[#faf0ec] transition-colors"
-                >
-                  <Settings size={18} />
-                </button>
-                <button
                   onClick={handleCopyUrl}
-                  className="hidden sm:flex items-center gap-2 ml-2 px-4 py-2 bg-[#faf0ec] rounded-full hover:bg-[#f5ebe6] transition-colors"
+                  className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-full border border-gray-200/80 transition-all hover:text-[#6d28d9] hover:border-[#a78bfa]/30"
                 >
-                  <span className="text-xs text-gray-500">linktr.ee/</span>
-                  <span className="text-xs font-semibold text-gray-900">{displayName || 'username'}</span>
-                  {copied ? <CheckCircle2 size={14} className="text-green-500 ml-1" /> : <Copy size={14} className="text-gray-400 ml-1" />}
+                  <Share2 size={13} />
+                  <span className="hidden sm:inline">Share</span>
+                </button>
+                <button
+                  onClick={() => window.open(`/preview/${displayName || 'username'}`, '_blank')}
+                  className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-[#7c3aed] to-[#a78bfa] rounded-full shadow-sm shadow-[#7c3aed]/20 hover:shadow-md hover:shadow-[#7c3aed]/30 transition-all hover:-translate-y-px"
+                >
+                  <Eye size={13} />
+                  <span className="hidden sm:inline">Preview</span>
                 </button>
               </div>
             </div>
@@ -767,7 +758,7 @@ export default function CreatePage() {
                             {/* Courses */}
                             <button className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
                               <div className="w-12 h-12 bg-[#e9d5ff] rounded-xl flex items-center justify-center flex-shrink-0">
-                                <GraduationCap size={22} className="text-[#c4917b]" />
+                                <GraduationCap size={22} className="text-[#7c3aed]" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-bold text-gray-900">Courses</p>
@@ -791,7 +782,7 @@ export default function CreatePage() {
                             {/* Bookings */}
                             <button className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
                               <div className="w-12 h-12 bg-[#f3e8ff] rounded-xl flex items-center justify-center flex-shrink-0">
-                                <Calendar size={22} className="text-[#c4917b]" />
+                                <Calendar size={22} className="text-[#7c3aed]" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-bold text-gray-900">Bookings</p>
@@ -835,7 +826,7 @@ export default function CreatePage() {
                             {/* Offer your time */}
                             <button className="w-full flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
                               <div className="w-12 h-12 bg-[#f3f3f1] rounded-xl flex items-center justify-center flex-shrink-0">
-                                <Calendar size={20} className="text-[#c4917b]" />
+                                <Calendar size={20} className="text-[#7c3aed]" />
                               </div>
                               <div className="flex-1">
                                 <p className="text-sm font-bold text-gray-900">Offer your time</p>
@@ -847,7 +838,7 @@ export default function CreatePage() {
                             {/* Sell digital products */}
                             <button className="w-full flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
                               <div className="w-12 h-12 bg-[#f3f3f1] rounded-xl flex items-center justify-center flex-shrink-0">
-                                <ShoppingBag size={20} className="text-[#c4917b]" />
+                                <ShoppingBag size={20} className="text-[#7c3aed]" />
                               </div>
                               <div className="flex-1">
                                 <p className="text-sm font-bold text-gray-900">Sell digital products</p>
@@ -859,7 +850,7 @@ export default function CreatePage() {
                             {/* Teach a course */}
                             <button className="w-full flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
                               <div className="w-12 h-12 bg-[#f3f3f1] rounded-xl flex items-center justify-center flex-shrink-0">
-                                <GraduationCap size={20} className="text-[#c4917b]" />
+                                <GraduationCap size={20} className="text-[#7c3aed]" />
                               </div>
                               <div className="flex-1">
                                 <p className="text-sm font-bold text-gray-900">Teach a course</p>
@@ -1198,7 +1189,7 @@ export default function CreatePage() {
                           <div className="bg-white rounded-lg p-3 shadow-sm">
                             <p className="text-xs text-gray-400 mb-1">When someone sends: "{autoReplyKeywords.split(',')[0]?.trim()}"</p>
                             <p className="text-sm text-gray-800">{autoReplyMessage}</p>
-                            <p className="text-xs text-blue-500 mt-1">linktr.ee/{displayName || 'username'}</p>
+                            <p className="text-xs text-blue-500 mt-1">linkc.ee/{displayName || 'username'}</p>
                           </div>
                         </div>
                         <button
@@ -1324,65 +1315,132 @@ export default function CreatePage() {
                 <input ref={linkImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleLinkImageUpload} />
 
                 {/* Profile Card */}
-                <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm mb-5">
-                  <div className="flex items-center gap-4">
-                    <div className="relative group">
-                      <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="relative bg-white rounded-3xl border border-gray-100/60 shadow-sm mb-5 group/profile hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-500 overflow-hidden"
+                >
+                  {/* Gradient banner */}
+                  <div className="h-14 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-indigo-500" />
+                    <motion.div
+                      animate={{ x: [0, 30, 0], y: [0, -6, 0], scale: [1, 1.2, 1] }}
+                      transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                      className="absolute top-1/2 left-1/4 w-16 h-16 bg-pink-400/30 rounded-full blur-2xl"
+                    />
+                    <motion.div
+                      animate={{ x: [0, -20, 0], y: [0, 10, 0], scale: [1.1, 0.9, 1.1] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                      className="absolute top-0 right-1/4 w-14 h-14 bg-cyan-300/25 rounded-full blur-2xl"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+                  </div>
+
+                  {/* Profile content - centered layout */}
+                  <div className="flex flex-col items-center -mt-7 pb-1 px-4">
+                    {/* Avatar with glowing ring */}
+                    <div className="relative group flex-shrink-0 mb-1.5">
+                      <div className="absolute -inset-1 bg-gradient-to-br from-violet-400 via-fuchsia-400 to-indigo-400 rounded-full opacity-0 group-hover:opacity-70 blur-md transition-all duration-500" />
+                      <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-white to-gray-50 flex items-center justify-center overflow-hidden ring-[3px] ring-white shadow-md transition-all duration-300">
                         {avatar ? (
                           <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (
-                          <User size={24} className="text-gray-300" />
+                          <div className="w-full h-full bg-gradient-to-br from-violet-50 via-fuchsia-50 to-indigo-50 flex items-center justify-center">
+                            <User size={20} className="text-violet-300" />
+                          </div>
                         )}
                       </div>
                       <button
                         onClick={() => avatarInputRef.current?.click()}
-                        className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                        className="absolute inset-0 rounded-full bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 scale-90 group-hover:scale-100"
                       >
-                        <Upload size={16} className="text-white" />
+                        <Upload size={13} className="text-white" />
                       </button>
+                      <div className="absolute -bottom-px -right-px w-3.5 h-3.5 bg-emerald-400 rounded-full ring-2 ring-white" />
                     </div>
-                    <div className="flex-1 space-y-2">
+                    {/* Name & Bio - centered */}
+                    <div className="w-full text-center mb-2">
                       <input
                         type="text"
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
-                        placeholder="Add your name"
-                        className="w-full text-sm font-semibold text-gray-900 placeholder-gray-300 bg-transparent focus:outline-none"
+                        placeholder="Your name"
+                        className="w-full text-center text-sm font-bold text-gray-900 placeholder-gray-300 bg-transparent focus:outline-none"
                       />
                       <input
                         type="text"
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
-                        placeholder="Add bio"
-                        className="w-full text-sm text-gray-500 placeholder-gray-300 bg-transparent focus:outline-none"
+                        placeholder="Write something about you..."
+                        className="w-full text-center text-[11px] text-gray-400 placeholder-gray-300 bg-transparent focus:outline-none"
                       />
                     </div>
                   </div>
-                  {/* Add social icons */}
-                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-50">
-                    {socialPlatforms.slice(0, 5).map((p) => {
-                      const isActive = activeSocials.includes(p.id);
-                      return (
-                        <button
-                          key={p.id}
-                          onClick={() => toggleSocial(p.id)}
-                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isActive
-                            ? 'bg-gray-900 text-white'
-                            : 'bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600'
-                            }`}
-                          title={p.label}
-                        >
-                          <p.icon size={14} />
-                        </button>
-                      );
-                    })}
-                    <button
-                      onClick={() => setShowSocialPicker(!showSocialPicker)}
-                      className="w-8 h-8 rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 flex items-center justify-center transition-all"
-                    >
-                      <Plus size={14} />
-                    </button>
+
+                  {/* Social icons */}
+                  <div className="mx-4 pt-1.5 pb-2 border-t border-gray-100/60">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {socialPlatforms.slice(0, 5).map((p) => {
+                        const isActive = activeSocials.includes(p.id);
+                        return (
+                          <motion.button
+                            key={p.id}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.93 }}
+                            onClick={() => toggleSocial(p.id)}
+                            className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${isActive
+                              ? 'bg-gradient-to-br from-violet-100 to-fuchsia-100 text-violet-600 shadow-sm shadow-violet-200/50'
+                              : 'bg-gray-50/80 text-gray-400 hover:bg-violet-50 hover:text-violet-500'
+                              }`}
+                            title={p.label}
+                          >
+                            <p.icon size={13} />
+                          </motion.button>
+                        );
+                      })}
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.93 }}
+                        onClick={() => setShowSocialPicker(!showSocialPicker)}
+                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 border-2 border-dashed ${showSocialPicker ? 'border-violet-300 bg-violet-50 text-violet-600 rotate-45' : 'border-gray-200 text-gray-400 hover:border-violet-300 hover:text-violet-500'}`}
+                      >
+                        <Plus size={14} />
+                      </motion.button>
+                    </div>
                   </div>
+
+                  {/* Active social URL inputs */}
+                  {activeSocials.length > 0 && (
+                    <div className="mx-4 pt-2 pb-1 border-t border-gray-100/60 space-y-1.5">
+                      {activeSocials.map((id) => {
+                        const p = socialPlatforms.find((s) => s.id === id);
+                        if (!p) return null;
+                        return (
+                          <div key={id} className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-md bg-violet-100 text-violet-600 flex items-center justify-center flex-shrink-0">
+                              <p.icon size={11} />
+                            </div>
+                            <input
+                              type="url"
+                              value={socialUrls[id] || ''}
+                              onChange={(e) => setSocialUrls({ ...socialUrls, [id]: e.target.value })}
+                              placeholder={`${p.label} URL`}
+                              className="flex-1 text-[11px] text-gray-600 placeholder-gray-300 bg-gray-50/80 border border-gray-100 rounded-md px-2.5 py-1.5 focus:outline-none focus:border-violet-300 transition-all"
+                            />
+                            <button
+                              onClick={() => toggleSocial(id)}
+                              className="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"
+                              title="Remove"
+                            >
+                              <X size={11} />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
                   {/* Social Picker Dropdown */}
                   <AnimatePresence>
                     {showSocialPicker && (
@@ -1390,22 +1448,22 @@ export default function CreatePage() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="mt-3 pt-3 border-t border-gray-50 overflow-hidden"
+                        className="mx-4 mt-1 pt-2 pb-2 border-t border-gray-100/60 overflow-hidden"
                       >
-                        <p className="text-[11px] text-gray-400 mb-2">All platforms</p>
-                        <div className="flex flex-wrap gap-2">
+                        <p className="text-[10px] font-medium text-gray-400 mb-2 uppercase tracking-wider">All platforms</p>
+                        <div className="flex flex-wrap gap-1">
                           {socialPlatforms.map((p) => {
                             const isActive = activeSocials.includes(p.id);
                             return (
                               <button
                                 key={p.id}
                                 onClick={() => toggleSocial(p.id)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${isActive
-                                  ? 'bg-gray-900 text-white'
-                                  : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                                className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all duration-200 ${isActive
+                                  ? 'bg-violet-100 text-violet-600'
+                                  : 'bg-gray-50 text-gray-500 hover:bg-violet-50 hover:text-violet-600'
                                   }`}
                               >
-                                <p.icon size={12} />
+                                <p.icon size={11} />
                                 {p.label}
                               </button>
                             );
@@ -1414,15 +1472,27 @@ export default function CreatePage() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                  <div className="pb-0.5" />
+                </motion.div>
 
                 {/* Add Button */}
-                <button
-                  onClick={() => setAddModalOpen(true)}
-                  className="w-full py-4 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-full flex items-center justify-center gap-2 transition-colors border border-gray-200 shadow-sm mb-5"
-                >
-                  <Plus size={20} /> Add
-                </button>
+                <div className="relative mb-5">
+                  {/* Glow behind button */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#7c3aed]/30 via-[#a78bfa]/20 to-purple-400/20 rounded-2xl blur-xl scale-95 opacity-60" />
+                  <motion.button
+                    whileHover={{ scale: 1.015, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setAddModalOpen(true)}
+                    className="relative w-full py-4 bg-gradient-to-r from-[#7c3aed] via-[#a78bfa] to-[#7c3aed] text-white font-bold rounded-2xl flex items-center justify-center gap-2.5 shadow-lg shadow-[#7c3aed]/25 hover:shadow-xl hover:shadow-[#7c3aed]/35 transition-all duration-300 overflow-hidden group"
+                    style={{ backgroundSize: '200% 100%' }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                    <div className="relative z-[1] w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                      <Plus size={16} />
+                    </div>
+                    <span className="relative z-[1] text-base">Add new link</span>
+                  </motion.button>
+                </div>
 
                 {/* Actions row */}
                 <div className="flex items-center justify-between mb-5">
@@ -1432,40 +1502,64 @@ export default function CreatePage() {
                       setLinks([...links, { id, title: 'Collection', url: '', enabled: true, clicks: 0 }]);
                       showToast('Collection added');
                     }}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-500 bg-white border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray-500 bg-white/90 backdrop-blur-sm border border-gray-200/80 rounded-xl hover:bg-[#f5f3ff]/50 hover:border-[#a78bfa]/30 hover:text-[#6d28d9] transition-all duration-200 shadow-sm"
                   >
-                    <FolderOpen size={15} /> Add collection
+                    <FolderOpen size={14} /> Add collection
                   </button>
                   <button
                     onClick={() => setShowArchive(!showArchive)}
-                    className={`flex items-center gap-2 text-sm transition-colors ${showArchive ? 'text-[#c4917b] font-medium' : 'text-gray-500 hover:text-[#8b6f5e]'}`}
+                    className={`flex items-center gap-2 text-xs font-medium px-3 py-2 rounded-xl transition-all ${showArchive ? 'text-[#7c3aed] bg-[#f5f3ff]/50 border border-[#e0e7ff]/50' : 'text-gray-400 hover:text-[#6d28d9] hover:bg-gray-50'}`}
                   >
-                    <Archive size={15} /> {showArchive ? 'Hide archive' : 'View archive'} <ChevronRight size={14} className={`transition-transform ${showArchive ? 'rotate-90' : ''}`} />
+                    <Archive size={14} /> {showArchive ? 'Hide archive' : 'Archive'} <ChevronRight size={12} className={`transition-transform duration-200 ${showArchive ? 'rotate-90' : ''}`} />
                   </button>
                 </div>
 
                 {/* Link Cards */}
                 <div className="space-y-3 mb-8">
+                  {/* Empty state */}
+                  {visibleLinks.length === 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-center py-12 px-6 border-2 border-dashed border-gray-200/80 rounded-3xl bg-gradient-to-b from-white/60 to-gray-50/40"
+                    >
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#f5f3ff] to-[#ede9fe] flex items-center justify-center">
+                        <Link2 size={24} className="text-[#7c3aed]" />
+                      </div>
+                      <h3 className="text-base font-bold text-gray-900 mb-1.5">No links yet</h3>
+                      <p className="text-sm text-gray-400 mb-5 max-w-[250px] mx-auto">Add your first link to start building your OpenBio page</p>
+                      <button
+                        onClick={() => setAddModalOpen(true)}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#7c3aed] to-[#a78bfa] text-white text-sm font-semibold rounded-xl shadow-sm shadow-[#7c3aed]/20 hover:shadow-md hover:shadow-[#7c3aed]/30 transition-all hover:-translate-y-0.5"
+                      >
+                        <Plus size={16} /> Add your first link
+                      </button>
+                    </motion.div>
+                  )}
                   <AnimatePresence>
-                    {visibleLinks.map((link) => (
+                    {visibleLinks.map((link, linkIndex) => (
                       <motion.div
                         key={link.id}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className={`bg-white rounded-2xl border shadow-sm overflow-hidden ${!link.enabled ? 'border-gray-200 opacity-60' : 'border-gray-100'}`}
+                        initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                        whileHover={{ y: -2, boxShadow: '0 12px 40px -12px rgba(124,58,237,0.18)' }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                        className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all duration-300 ${!link.enabled ? 'border-gray-200 opacity-50 grayscale-[30%]' : 'border-gray-100/80 hover:border-[#a78bfa]/40'}`}
                       >
                         <div className="flex items-start gap-1 p-3">
-                          <div className="mt-1 text-gray-300 cursor-grab hover:text-gray-400 p-1">
+                          {/* Colored accent bar */}
+                          <div className={`w-1 self-stretch rounded-full flex-shrink-0 mr-1 ${!link.enabled ? 'bg-gray-200' : ''}`} style={{ backgroundColor: link.enabled ? (link.color || ['#7c3aed', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ec4899'][linkIndex % 6]) : undefined }} />
+                          <div className="mt-1 text-gray-300 cursor-grab hover:text-gray-400 p-1 active:text-[#7c3aed] transition-colors">
                             <GripVertical size={16} />
                           </div>
                           {link.thumbnail && (
-                            <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 mr-2">
+                            <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 mr-2 ring-1 ring-gray-100">
                               <img src={link.thumbnail} alt="" className="w-full h-full object-cover" />
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
+                            <div className="flex items-center gap-2 mb-1.5">
                               <input
                                 type="text"
                                 value={link.title}
@@ -1475,7 +1569,7 @@ export default function CreatePage() {
                               />
                               <button
                                 onClick={() => setEditingLinkId(editingLinkId === link.id ? null : link.id)}
-                                className={`p-1 transition-colors ${editingLinkId === link.id ? 'text-purple-500' : 'text-gray-300 hover:text-gray-500'}`}
+                                className={`p-1.5 rounded-lg transition-all ${editingLinkId === link.id ? 'text-[#7c3aed] bg-[#f5f3ff]' : 'text-gray-300 hover:text-gray-500 hover:bg-gray-50'}`}
                               >
                                 <Pencil size={13} />
                               </button>
@@ -1541,27 +1635,27 @@ export default function CreatePage() {
                           </div>
                         </div>
                         {/* Card footer */}
-                        <div className="flex items-center justify-between px-4 py-2 bg-gray-50/50 border-t border-gray-50">
-                          <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-gray-50/80 to-gray-50/40 border-t border-gray-100/60">
+                          <div className="flex items-center gap-1">
                             <button
                               onClick={() => { setImageTargetLinkId(link.id); linkImageInputRef.current?.click(); }}
-                              className="text-gray-300 hover:text-gray-500 transition-colors"
+                              className="p-1.5 rounded-lg text-gray-300 hover:text-[#7c3aed] hover:bg-[#f5f3ff] transition-all"
                               title="Add thumbnail"
                             >
                               <Image size={14} />
                             </button>
                             <button
                               onClick={() => showToast(`${link.clicks || 0} clicks`)}
-                              className="flex items-center gap-1 text-gray-300 hover:text-gray-500 transition-colors"
+                              className="flex items-center gap-1 p-1.5 rounded-lg text-gray-300 hover:text-[#8b5cf6] hover:bg-purple-50 transition-all"
                               title="View stats"
                             >
                               <BarChart3 size={14} />
-                              {(link.clicks ?? 0) > 0 && <span className="text-[10px] text-gray-400">{link.clicks}</span>}
+                              {(link.clicks ?? 0) > 0 && <span className="text-[10px] font-medium text-gray-400">{link.clicks}</span>}
                             </button>
                           </div>
                           <button
                             onClick={() => removeLink(link.id)}
-                            className="text-gray-300 hover:text-red-400 transition-colors"
+                            className="p-1.5 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-50 transition-all"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -1572,18 +1666,20 @@ export default function CreatePage() {
                 </div>
 
                 {/* Tabs: Add links / Settings */}
-                <div className="border-b border-gray-200 mb-6">
-                  <div className="flex">
+                <div className="mb-6">
+                  <div className="flex bg-gray-100/80 rounded-2xl p-1 gap-1">
                     {(['add', 'settings'] as const).map((tab) => (
                       <button
                         key={tab}
                         onClick={() => setMainTab(tab)}
-                        className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${mainTab === tab
-                          ? 'border-gray-400 text-gray-900'
-                          : 'border-transparent text-gray-400 hover:text-gray-600'
+                        className={`relative flex-1 py-2.5 text-sm font-medium rounded-xl transition-all duration-300 ${mainTab === tab
+                          ? 'bg-white text-[#6d28d9] shadow-sm'
+                          : 'text-gray-400 hover:text-gray-600'
                           }`}
                       >
-                        {tab === 'add' ? 'Add links' : 'Settings'}
+                        <span className="flex items-center justify-center gap-2">
+                          {tab === 'add' ? <><Plus size={14} /> Add links</> : <><Settings size={14} /> Appearance</>}
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -1592,9 +1688,17 @@ export default function CreatePage() {
                 {mainTab === 'settings' ? (
                   <div className="space-y-6 pb-10">
                     {/* Themes */}
-                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <Palette size={16} /> Themes
+                    <motion.div
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05 }}
+                      className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border border-gray-100/60 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/5 transition-all duration-500"
+                    >
+                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                          <Palette size={14} className="text-purple-500" />
+                        </div>
+                        Themes
                       </h2>
                       <div className="grid grid-cols-3 gap-3">
                         {(showAllThemes ? themes : themes.slice(0, 6)).map((t) => (
@@ -1684,90 +1788,144 @@ export default function CreatePage() {
                           </motion.div>
                         )}
                       </AnimatePresence>
-                    </div>
+                    </motion.div>
 
-                    {/* Background Pattern */}
-                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <Grid3x3 size={16} /> Background Pattern
-                      </h2>
-                      <div className="grid grid-cols-5 gap-2">
-                        {bgPatterns.map((p) => (
-                          <button
-                            key={p.id}
-                            onClick={() => setSelectedPattern(p.id)}
-                            className={`relative p-1 rounded-xl border-2 transition-all ${selectedPattern === p.id ? 'border-gray-400' : 'border-transparent hover:border-gray-200'}`}
-                          >
-                            <div
-                              className="h-12 rounded-lg bg-gray-100"
-                              style={p.id !== 'none' ? p.style : undefined}
-                            />
-                            <span className="block text-[10px] font-medium text-gray-500 mt-1 text-center">{p.label}</span>
-                          </button>
-                        ))}
-                      </div>
-                      <p className="text-[10px] text-gray-400 mt-2">ลายจะแสดงทับ background ของธีมใน Preview</p>
-                    </div>
+                    {/* Background Pattern & Button Style - side by side */}
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Background Pattern */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="bg-white/90 backdrop-blur-sm rounded-3xl p-5 border border-gray-100/60 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/5 transition-all duration-500 relative"
+                      >
+                        <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center">
+                            <Grid3x3 size={14} className="text-rose-500" />
+                          </div>
+                          Background Pattern
+                        </h2>
+                        {/* Dropdown trigger */}
+                        <button
+                          onClick={() => setPatternDropdownOpen(!patternDropdownOpen)}
+                          className="w-full flex items-center gap-3 p-2.5 rounded-xl border border-gray-200 hover:border-gray-300 transition-all bg-gray-50"
+                        >
+                          <div
+                            className="w-10 h-10 rounded-lg bg-gray-200 border border-gray-200 shrink-0"
+                            style={selectedPattern !== 'none' ? bgPatterns.find((p) => p.id === selectedPattern)?.style : undefined}
+                          />
+                          <span className="text-sm font-medium text-gray-700">
+                            {bgPatterns.find((p) => p.id === selectedPattern)?.label || 'None'}
+                          </span>
+                          <ChevronDown size={16} className={`ml-auto text-gray-400 transition-transform ${patternDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        {/* Dropdown panel */}
+                        {patternDropdownOpen && (
+                          <div className="mt-2 bg-white rounded-xl border border-gray-200 shadow-lg p-3">
+                            <div className="grid grid-cols-4 gap-1.5 max-h-[200px] overflow-y-auto">
+                              {bgPatterns.map((p) => (
+                                <button
+                                  key={p.id}
+                                  onClick={() => { setSelectedPattern(p.id); setPatternDropdownOpen(false); }}
+                                  className={`p-1.5 rounded-lg border transition-all ${selectedPattern === p.id ? 'border-gray-400 bg-gray-50' : 'border-gray-100 hover:border-gray-200'}`}
+                                >
+                                  <div
+                                    className="h-10 rounded-md bg-gray-100"
+                                    style={p.id !== 'none' ? p.style : undefined}
+                                  />
+                                  <span className="block text-[9px] font-medium text-gray-500 mt-0.5 text-center truncate">{p.label}</span>
+                                </button>
+                              ))}
+                            </div>
+                            <p className="text-[10px] text-gray-400 mt-2">ลายจะแสดงทับ background ของธีมใน Preview</p>
+                          </div>
+                        )}
+                      </motion.div>
 
-                    {/* Button Style */}
-                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <Type size={16} /> Button Style
-                      </h2>
-                      <div className="grid grid-cols-5 gap-2">
-                        {buttonStyles.map((style) => (
-                          <button
-                            key={style.id}
-                            onClick={() => setSelectedButton(style.id)}
-                            className={`p-3 rounded-xl border-2 transition-all ${selectedButton === style.id ? 'border-gray-400' : 'border-gray-100 hover:border-gray-200'
-                              }`}
-                          >
-                            <div className={`h-7 bg-gray-300 ${style.cls} mb-1.5`} />
-                            <span className="text-[10px] font-medium text-gray-500">{style.label}</span>
-                          </button>
-                        ))}
-                      </div>
+                      {/* Button Style */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15 }}
+                        className="bg-white/90 backdrop-blur-sm rounded-3xl p-5 border border-gray-100/60 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/5 transition-all duration-500"
+                      >
+                        <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                            <Type size={14} className="text-blue-500" />
+                          </div>
+                          Button Style
+                        </h2>
+                        <div className="grid grid-cols-3 gap-2">
+                          {buttonStyles.map((style) => (
+                            <button
+                              key={style.id}
+                              onClick={() => setSelectedButton(style.id)}
+                              className={`p-3 rounded-xl border-2 transition-all ${selectedButton === style.id ? 'border-gray-400' : 'border-gray-100 hover:border-gray-200'
+                                }`}
+                            >
+                              <div className={`h-7 bg-gray-300 ${style.cls} mb-1.5`} />
+                              <span className="text-[10px] font-medium text-gray-500">{style.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
                     </div>
 
                     {/* Font */}
-                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <Type size={16} /> Font
+                    <motion.div
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="bg-white/90 backdrop-blur-sm rounded-3xl p-5 border border-gray-100/60 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/5 transition-all duration-500"
+                    >
+                      <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                          <Type size={14} className="text-amber-600" />
+                        </div>
+                        Font
                       </h2>
                       {/* Category tabs */}
-                      <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1">
+                      <div className="flex gap-1 mb-2 overflow-x-auto pb-1">
                         {['all', 'Sans-serif', 'Serif', 'Mono', 'Handwriting'].map((cat) => (
                           <button
                             key={cat}
                             onClick={() => setFontCategory(cat)}
-                            className={`px-3 py-1 rounded-full text-[11px] font-medium whitespace-nowrap transition-all ${fontCategory === cat ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap transition-all ${fontCategory === cat ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
                           >
                             {cat === 'all' ? 'All' : cat}
                           </button>
                         ))}
                       </div>
-                      <div className="grid grid-cols-3 gap-2 max-h-[300px] overflow-y-auto pr-1">
+                      <div className="grid grid-cols-4 gap-1.5 max-h-[180px] overflow-y-auto pr-1">
                         {fontOptions
                           .filter((f) => fontCategory === 'all' || f.category === fontCategory)
                           .map((f) => (
                             <button
                               key={f.id}
                               onClick={() => setSelectedFont(f.id)}
-                              className={`p-3 rounded-xl border-2 transition-all ${selectedFont === f.id ? 'border-gray-400' : 'border-gray-100 hover:border-gray-200'
+                              className={`p-1.5 rounded-lg border transition-all ${selectedFont === f.id ? 'border-gray-400 bg-gray-50' : 'border-gray-100 hover:border-gray-200'
                                 }`}
                             >
-                              <span className={`text-lg ${f.cls} text-gray-700`}>Aa</span>
-                              <span className="block text-[10px] font-medium text-gray-400 mt-1">{f.label}</span>
+                              <span className={`text-sm ${f.cls} text-gray-700`}>Aa</span>
+                              <span className="block text-[9px] font-medium text-gray-400 mt-0.5 truncate">{f.label}</span>
                             </button>
                           ))}
                       </div>
-                    </div>
+                    </motion.div>
 
                     {/* Text Color */}
-                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                    <motion.div
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.25 }}
+                      className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border border-gray-100/60 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/5 transition-all duration-500"
+                    >
                       <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-                          <Palette size={16} /> Text Color
+                        <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
+                            <Palette size={14} className="text-green-600" />
+                          </div>
+                          Text Color
                         </h2>
                         {/* Auto / Custom picker */}
                         <div className="flex items-center gap-2">
@@ -1811,100 +1969,90 @@ export default function CreatePage() {
                           </div>
                         </div>
                       ))}
-                    </div>
+                    </motion.div>
 
-                    {/* Social Icons */}
-                    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                      <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <Globe size={16} /> Social Icons
-                      </h2>
-                      {/* Search bar */}
-                      <div className="relative mb-3">
-                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
-                        <input
-                          type="text"
-                          placeholder="Search icons..."
-                          value={socialSearch}
-                          onChange={(e) => setSocialSearch(e.target.value)}
-                          className="w-full pl-8 pr-3 py-2 text-xs bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:border-gray-300 transition-colors"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 gap-2 max-h-[280px] overflow-y-auto pr-1">
-                        {socialPlatforms
-                          .filter((p) => p.label.toLowerCase().includes(socialSearch.toLowerCase()))
-                          .map((p) => {
-                            const isActive = activeSocials.includes(p.id);
-                            return (
-                              <button
-                                key={p.id}
-                                onClick={() => toggleSocial(p.id)}
-                                className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all ${isActive ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
-                                  }`}
-                              >
-                                <p.icon size={18} />
-                                <span className="text-[10px] font-medium">{p.label}</span>
-                              </button>
-                            );
-                          })}
-                        {socialPlatforms.filter((p) => p.label.toLowerCase().includes(socialSearch.toLowerCase())).length === 0 && (
-                          <p className="col-span-4 text-center text-xs text-gray-400 py-4">No icons found</p>
-                        )}
-                      </div>
-                    </div>
                   </div>
                 ) : (
                   /* Add links tab - suggestion cards */
-                  <div className="grid grid-cols-2 gap-3 pb-10">
-                    {[
-                      { icon: ExternalLink, label: 'Link', desc: 'Add a URL' },
-                      { icon: Image, label: 'Header', desc: 'Add a text header' },
-                      { icon: Music2, label: 'Music', desc: 'Embed a song' },
-                      { icon: Youtube, label: 'Video', desc: 'Embed a video' },
-                      { icon: DollarSign, label: 'Store', desc: 'Sell products' },
-                      { icon: Calendar, label: 'Event', desc: 'Promote events' },
-                    ].map((item) => (
-                      <button
-                        key={item.label}
-                        onClick={() => addLink(item.label)}
-                        className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all text-left"
-                      >
-                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
-                          <item.icon size={18} className="text-gray-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">{item.label}</p>
-                          <p className="text-[11px] text-gray-400">{item.desc}</p>
-                        </div>
-                      </button>
-                    ))}
+                  <div className="space-y-3 pb-10">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1">Quick add</p>
+                    <div className="grid grid-cols-3 gap-2.5">
+                      {[
+                        { icon: ExternalLink, label: 'Link', desc: 'Add a URL', gradient: 'from-violet-600 to-indigo-500' },
+                        { icon: Image, label: 'Header', desc: 'Text header', gradient: 'from-gray-500 to-gray-600' },
+                        { icon: Music2, label: 'Music', desc: 'Embed song', gradient: 'from-[#1DB954] to-[#1ed760]' },
+                        { icon: Youtube, label: 'Video', desc: 'Embed video', gradient: 'from-[#FF0000] to-[#CC0000]' },
+                        { icon: DollarSign, label: 'Store', desc: 'Sell products', gradient: 'from-[#8b5cf6] to-[#a78bfa]' },
+                        { icon: Calendar, label: 'Event', desc: 'Promote events', gradient: 'from-[#f59e0b] to-[#fbbf24]' },
+                      ].map((item) => (
+                        <motion.button
+                          key={item.label}
+                          whileHover={{ y: -3, scale: 1.02 }}
+                          whileTap={{ scale: 0.97 }}
+                          onClick={() => addLink(item.label)}
+                          className="flex flex-col items-center gap-2.5 p-4 bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-100/80 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/10 transition-all duration-300 text-center group"
+                        >
+                          <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow`}>
+                            <item.icon size={18} className="text-white" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900">{item.label}</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">{item.desc}</p>
+                          </div>
+                        </motion.button>
+                      ))}
+                    </div>
+                    {/* More options prompt */}
+                    <button
+                      onClick={() => setAddModalOpen(true)}
+                      className="w-full py-3 text-xs font-medium text-[#7c3aed] hover:text-[#6d28d9] bg-[#f5f3ff]/50 hover:bg-[#f5f3ff] rounded-xl border border-[#e0e7ff]/50 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Sparkles size={13} /> Browse all integrations
+                      <ChevronRight size={13} />
+                    </button>
                   </div>
                 )}
               </>}
             </div>
 
             {/* ── Live Preview (desktop) ── */}
-            <div className="hidden xl:block w-[340px] flex-shrink-0 p-6">
+            <div className="hidden xl:block w-[360px] flex-shrink-0 p-6">
               <div className="sticky top-36">
                 {/* Preview header */}
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-5">
                   <button
                     onClick={handleCopyUrl}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-full border border-gray-100 shadow-sm hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-100/80 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/10 hover:border-[#a78bfa]/30 transition-all duration-300 group"
                   >
-                    <span className="text-xs text-gray-400">linktr.ee/</span>
-                    <span className="text-xs font-semibold text-gray-900">{displayName || 'username'}</span>
-                    {copied ? <CheckCircle2 size={12} className="text-green-500 ml-1" /> : <Copy size={12} className="text-gray-300 ml-1" />}
+                    <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#7c3aed] to-[#a78bfa] flex items-center justify-center">
+                      <Globe size={10} className="text-white" />
+                    </div>
+                    <span className="text-xs text-gray-400 group-hover:text-[#7c3aed] transition-colors">linkc.ee/</span>
+                    <span className="text-xs font-bold text-gray-900">{displayName || 'username'}</span>
+                    {copied ? <CheckCircle2 size={12} className="text-green-500 ml-1" /> : <Copy size={12} className="text-gray-300 ml-1 group-hover:text-[#7c3aed] transition-colors" />}
                   </button>
+                  <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Live Preview</span>
                 </div>
 
                 {/* Phone Frame */}
-                <div className="mx-auto w-[280px]">
-                  <div className="rounded-[2.5rem] bg-white p-2 shadow-xl shadow-gray-200/80 border border-gray-100">
+                <div
+                  className="mx-auto w-[290px]"
+                >
+                  <div className="rounded-[2.8rem] bg-gradient-to-b from-gray-800 to-gray-900 p-[10px] shadow-2xl shadow-gray-900/30 relative">
+                    {/* Glow effect behind phone */}
+                    <div className="absolute -inset-4 bg-gradient-to-b from-violet-300/25 via-indigo-200/15 to-purple-300/15 rounded-[3.5rem] blur-2xl -z-[1]" />
+                    {/* Side buttons */}
+                    <div className="absolute -left-[2px] top-24 w-[3px] h-8 bg-gray-700 rounded-l-sm" />
+                    <div className="absolute -left-[2px] top-36 w-[3px] h-12 bg-gray-700 rounded-l-sm" />
+                    <div className="absolute -left-[2px] top-[200px] w-[3px] h-12 bg-gray-700 rounded-l-sm" />
+                    <div className="absolute -right-[2px] top-32 w-[3px] h-16 bg-gray-700 rounded-r-sm" />
                     <div className="relative">
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-white rounded-b-2xl z-10" />
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-gray-900 rounded-b-2xl z-10 flex items-center justify-center">
+                        <div className="w-12 h-3 bg-gray-800 rounded-full" />
+                      </div>
                     </div>
                     <div
-                      className={`rounded-[2.3rem] overflow-hidden ${!isCustom ? theme.bg : ''} min-h-[460px] flex flex-col ${fontStyle.cls} relative`}
+                      className={`rounded-[2.2rem] overflow-hidden ${!isCustom ? theme.bg : ''} min-h-[480px] flex flex-col ${fontStyle.cls} relative`}
                       style={isCustom ? customTheme.bgStyle : undefined}
                     >
                       {/* Pattern overlay */}
@@ -1937,10 +2085,17 @@ export default function CreatePage() {
                           {activeSocials.map((id) => {
                             const p = socialPlatforms.find((s) => s.id === id);
                             if (!p) return null;
+                            const url = socialUrls[id];
+                            const Wrapper = url ? 'a' : 'div';
                             return (
-                              <div key={id} className={`w-7 h-7 rounded-full ${!isCustom ? theme.card : ''} flex items-center justify-center`} style={isCustom ? customTheme.cardStyle : undefined}>
+                              <Wrapper
+                                key={id}
+                                {...(url ? { href: url, target: '_blank', rel: 'noopener noreferrer' } : {})}
+                                className={`w-7 h-7 rounded-full ${!isCustom ? theme.card : ''} flex items-center justify-center ${url ? 'hover:opacity-80 transition-opacity cursor-pointer' : ''}`}
+                                style={isCustom ? customTheme.cardStyle : undefined}
+                              >
                                 <p.icon size={12} className={`${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-50`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined} />
-                              </div>
+                              </Wrapper>
                             );
                           })}
                         </div>
@@ -1990,16 +2145,16 @@ export default function CreatePage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 z-50"
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
               onClick={() => { setAddModalOpen(false); setAddModalSearch(''); }}
             />
             {/* Modal */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.92, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-4 sm:inset-auto sm:top-[10%] sm:left-1/2 sm:-translate-x-1/2 sm:w-[680px] sm:max-h-[75vh] bg-white rounded-2xl z-50 flex flex-col shadow-2xl overflow-hidden"
+              exit={{ opacity: 0, scale: 0.92, y: 30 }}
+              transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+              className="fixed inset-4 sm:inset-auto sm:top-[8%] sm:left-1/2 sm:-translate-x-1/2 sm:w-[700px] sm:max-h-[78vh] bg-white/98 backdrop-blur-2xl rounded-3xl z-50 flex flex-col shadow-2xl shadow-gray-900/10 overflow-hidden border border-gray-200/50 ring-1 ring-white/80"
             >
               {/* Modal Header */}
               <div className="flex items-center justify-between px-6 pt-5 pb-4">
@@ -2087,8 +2242,8 @@ export default function CreatePage() {
                         <Link2 size={18} className="text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-[#8b6f5e]">Add as link</p>
-                        <p className="text-[11px] text-[#c4917b] truncate">{addModalSearch}</p>
+                        <p className="text-sm font-medium text-[#6d28d9]">Add as link</p>
+                        <p className="text-[11px] text-[#7c3aed] truncate">{addModalSearch}</p>
                       </div>
                       <Plus size={18} className="text-purple-400" />
                     </button>
@@ -2147,10 +2302,11 @@ export default function CreatePage() {
       <AnimatePresence>
         {toast && (
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-5 py-3 bg-gray-900 text-white text-sm font-medium rounded-full shadow-lg flex items-center gap-2"
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-6 py-3.5 bg-gray-900/90 backdrop-blur-xl text-white text-sm font-medium rounded-2xl shadow-xl shadow-gray-900/20 flex items-center gap-2.5 border border-white/5"
           >
             <CheckCircle2 size={16} className="text-green-400" />
             {toast}

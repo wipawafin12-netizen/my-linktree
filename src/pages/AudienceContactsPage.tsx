@@ -16,11 +16,11 @@ const toolCards = [
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500" />
               <div className="text-xs text-gray-700 font-medium">Get updates from<br/>Nick Neon</div>
             </div>
-            <div className="bg-[#8b6f5e] text-white rounded-lg px-3 py-1.5 flex items-center gap-1.5 text-xs font-semibold w-fit">
+            <div className="bg-[#6d28d9] text-white rounded-lg px-3 py-1.5 flex items-center gap-1.5 text-xs font-semibold w-fit">
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
               456
             </div>
-            <div className="text-[10px] text-[#8b6f5e] font-semibold mt-1">New Subscribers</div>
+            <div className="text-[10px] text-[#6d28d9] font-semibold mt-1">New Subscribers</div>
           </div>
           <div className="bg-gray-100 rounded-lg px-3 py-1.5 mt-2 ml-4">
             <div className="text-[10px] text-gray-400">Email address</div>
@@ -45,7 +45,7 @@ const toolCards = [
             <span className="text-gray-400">◎</span> Dropdown
           </div>
         </div>
-        <button className="w-full bg-[#8b6f5e] text-white text-xs font-semibold rounded-lg py-1.5">Save</button>
+        <button className="w-full bg-[#6d28d9] text-white text-xs font-semibold rounded-lg py-1.5">Save</button>
       </div>
     ),
   },
@@ -147,8 +147,8 @@ export default function AudienceContactsPage() {
                 onClick={() => setActiveTab('contacts')}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   activeTab === 'contacts'
-                    ? 'bg-[#8b6f5e] text-white'
-                    : 'text-gray-600 hover:bg-[#faf0ec]'
+                    ? 'bg-[#6d28d9] text-white'
+                    : 'text-gray-600 hover:bg-[#f5f3ff]'
                 }`}
               >
                 Contacts
@@ -157,8 +157,8 @@ export default function AudienceContactsPage() {
                 onClick={() => setActiveTab('integrations')}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   activeTab === 'integrations'
-                    ? 'bg-[#8b6f5e] text-white'
-                    : 'text-gray-600 hover:bg-[#faf0ec]'
+                    ? 'bg-[#6d28d9] text-white'
+                    : 'text-gray-600 hover:bg-[#f5f3ff]'
                 }`}
               >
                 Integrations
@@ -212,7 +212,7 @@ export default function AudienceContactsPage() {
               <p className="text-gray-500 text-sm mb-6">
                 Let's start growing your contact list.
               </p>
-              <button className="bg-[#8b6f5e] text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-[#7a5f4f] transition-colors">
+              <button className="bg-[#6d28d9] text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-[#5b21b6] transition-colors">
                 Turn on Subscribe
               </button>
             </div>

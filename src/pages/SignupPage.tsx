@@ -83,7 +83,7 @@ export default function SignupPage() {
             </div>
             {name && (
               <p className="text-[11px] text-gray-400 mt-1.5 ml-1">
-                linktr.ee/<span className="text-gray-600 font-medium">{name.toLowerCase().replace(/\s+/g, '')}</span>
+                linkc.ee/<span className="text-gray-600 font-medium">{name.toLowerCase().replace(/\s+/g, '')}</span>
               </p>
             )}
           </div>
@@ -146,8 +146,8 @@ export default function SignupPage() {
           {/* Terms */}
           <p className="text-[11px] text-gray-400 leading-relaxed">
             By creating an account, you agree to OpenBio's{' '}
-            <a href="https://linktr.ee/s/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">Terms of Service</a> and{' '}
-            <a href="https://linktr.ee/s/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">Privacy Policy</a>.
+            <a href="https://linkc.ee/s/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">Terms of Service</a> and{' '}
+            <a href="https://linkc.ee/s/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">Privacy Policy</a>.
           </p>
 
           {/* Submit */}
