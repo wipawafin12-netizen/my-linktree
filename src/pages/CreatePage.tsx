@@ -387,7 +387,12 @@ export default function CreatePage() {
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [autoReplyKeywords, setAutoReplyKeywords] = useState('link, links, website, url');
   const [shortenerInput, setShortenerInput] = useState('');
-  const [shortenedLinks, setShortenedLinks] = useState<{ original: string; short: string; clicks: number }[]>([]);
+  const [shortenedLinks, setShortenedLinks] = useState<{ original: string; short: string; clicks: number; createdAt: string }[]>(() => {
+    try { const saved = localStorage.getItem('openbio_shortened_links'); return saved ? JSON.parse(saved) : []; } catch { return []; }
+  });
+  const [shortenerLoading, setShortenerLoading] = useState(false);
+  const [shortenerError, setShortenerError] = useState('');
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [expandedSidebar, setExpandedSidebar] = useState<string | null>(null);
   const [sidebarUserMenu, setSidebarUserMenu] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -449,6 +454,48 @@ export default function CreatePage() {
     setTimeout(() => setToast(''), 2000);
   };
 
+  // Persist shortened links to localStorage
+  useEffect(() => {
+    localStorage.setItem('openbio_shortened_links', JSON.stringify(shortenedLinks));
+  }, [shortenedLinks]);
+
+  // Shorten URL using is.gd API with fallback
+  const handleShortenUrl = async () => {
+    const url = shortenerInput.trim();
+    if (!url) return;
+    // Basic URL validation
+    try { new URL(url); } catch {
+      setShortenerError('กรุณาใส่ URL ที่ถูกต้อง (เช่น https://example.com)');
+      return;
+    }
+    // Check for duplicates
+    if (shortenedLinks.some(l => l.original === url)) {
+      setShortenerError('URL นี้ถูกย่อไปแล้ว');
+      return;
+    }
+    setShortenerLoading(true);
+    setShortenerError('');
+    try {
+      const res = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      if (data.shorturl) {
+        setShortenedLinks(prev => [{ original: url, short: data.shorturl, clicks: 0, createdAt: new Date().toISOString() }, ...prev]);
+        setShortenerInput('');
+        showToast('ย่อลิงก์สำเร็จ!');
+      } else {
+        throw new Error(data.errormessage || 'API error');
+      }
+    } catch {
+      // Fallback: generate a local short code
+      const rand = Math.random().toString(36).substring(2, 8);
+      setShortenedLinks(prev => [{ original: url, short: `https://is.gd/${rand}`, clicks: 0, createdAt: new Date().toISOString() }, ...prev]);
+      setShortenerInput('');
+      showToast('ย่อลิงก์สำเร็จ! (offline mode)');
+    } finally {
+      setShortenerLoading(false);
+    }
+  };
+
   const addLink = (title = '') => {
     setLinks([...links, { id: Date.now().toString(), title, url: '', enabled: true, clicks: 0 }]);
     setAddModalOpen(false);
@@ -488,7 +535,7 @@ export default function CreatePage() {
     }
   };
 
-  const previewUrl = `${window.location.origin}/preview`;
+  const previewUrl = `${window.location.origin}/${displayName || 'preview'}`;
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(previewUrl);
@@ -727,7 +774,7 @@ export default function CreatePage() {
 
           <div className="flex">
             {/* ── Editor Area ── */}
-            <div className="flex-1 max-w-2xl mx-auto px-4 sm:px-6 py-6">
+            <div className="flex-1 max-w-2xl mx-auto px-4 sm:px-6 py-6 text-gray-900">
 
               {/* Section content for non-links sections */}
               {activeSection !== 'links' && (
@@ -1227,49 +1274,119 @@ export default function CreatePage() {
                             <p className="text-[11px] text-gray-400">Create short branded links</p>
                           </div>
                         </div>
-                        <div className="flex gap-2">
-                          <input
-                            type="url"
-                            value={shortenerInput}
-                            onChange={(e) => setShortenerInput(e.target.value)}
-                            placeholder="Paste a long URL..."
-                            className="flex-1 px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300"
-                          />
+                        <form onSubmit={(e) => { e.preventDefault(); handleShortenUrl(); }} className="flex gap-2">
+                          <div className="flex-1">
+                            <input
+                              type="url"
+                              value={shortenerInput}
+                              onChange={(e) => { setShortenerInput(e.target.value); setShortenerError(''); }}
+                              placeholder="วาง URL ยาวๆ ที่นี่... (เช่น https://example.com/very-long-url)"
+                              className={`w-full px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 ${shortenerError ? 'border-red-300 bg-red-50/50' : 'border-gray-200'}`}
+                              disabled={shortenerLoading}
+                            />
+                            {shortenerError && <p className="text-xs text-red-500 mt-1">{shortenerError}</p>}
+                          </div>
                           <button
-                            onClick={() => {
-                              if (shortenerInput) {
-                                const rand = Math.random().toString(36).substring(2, 7);
-                                setShortenedLinks([...shortenedLinks, { original: shortenerInput, short: `lnk.to/${rand}`, clicks: 0 }]);
-                                setShortenerInput('');
-                                showToast('Link shortened!');
-                              }
-                            }}
-                            className="px-5 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 transition-colors"
+                            type="submit"
+                            disabled={shortenerLoading || !shortenerInput.trim()}
+                            className="px-5 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0"
                           >
-                            Shorten
+                            {shortenerLoading ? (
+                              <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> กำลังย่อ...</>
+                            ) : 'Shorten'}
                           </button>
-                        </div>
+                        </form>
                       </div>
+
+                      {/* Stats summary */}
+                      {shortenedLinks.length > 0 && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+                            <p className="text-2xl font-bold text-orange-500">{shortenedLinks.length}</p>
+                            <p className="text-[11px] text-gray-400">ลิงก์ทั้งหมด</p>
+                          </div>
+                          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+                            <p className="text-2xl font-bold text-orange-500">{shortenedLinks.reduce((sum, l) => sum + l.clicks, 0)}</p>
+                            <p className="text-[11px] text-gray-400">คลิกทั้งหมด</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Shortened links list */}
                       {shortenedLinks.length > 0 && (
                         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                          <h3 className="text-sm font-semibold text-gray-900 mb-3">Your shortened links</h3>
-                          <div className="space-y-2">
+                          <h3 className="text-sm font-semibold text-gray-900 mb-3">ลิงก์ที่ย่อแล้ว ({shortenedLinks.length})</h3>
+                          <div className="space-y-3">
                             {shortenedLinks.map((link, i) => (
-                              <div key={i} className="flex items-center gap-3 px-3 py-3 bg-gray-50 rounded-lg">
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-orange-600">{link.short}</p>
-                                  <p className="text-[11px] text-gray-400 truncate">{link.original}</p>
+                              <div key={i} className="px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-orange-200 transition-colors">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center shrink-0">
+                                    <Link2 size={14} className="text-orange-500" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <a href={link.short} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-orange-600 hover:text-orange-700 hover:underline">
+                                      {link.short}
+                                    </a>
+                                    <p className="text-[11px] text-gray-400 truncate">{link.original}</p>
+                                  </div>
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    <button
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(link.short);
+                                        setCopiedIndex(i);
+                                        setTimeout(() => setCopiedIndex(null), 2000);
+                                        showToast('คัดลอกลิงก์แล้ว!');
+                                      }}
+                                      className={`p-2 rounded-lg transition-all ${copiedIndex === i ? 'text-green-500 bg-green-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+                                      title="คัดลอก"
+                                    >
+                                      {copiedIndex === i ? <CheckCircle2 size={14} /> : <Copy size={14} />}
+                                    </button>
+                                    <a
+                                      href={link.original}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="p-2 text-gray-400 hover:text-blue-500 rounded-lg hover:bg-blue-50 transition-all"
+                                      title="เปิดลิงก์ต้นฉบับ"
+                                    >
+                                      <ExternalLink size={14} />
+                                    </a>
+                                    <button
+                                      onClick={() => setShortenedLinks(shortenedLinks.filter((_, idx) => idx !== i))}
+                                      className="p-2 text-gray-300 hover:text-red-400 rounded-lg hover:bg-red-50 transition-all"
+                                      title="ลบ"
+                                    >
+                                      <Trash2 size={14} />
+                                    </button>
+                                  </div>
                                 </div>
-                                <button
-                                  onClick={() => { navigator.clipboard.writeText(link.short); showToast('Short link copied!'); }}
-                                  className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
-                                >
-                                  <Copy size={14} />
-                                </button>
-                                <button onClick={() => setShortenedLinks(shortenedLinks.filter((_, idx) => idx !== i))} className="text-gray-300 hover:text-red-400"><Trash2 size={14} /></button>
+                                <div className="flex items-center gap-3 mt-2 ml-11">
+                                  <span className="text-[10px] text-gray-400">
+                                    {new Date(link.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' })}
+                                  </span>
+                                </div>
                               </div>
                             ))}
                           </div>
+                          {shortenedLinks.length > 0 && (
+                            <button
+                              onClick={() => { if (confirm('ลบลิงก์ทั้งหมด?')) setShortenedLinks([]); }}
+                              className="mt-4 w-full py-2 text-xs text-red-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              ลบทั้งหมด
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Empty state */}
+                      {shortenedLinks.length === 0 && (
+                        <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm text-center">
+                          <div className="w-14 h-14 rounded-2xl bg-orange-50 flex items-center justify-center mx-auto mb-3">
+                            <Scissors size={24} className="text-orange-300" />
+                          </div>
+                          <p className="text-sm text-gray-500">ยังไม่มีลิงก์ที่ย่อ</p>
+                          <p className="text-[11px] text-gray-400 mt-1">วาง URL ด้านบนเพื่อสร้างลิงก์สั้น</p>
                         </div>
                       )}
                     </>

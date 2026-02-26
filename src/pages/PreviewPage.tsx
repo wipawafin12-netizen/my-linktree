@@ -120,9 +120,12 @@ export default function PreviewPage() {
     );
   }
 
-  const { displayName, bio, avatar, selectedTheme, selectedButton, selectedFont,
-    customTextColor, customBgColor, customBgSecondary,
-    links, activeSocials, socialUrls, selectedPattern } = data;
+  const {
+    displayName = '', bio = '', avatar = '',
+    selectedTheme = 'minimal', selectedButton = 'rounded', selectedFont = 'inter',
+    customTextColor = '', customBgColor = '#6366f1', customBgSecondary = '#4f46e5',
+    links = [], activeSocials = [], socialUrls = {}, selectedPattern = 'none',
+  } = data;
 
   const isCustom = selectedTheme === 'custom';
   const theme = themes.find(t => t.id === selectedTheme) || themes[0];

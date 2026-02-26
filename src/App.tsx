@@ -29,6 +29,7 @@ export default function App() {
         <Routes>
           {/* Preview page – no Navbar */}
           <Route path="/preview" element={<PreviewPage />} />
+          <Route path="/:username" element={<PreviewPage />} />
 
           {/* All other pages – with Navbar */}
           <Route element={<MainLayout />}>

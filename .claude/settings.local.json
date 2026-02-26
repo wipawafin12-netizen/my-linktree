@@ -5,7 +5,9 @@
       "WebFetch(domain:linktr.ee)",
       "Bash(npx tsc:*)",
       "Bash(npx vite:*)",
-      "Bash(git status:*)"
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(timeout 5 curl:*)"
     ]
   }
 }

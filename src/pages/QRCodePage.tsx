@@ -6,8 +6,6 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function QRCodePage() {
   const { username } = useAuth();
-  const previewUrl = `${window.location.origin}/preview`;
-  const [url, setUrl] = useState(previewUrl);
   const [copied, setCopied] = useState(false);
   const [displayName, setDisplayName] = useState('');
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -24,6 +22,8 @@ export default function QRCodePage() {
   }, []);
 
   const shortName = username || displayName || 'my_page';
+  const previewUrl = `${window.location.origin}/${shortName}`;
+  const [url, setUrl] = useState(previewUrl);
 
   const handleCopy = useCallback(async () => {
     if (!url) return;
