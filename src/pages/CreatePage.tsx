@@ -13,7 +13,7 @@ import {
   Store, Rss, AtSign, Send, Radio, Tv, Newspaper,
   BookOpen, Coffee, Gift, Megaphone, Mic, Clapperboard, PenTool,
   Brush, Wallet, Bitcoin, Code2, Terminal, Rocket, Flame,
-  Shirt, Crown, Anchor, Zap, Star, Music, Video,
+  Shirt, Crown, Anchor, Zap, Star, Music, Video, Sun,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -182,7 +182,63 @@ const bgPatterns = [
   },
 ];
 
-// ── Button styles ──
+// ── Pattern animations ──
+const patternAnimations = [
+  { id: 'none', label: 'None' },
+  { id: 'scroll', label: 'Scroll' },
+  { id: 'pulse', label: 'Pulse' },
+  { id: 'float', label: 'Float' },
+  { id: 'shimmer', label: 'Shimmer' },
+  { id: 'spin', label: 'Spin' },
+];
+
+const patternAnimKeyframes = `
+@keyframes patternScroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 200px 200px; }
+}
+@keyframes patternPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+@keyframes patternFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes patternShimmer {
+  0% { opacity: 0.4; filter: brightness(1); }
+  50% { opacity: 1; filter: brightness(1.3); }
+  100% { opacity: 0.4; filter: brightness(1); }
+}
+@keyframes patternSpin {
+  0% { transform: rotate(0deg) scale(1.5); }
+  100% { transform: rotate(360deg) scale(1.5); }
+}
+@keyframes glowColorShift {
+  0%, 100% { background-color: rgba(168,85,247,0.8); }
+  25% { background-color: rgba(236,72,153,0.8); }
+  50% { background-color: rgba(59,130,246,0.8); }
+  75% { background-color: rgba(52,211,153,0.8); }
+}
+@keyframes glowMove {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  25% { transform: translate(10%, 8%) scale(1.1); }
+  50% { transform: translate(-5%, 12%) scale(1.05); }
+  75% { transform: translate(-8%, -5%) scale(1.12); }
+}
+`;
+
+const getPatternAnimStyle = (animId: string): React.CSSProperties => {
+  switch (animId) {
+    case 'scroll': return { animation: 'patternScroll 20s linear infinite' };
+    case 'pulse': return { animation: 'patternPulse 3s ease-in-out infinite' };
+    case 'float': return { animation: 'patternFloat 6s ease-in-out infinite' };
+    case 'shimmer': return { animation: 'patternShimmer 4s ease-in-out infinite' };
+    case 'spin': return { animation: 'patternSpin 30s linear infinite' };
+    default: return {};
+  }
+};
+
 const buttonStyles = [
   { id: 'rounded', label: 'Rounded', cls: 'rounded-full' },
   { id: 'soft', label: 'Soft', cls: 'rounded-xl' },
@@ -191,7 +247,6 @@ const buttonStyles = [
   { id: 'shadow', label: 'Shadow', cls: 'rounded-xl shadow-md' },
 ];
 
-// ── Font options ──
 const fontOptions = [
   // Sans-serif
   { id: 'inter', label: 'Inter', cls: 'font-sans', category: 'Sans-serif' },
@@ -328,6 +383,8 @@ export default function CreatePage() {
   const [avatar, setAvatar] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('minimal');
   const [selectedButton, setSelectedButton] = useState('rounded');
+  const [buttonAnimation, setButtonAnimation] = useState(true);
+  const [btnAnimKey, setBtnAnimKey] = useState(0);
   const [selectedFont, setSelectedFont] = useState('inter');
   const [customTextColor, setCustomTextColor] = useState('');
   const [customBgColor, setCustomBgColor] = useState('#6366f1');
@@ -374,9 +431,6 @@ export default function CreatePage() {
   const [newSubscriberEmail, setNewSubscriberEmail] = useState('');
   const [emailFormTitle, setEmailFormTitle] = useState('Join my newsletter');
 
-  // Insights section
-  const [insightsPeriod, setInsightsPeriod] = useState<'7d' | '30d' | 'all'>('7d');
-
   // Tools section
   const [scheduledPosts, setScheduledPosts] = useState<{ id: string; text: string; platform: string; date: string; time: string }[]>([]);
   const [newPostText, setNewPostText] = useState('');
@@ -399,6 +453,9 @@ export default function CreatePage() {
   const [earnSubTab, setEarnSubTab] = useState<'overview' | 'earnings'>('overview');
   const [selectedPattern, setSelectedPattern] = useState('none');
   const [patternDropdownOpen, setPatternDropdownOpen] = useState(false);
+  const [selectedPatternAnim, setSelectedPatternAnim] = useState('none');
+  const [patternAnimDropdownOpen, setPatternAnimDropdownOpen] = useState(false);
+  const [patternGlow, setPatternGlow] = useState(false);
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
 
   // Apply template data from TemplatesPage navigation
@@ -574,11 +631,11 @@ export default function CreatePage() {
     localStorage.setItem('openbio_preview', JSON.stringify({
       displayName, bio, avatar, selectedTheme, selectedButton, selectedFont,
       customTextColor, customBgColor, customBgSecondary,
-      links, activeSocials, socialUrls, selectedPattern,
+      links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
     }));
   }, [displayName, bio, avatar, selectedTheme, selectedButton, selectedFont,
       customTextColor, customBgColor, customBgSecondary,
-      links, activeSocials, socialUrls, selectedPattern]);
+      links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow]);
 
   return (
     <div
@@ -588,6 +645,7 @@ export default function CreatePage() {
         backgroundSize: '24px 24px',
       }}
     >
+      <style>{patternAnimKeyframes}</style>
       {/* Background removed */}
       <div className="flex">
 
@@ -1048,33 +1106,43 @@ export default function CreatePage() {
                   )}
 
                   {/* ── Insights Section ── */}
-                  {activeSection === 'insights' && (
+                  {activeSection === 'insights' && (() => {
+                    const analyticsRaw = localStorage.getItem('openbio_analytics');
+                    const analytics = analyticsRaw ? JSON.parse(analyticsRaw) : { pageViews: 0, linkClicks: [], viewHistory: [] };
+                    const totalClicks = (analytics.linkClicks || []).length;
+                    const totalViews = analytics.pageViews || 0;
+                    const ctr = totalViews > 0 ? Math.round((totalClicks / totalViews) * 100) : 0;
+                    const clicksPerLink: Record<string, { title: string; count: number }> = {};
+                    (analytics.linkClicks || []).forEach((c: { linkId: string; linkTitle: string }) => {
+                      if (!clicksPerLink[c.linkId]) clicksPerLink[c.linkId] = { title: c.linkTitle, count: 0 };
+                      clicksPerLink[c.linkId].count++;
+                    });
+                    const sortedLinks2 = Object.entries(clicksPerLink).sort((a, b) => b[1].count - a[1].count).slice(0, 5);
+                    // Last 7 days chart data
+                    const last7 = Array.from({ length: 7 }).map((_, i) => {
+                      const d = new Date(); d.setDate(d.getDate() - (6 - i));
+                      const dateStr = d.toDateString();
+                      return {
+                        label: d.toLocaleDateString('th-TH', { weekday: 'short' }),
+                        clicks: (analytics.linkClicks || []).filter((c: { timestamp: string }) => new Date(c.timestamp).toDateString() === dateStr).length,
+                        views: (analytics.viewHistory || []).filter((v: string) => new Date(v).toDateString() === dateStr).length,
+                      };
+                    });
+                    const maxBar = Math.max(...last7.map(d => d.clicks + d.views), 1);
+                    return (
                     <>
-                      {/* Period Selector */}
-                      <div className="flex gap-2 mb-2">
-                        {([['7d', 'Last 7 days'], ['30d', 'Last 30 days'], ['all', 'All time']] as const).map(([val, label]) => (
-                          <button
-                            key={val}
-                            onClick={() => setInsightsPeriod(val)}
-                            className={`px-4 py-2 text-xs font-medium rounded-full transition-colors ${insightsPeriod === val ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}
-                          >
-                            {label}
-                          </button>
-                        ))}
-                      </div>
-
                       {/* Overview Stats */}
                       <div className="grid grid-cols-4 gap-3">
                         <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
-                          <p className="text-2xl font-bold text-gray-900">{links.reduce((a, l) => a + (l.clicks || 0), 0)}</p>
+                          <p className="text-2xl font-bold text-gray-900">{totalClicks}</p>
                           <p className="text-[11px] text-gray-400 mt-1">Total clicks</p>
                         </div>
                         <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
-                          <p className="text-2xl font-bold text-gray-900">{Math.round(links.reduce((a, l) => a + (l.clicks || 0), 0) * 2.3)}</p>
+                          <p className="text-2xl font-bold text-gray-900">{totalViews}</p>
                           <p className="text-[11px] text-gray-400 mt-1">Views</p>
                         </div>
                         <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
-                          <p className="text-2xl font-bold text-gray-900">{links.length > 0 ? Math.round(links.reduce((a, l) => a + (l.clicks || 0), 0) / Math.max(links.reduce((a, l) => a + (l.clicks || 0), 0) * 2.3, 1) * 100) : 0}%</p>
+                          <p className="text-2xl font-bold text-gray-900">{ctr}%</p>
                           <p className="text-[11px] text-gray-400 mt-1">CTR</p>
                         </div>
                         <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
@@ -1083,52 +1151,58 @@ export default function CreatePage() {
                         </div>
                       </div>
 
-                      {/* Mini Chart */}
+                      {/* Mini Chart - Real data */}
                       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-4">Click activity</h3>
-                        <div className="flex items-end gap-1.5 h-32">
-                          {Array.from({ length: insightsPeriod === '7d' ? 7 : insightsPeriod === '30d' ? 15 : 12 }).map((_, i) => {
-                            const height = links.length > 0 ? Math.random() * 80 + 20 : 10;
-                            return (
-                              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                                <div
-                                  className="w-full bg-purple-400 rounded-t-md transition-all hover:bg-purple-500"
-                                  style={{ height: `${height}%` }}
-                                />
-                              </div>
-                            );
-                          })}
+                        <h3 className="text-sm font-semibold text-gray-900 mb-1">Last 7 days</h3>
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="flex items-center gap-1.5 text-[10px] text-gray-400"><div className="w-2.5 h-2.5 rounded-sm bg-blue-500" /> Views</div>
+                          <div className="flex items-center gap-1.5 text-[10px] text-gray-400"><div className="w-2.5 h-2.5 rounded-sm bg-purple-500" /> Clicks</div>
                         </div>
-                        <div className="flex justify-between mt-2">
-                          <span className="text-[10px] text-gray-400">{insightsPeriod === '7d' ? 'Mon' : insightsPeriod === '30d' ? '1st' : 'Jan'}</span>
-                          <span className="text-[10px] text-gray-400">{insightsPeriod === '7d' ? 'Sun' : insightsPeriod === '30d' ? '30th' : 'Dec'}</span>
+                        <div className="flex items-end gap-1.5 h-32">
+                          {last7.map((day, i) => (
+                            <div key={i} className="flex-1 flex flex-col items-center gap-0.5" style={{ height: '100%', justifyContent: 'flex-end' }}>
+                              <div className="w-full bg-blue-500 rounded-t-md" style={{ height: `${Math.max((day.views / maxBar) * 100, day.views > 0 ? 8 : 0)}%` }} title={`${day.views} views`} />
+                              <div className="w-full bg-purple-500 rounded-b-md" style={{ height: `${Math.max((day.clicks / maxBar) * 100, day.clicks > 0 ? 8 : 0)}%` }} title={`${day.clicks} clicks`} />
+                              <span className="text-[10px] text-gray-400 mt-1">{day.label}</span>
+                            </div>
+                          ))}
                         </div>
                       </div>
 
-                      {/* Top Links */}
+                      {/* Top Links - Real data */}
                       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
                         <h3 className="text-sm font-semibold text-gray-900 mb-4">Top performing links</h3>
-                        {links.length === 0 ? (
-                          <p className="text-sm text-gray-400 text-center py-4">Add links to see analytics</p>
+                        {sortedLinks2.length === 0 ? (
+                          <p className="text-sm text-gray-400 text-center py-4">No clicks yet. Share your link to start tracking!</p>
                         ) : (
                           <div className="space-y-2">
-                            {[...links].sort((a, b) => (b.clicks || 0) - (a.clicks || 0)).slice(0, 5).map((link, i) => (
-                              <div key={link.id} className="flex items-center gap-3 px-3 py-2.5 bg-gray-50 rounded-lg">
+                            {sortedLinks2.map(([id, data], i) => (
+                              <div key={id} className="flex items-center gap-3 px-3 py-2.5 bg-gray-50 rounded-lg">
                                 <span className="text-xs font-bold text-gray-400 w-5">#{i + 1}</span>
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-gray-900 truncate">{link.title || 'Untitled'}</p>
+                                  <p className="text-sm font-medium text-gray-900 truncate">{data.title || 'Untitled'}</p>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                   <BarChart3 size={12} className="text-purple-400" />
-                                  <span className="text-sm font-semibold text-gray-900">{link.clicks || 0}</span>
+                                  <span className="text-sm font-semibold text-gray-900">{data.count}</span>
                                 </div>
                               </div>
                             ))}
                           </div>
                         )}
                       </div>
+
+                      {/* View full dashboard button */}
+                      <button
+                        onClick={() => navigate('/dashboard')}
+                        className="w-full py-3 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <BarChart3 size={16} />
+                        View full Dashboard
+                      </button>
                     </>
-                  )}
+                    );
+                  })()}
 
                   {/* ── Social Planner ── */}
                   {activeSection === 'planner' && (
@@ -1914,12 +1988,47 @@ export default function CreatePage() {
                       <div className="flex gap-5">
                         {/* Background Pattern */}
                         <div className="flex-1 min-w-0">
-                          <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center flex-shrink-0">
-                              <Grid3x3 size={12} className="text-rose-500" />
+                          <div className="flex items-center justify-between mb-3">
+                            <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-md bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center flex-shrink-0">
+                                <Grid3x3 size={12} className="text-rose-500" />
+                              </div>
+                              Pattern
+                            </h2>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => setPatternGlow(!patternGlow)}
+                                className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-medium transition-all ${patternGlow ? 'bg-amber-100 text-amber-600 shadow-[0_0_8px_rgba(251,191,36,0.4)]' : 'bg-gray-100 text-gray-400'}`}
+                                title={patternGlow ? 'Glow เปิดอยู่' : 'Glow ปิดอยู่'}
+                              >
+                                <Sun size={10} />
+                                Glow
+                              </button>
+                            <div className="relative">
+                              <button
+                                onClick={() => setPatternAnimDropdownOpen(!patternAnimDropdownOpen)}
+                                className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-medium transition-all ${selectedPatternAnim !== 'none' ? 'bg-violet-100 text-violet-600' : 'bg-gray-100 text-gray-400'}`}
+                                title={selectedPatternAnim !== 'none' ? `Animation: ${patternAnimations.find(a => a.id === selectedPatternAnim)?.label}` : 'Animation ปิดอยู่'}
+                              >
+                                <Sparkles size={10} />
+                                Anim
+                              </button>
+                              {patternAnimDropdownOpen && (
+                                <div className="absolute right-0 top-full mt-1 bg-white rounded-xl border border-gray-200 shadow-lg p-1.5 z-50 min-w-[100px]">
+                                  {patternAnimations.map((a) => (
+                                    <button
+                                      key={a.id}
+                                      onClick={() => { setSelectedPatternAnim(a.id); setPatternAnimDropdownOpen(false); }}
+                                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-[10px] font-medium transition-all ${selectedPatternAnim === a.id ? 'bg-violet-50 text-violet-600' : 'text-gray-500 hover:bg-gray-50'}`}
+                                    >
+                                      {a.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
                             </div>
-                            Pattern
-                          </h2>
+                          </div>
+                          </div>
                           <button
                             onClick={() => setPatternDropdownOpen(!patternDropdownOpen)}
                             className="w-full flex items-center gap-2 p-2 rounded-xl border border-gray-200 hover:border-gray-300 transition-all bg-gray-50"
@@ -1939,23 +2048,51 @@ export default function CreatePage() {
 
                         {/* Button Style */}
                         <div className="flex-1 min-w-0">
-                          <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center flex-shrink-0">
-                              <Type size={12} className="text-blue-500" />
-                            </div>
-                            Button Style
-                          </h2>
+                          <div className="flex items-center justify-between mb-3">
+                            <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center flex-shrink-0">
+                                <Type size={12} className="text-blue-500" />
+                              </div>
+                              Button Style
+                            </h2>
+                            <button
+                              onClick={() => setButtonAnimation(!buttonAnimation)}
+                              className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-medium transition-all ${buttonAnimation ? 'bg-violet-100 text-violet-600' : 'bg-gray-100 text-gray-400'}`}
+                              title={buttonAnimation ? 'Animation เปิดอยู่' : 'Animation ปิดอยู่'}
+                            >
+                              <Sparkles size={10} />
+                              Anim
+                            </button>
+                          </div>
                           <div className="flex flex-wrap gap-1.5">
-                            {buttonStyles.map((style) => (
-                              <button
-                                key={style.id}
-                                onClick={() => setSelectedButton(style.id)}
-                                className={`flex-1 min-w-[52px] p-2 rounded-lg border-2 transition-all ${selectedButton === style.id ? 'border-gray-400' : 'border-gray-100 hover:border-gray-200'}`}
-                              >
-                                <div className={`h-5 bg-gray-300 ${style.cls} mb-1`} />
-                                <span className="block text-[9px] font-medium text-gray-500 text-center">{style.label}</span>
-                              </button>
-                            ))}
+                            {buttonStyles.map((style) => {
+                              const isActive = selectedButton === style.id;
+                              return (
+                                <button
+                                  key={style.id}
+                                  onClick={() => {
+                                    setSelectedButton(style.id);
+                                    if (buttonAnimation) setBtnAnimKey((k) => k + 1);
+                                  }}
+                                  className={`flex-1 min-w-[52px] p-2 rounded-lg border-2 transition-colors ${isActive ? 'border-gray-400' : 'border-gray-100 hover:border-gray-200'}`}
+                                >
+                                  <motion.div
+                                    key={isActive ? `${style.id}-${btnAnimKey}` : style.id}
+                                    className={`h-5 bg-gray-300 ${style.cls} mb-1`}
+                                    initial={isActive && buttonAnimation ? { scale: 0.7, opacity: 0.5 } : false}
+                                    animate={isActive && buttonAnimation
+                                      ? { scale: 1, opacity: 1, boxShadow: ['0 0 0 4px rgba(124,58,237,0.3)', '0 0 0 0px rgba(124,58,237,0)'] }
+                                      : { scale: 1, opacity: 1, boxShadow: '0 0 0 0 rgba(124,58,237,0)' }
+                                    }
+                                    transition={isActive && buttonAnimation
+                                      ? { type: 'spring', stiffness: 500, damping: 15, boxShadow: { duration: 0.6 } }
+                                      : { duration: 0 }
+                                    }
+                                  />
+                                  <span className="block text-[9px] font-medium text-gray-500 text-center">{style.label}</span>
+                                </button>
+                              );
+                            })}
                           </div>
                         </div>
                       </div>
@@ -2174,9 +2311,31 @@ export default function CreatePage() {
                       {/* Pattern overlay */}
                       {selectedPattern !== 'none' && (
                         <div
-                          className="absolute inset-0 pointer-events-none z-0 rounded-[2.3rem]"
-                          style={bgPatterns.find((p) => p.id === selectedPattern)?.style}
-                        />
+                          className="absolute inset-0 pointer-events-none z-0 rounded-[2.3rem] overflow-hidden"
+                        >
+                          <div
+                            className="absolute inset-[-50%] w-[200%] h-[200%]"
+                            style={{
+                              ...bgPatterns.find((p) => p.id === selectedPattern)?.style,
+                              ...getPatternAnimStyle(selectedPatternAnim),
+                            }}
+                          />
+                        </div>
+                      )}
+                      {/* Glow overlay */}
+                      {patternGlow && (
+                        <div className="absolute inset-0 pointer-events-none z-0 rounded-[2.3rem] overflow-hidden">
+                          <div
+                            className="absolute rounded-full blur-3xl"
+                            style={{
+                              width: '75%',
+                              height: '55%',
+                              top: '20%',
+                              left: '12%',
+                              animation: 'glowColorShift 8s ease-in-out infinite, glowMove 6s ease-in-out infinite',
+                            }}
+                          />
+                        </div>
                       )}
                       {/* Profile */}
                       <div className="pt-8 pb-3 flex flex-col items-center px-6 relative z-[1]">
@@ -2233,7 +2392,10 @@ export default function CreatePage() {
                               layout
                               initial={{ opacity: 0, scale: 0.95 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              className={`${!link.color && !isCustom ? `${theme.card} ${theme.cardBorder}` : ''} ${btnStyle.cls} px-4 py-2.5 text-center relative z-[1]`}
+                              whileHover={buttonAnimation ? { scale: 1.03, y: -1 } : undefined}
+                              whileTap={buttonAnimation ? { scale: 0.97 } : undefined}
+                              transition={buttonAnimation ? { type: 'spring', stiffness: 400, damping: 17 } : undefined}
+                              className={`${!link.color && !isCustom ? `${theme.card} ${theme.cardBorder}` : ''} ${btnStyle.cls} px-4 py-2.5 text-center relative z-[1] ${buttonAnimation ? 'cursor-pointer' : ''}`}
                               style={link.color
                                 ? { backgroundColor: link.color, border: '1px solid rgba(0,0,0,0.06)' }
                                 : isCustom ? customTheme.cardStyle : undefined

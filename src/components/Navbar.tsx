@@ -16,19 +16,21 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { isLoggedIn, username, logout } = useAuth();
 
+  const isHome = location.pathname === '/';
+
   return (
     <motion.nav
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100"
+      className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-md ${isHome ? 'bg-[#050510]/80 border-b border-white/5' : 'bg-white/90 border-b border-gray-100'}`}
     >
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-1 -ml-2">
-            <img src="/linkcenter.png" alt="LinkCenter" className="h-12" />
+            <img src="/linkcenter.png" alt="LinkCenter" className={`h-12 ${isHome ? 'brightness-0 invert' : ''}`} />
           </Link>
 
           {/* Desktop Nav Links */}
@@ -40,7 +42,9 @@ export default function Navbar() {
                 className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                   location.pathname === link.to
                     ? 'text-violet-600 bg-violet-50'
-                    : 'text-gray-400 hover:text-gray-700 hover:bg-gray-50'
+                    : isHome
+                      ? 'text-gray-400 hover:text-white hover:bg-white/10'
+                      : 'text-gray-400 hover:text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {link.label}
@@ -61,7 +65,7 @@ export default function Navbar() {
                 <div className="relative">
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="w-9 h-9 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-900 hover:border-gray-200 transition-colors"
+                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isHome ? 'bg-white/10 border border-white/10 text-gray-300 hover:text-white hover:border-white/20' : 'bg-gray-50 border border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-200'}`}
                   >
                     <User size={16} />
                   </button>
@@ -74,7 +78,7 @@ export default function Navbar() {
                           <p className="text-xs text-gray-400">linkc.ee/{username}</p>
                         </div>
                         <Link
-                          to="/create"
+                          to="/dashboard"
                           onClick={() => setUserMenuOpen(false)}
                           className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
                         >
@@ -102,7 +106,7 @@ export default function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="px-5 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 border border-gray-200 rounded-full hover:border-gray-300 transition-all"
+                  className={`px-5 py-2 text-sm font-medium rounded-full transition-all ${isHome ? 'text-gray-300 hover:text-white border border-white/10 hover:border-white/20' : 'text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-300'}`}
                 >
                   Log in
                 </Link>
@@ -119,7 +123,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+            className={`md:hidden p-2 rounded-lg transition-colors ${isHome ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-400 hover:text-gray-900 hover:bg-gray-50'}`}
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -132,7 +136,7 @@ export default function Navbar() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className="md:hidden bg-white border-t border-gray-100"
+          className={`md:hidden ${isHome ? 'bg-[#0a0a20] border-t border-white/5' : 'bg-white border-t border-gray-100'}`}
         >
           <div className="px-4 py-3 space-y-1">
             {navLinks.map((link) => (

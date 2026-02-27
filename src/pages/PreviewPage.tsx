@@ -97,11 +97,24 @@ export default function PreviewPage() {
     customTextColor: string; customBgColor: string; customBgSecondary: string;
     links: LinkItem[]; activeSocials: string[]; socialUrls: Record<string, string>;
     selectedPattern: string;
+    patternGlow?: boolean;
   } | null>(null);
 
   useEffect(() => {
     const raw = localStorage.getItem('openbio_preview');
     if (raw) setData(JSON.parse(raw));
+
+    // Track page view
+    try {
+      const analyticsRaw = localStorage.getItem('openbio_analytics');
+      const analytics = analyticsRaw
+        ? JSON.parse(analyticsRaw)
+        : { pageViews: 0, linkClicks: [], viewHistory: [] };
+      analytics.pageViews = (analytics.pageViews || 0) + 1;
+      if (!analytics.viewHistory) analytics.viewHistory = [];
+      analytics.viewHistory.push(new Date().toISOString());
+      localStorage.setItem('openbio_analytics', JSON.stringify(analytics));
+    } catch { /* ignore */ }
 
     // Listen for storage changes (from CreatePage)
     const handler = () => {
@@ -125,6 +138,7 @@ export default function PreviewPage() {
     selectedTheme = 'minimal', selectedButton = 'rounded', selectedFont = 'inter',
     customTextColor = '', customBgColor = '#6366f1', customBgSecondary = '#4f46e5',
     links = [], activeSocials = [], socialUrls = {}, selectedPattern = 'none',
+    patternGlow = false,
   } = data;
 
   const isCustom = selectedTheme === 'custom';
@@ -146,6 +160,23 @@ export default function PreviewPage() {
 
   const enabledLinks = links.filter(l => l.title && l.enabled);
 
+  const trackLinkClick = (link: LinkItem) => {
+    try {
+      const analyticsRaw = localStorage.getItem('openbio_analytics');
+      const analytics = analyticsRaw
+        ? JSON.parse(analyticsRaw)
+        : { pageViews: 0, linkClicks: [], viewHistory: [] };
+      if (!analytics.linkClicks) analytics.linkClicks = [];
+      analytics.linkClicks.push({
+        linkId: link.id,
+        linkTitle: link.title,
+        linkUrl: link.url,
+        timestamp: new Date().toISOString(),
+      });
+      localStorage.setItem('openbio_analytics', JSON.stringify(analytics));
+    } catch { /* ignore */ }
+  };
+
   const patternStyle = selectedPattern && selectedPattern !== 'none' ? bgPatterns[selectedPattern] : undefined;
 
   return (
@@ -153,12 +184,43 @@ export default function PreviewPage() {
       className={`min-h-screen flex flex-col items-center relative ${!isCustom ? theme.bg : ''} ${fontCls}`}
       style={customBgStyle}
     >
+      {patternGlow && (
+        <style>{`
+          @keyframes glowColorShift {
+            0%, 100% { background-color: rgba(168,85,247,0.8); }
+            25% { background-color: rgba(236,72,153,0.8); }
+            50% { background-color: rgba(59,130,246,0.8); }
+            75% { background-color: rgba(52,211,153,0.8); }
+          }
+          @keyframes glowMove {
+            0%, 100% { transform: translate(0%, 0%) scale(1); }
+            25% { transform: translate(10%, 8%) scale(1.1); }
+            50% { transform: translate(-5%, 12%) scale(1.05); }
+            75% { transform: translate(-8%, -5%) scale(1.12); }
+          }
+        `}</style>
+      )}
       {/* Pattern overlay */}
       {patternStyle && (
         <div
           className="absolute inset-0 pointer-events-none z-0"
           style={patternStyle}
         />
+      )}
+      {/* Glow overlay */}
+      {patternGlow && (
+        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+          <div
+            className="absolute rounded-full blur-3xl"
+            style={{
+              width: '75%',
+              height: '55%',
+              top: '20%',
+              left: '12%',
+              animation: 'glowColorShift 8s ease-in-out infinite, glowMove 6s ease-in-out infinite',
+            }}
+          />
+        </div>
       )}
 
       {/* Profile */}
@@ -222,6 +284,7 @@ export default function PreviewPage() {
             href={link.url || '#'}
             target={link.url ? '_blank' : undefined}
             rel="noopener noreferrer"
+            onClick={() => trackLinkClick(link)}
             className={`block ${!link.color && !isCustom ? `${theme.card} ${theme.cardBorder}` : ''} ${btnCls} px-5 py-3.5 text-center hover:scale-[1.02] transition-transform`}
             style={link.color
               ? { backgroundColor: link.color, border: '1px solid rgba(0,0,0,0.06)' }

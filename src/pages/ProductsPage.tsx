@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import {
-  Link2, Settings, Users, DollarSign, BarChart3,
+  Link2, Settings, Users,
   ChevronRight, Instagram, Music2, Linkedin, Twitter,
   ArrowRight,
 } from 'lucide-react';
@@ -11,16 +11,13 @@ const sidebarItems = [
   { icon: Link2, label: 'Link in bio + tools', desc: 'Everything you need to connect audiences to your content.', to: '/create' },
   { icon: Settings, label: 'Manage your social media', desc: 'Schedule, publish, and analyze across platforms.', to: '/create' },
   { icon: Users, label: 'Grow and engage your audience', desc: 'Turn followers into fans with powerful tools.', to: '/admin/audience/contacts' },
-  { icon: DollarSign, label: 'Monetize your following', desc: 'Start earning from your content and community.', to: '/create' },
-  { icon: BarChart3, label: 'Measure your success', desc: 'Track clicks, views, and revenue in one dashboard.', to: '/create' },
 ];
 
 const productItems = [
   { title: 'Link in bio', desc: 'Customize your OpenBio', icon: '🔗', to: '/create' },
-  { title: 'Link shortener', desc: 'Create trackable, shareable short links', icon: '✂️', to: '/create' },
+  { title: 'Link shortener', desc: 'Create trackable, shareable short links', icon: '✂️', to: '/link-shortener' },
   { title: 'QR code generator', desc: 'Turn links into scannable QR codes', icon: '📱', to: '/qr-code' },
   { title: 'Canva Background Editor', desc: 'Import your custom designs from Canva into your profile', icon: '🎨', to: '/create' },
-  { title: 'OpenBio for every social platform', desc: 'Grow and engage your audience everywhere', icon: '🌐', to: '/create' },
 ];
 
 const socialIcons = [
@@ -127,7 +124,7 @@ export default function ProductsPage() {
               One link to share everything you create, curate, and sell across all your socials.
             </p>
             <Link
-              to={isLoggedIn ? '/create' : '/signup'}
+              to={isLoggedIn ? '/dashboard' : '/signup'}
               className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-900 font-semibold rounded-full hover:bg-gray-100 transition-colors"
             >
               {isLoggedIn ? 'Go to Dashboard' : 'Get started free'} <ArrowRight size={18} />
