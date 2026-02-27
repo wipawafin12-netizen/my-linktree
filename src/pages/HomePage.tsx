@@ -278,7 +278,7 @@ export default function HomePage() {
                 transition={{ duration: 0.5, delay: i * 0.12 }}
                 className="relative group rounded-3xl p-8 bg-gradient-to-br from-white/[0.05] to-transparent border border-white/[0.06] hover:border-violet-500/20 hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="text-6xl font-extrabold text-white/[0.03] absolute top-5 right-6 group-hover:text-violet-500/10 transition-colors duration-300">
+                <div className="text-6xl font-extrabold text-white/10 absolute top-5 right-6 group-hover:text-violet-500/20 transition-colors duration-300">
                   {step}
                 </div>
                 <div className="relative">
