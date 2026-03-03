@@ -1,13 +1,36 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useRef } from 'react';
-import { Instagram, Music2, Twitter, Youtube, Search, Star, TrendingUp, Sparkles, ChevronLeft, ChevronRight, Rocket, Palette } from 'lucide-react';
+import {
+  Instagram, Music2, Twitter, Youtube, Search, Star,
+  TrendingUp, Sparkles, ChevronLeft, ChevronRight, Rocket,
+  X, Eye, ArrowRight, Layers, Filter,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+// ─── Data ────────────────────────────────────────────────────────
 const categories = [
   'All', 'Fashion', 'Health and Fitness', 'Influencer and Creator', 'Marketing',
   'Music', 'Small Business', 'Social Media', 'Sports', 'Telegram', 'Whatsapp',
   'Food & Drink', 'Technology', 'Art & Design', 'Education',
 ];
+
+const categoryIcons: Record<string, string> = {
+  'All': '✦',
+  'Fashion': '👗',
+  'Health and Fitness': '💪',
+  'Influencer and Creator': '⭐',
+  'Marketing': '📈',
+  'Music': '🎵',
+  'Small Business': '🏪',
+  'Social Media': '📱',
+  'Sports': '⚡',
+  'Telegram': '✈️',
+  'Whatsapp': '💬',
+  'Food & Drink': '🍽️',
+  'Technology': '💻',
+  'Art & Design': '🎨',
+  'Education': '📚',
+};
 
 const templates = [
   {
@@ -23,6 +46,7 @@ const templates = [
     textColor: 'text-white',
     bioColor: 'text-white/70',
     tag: 'Popular',
+    accent: '#7cb342',
   },
   {
     name: 'Katy Delma',
@@ -35,6 +59,7 @@ const templates = [
     linkStyle: 'bg-white/90 text-gray-800',
     textColor: 'text-white',
     bioColor: 'text-white/80',
+    accent: '#2a8a8a',
   },
   {
     name: 'Matthew Hugh',
@@ -47,6 +72,7 @@ const templates = [
     linkStyle: 'bg-[#e8a87c]/80 text-[#3d2b1f]',
     textColor: 'text-white',
     bioColor: 'text-white/70',
+    accent: '#e8a87c',
   },
   {
     name: 'Luna Studio',
@@ -61,6 +87,7 @@ const templates = [
     textColor: 'text-white',
     bioColor: 'text-white/60',
     tag: 'Trending',
+    accent: '#e94560',
   },
   {
     name: 'Bella Rose',
@@ -74,6 +101,7 @@ const templates = [
     textColor: 'text-[#880e4f]',
     bioColor: 'text-[#ad1457]',
     tag: 'Popular',
+    accent: '#e91e63',
   },
   {
     name: 'FitCore',
@@ -87,6 +115,7 @@ const templates = [
     linkStyle: 'bg-[#ff6b00] text-white',
     textColor: 'text-white',
     bioColor: 'text-gray-400',
+    accent: '#ff6b00',
   },
   {
     name: 'Sakura Cafe',
@@ -101,6 +130,7 @@ const templates = [
     textColor: 'text-[#5e3a3a]',
     bioColor: 'text-[#8b5e5e]',
     tag: 'New',
+    accent: '#d4a0a0',
   },
   {
     name: 'DJ Nexus',
@@ -115,6 +145,7 @@ const templates = [
     textColor: 'text-white',
     bioColor: 'text-purple-300/70',
     tag: 'Trending',
+    accent: '#7b2ff7',
   },
   {
     name: 'GreenLeaf',
@@ -128,6 +159,7 @@ const templates = [
     linkStyle: 'bg-white/80 text-[#2e7d32]',
     textColor: 'text-[#1b5e20]',
     bioColor: 'text-[#388e3c]',
+    accent: '#2e7d32',
   },
   {
     name: 'Alex Chen',
@@ -142,6 +174,7 @@ const templates = [
     textColor: 'text-white',
     bioColor: 'text-slate-400',
     tag: 'Popular',
+    accent: '#38bdf8',
   },
   {
     name: 'Nomad Tales',
@@ -155,6 +188,7 @@ const templates = [
     linkStyle: 'bg-white/90 text-[#bf360c]',
     textColor: 'text-white',
     bioColor: 'text-white/80',
+    accent: '#ff6d00',
   },
   {
     name: 'Mia Waves',
@@ -169,6 +203,7 @@ const templates = [
     textColor: 'text-white',
     bioColor: 'text-white/70',
     tag: 'New',
+    accent: '#48c9b0',
   },
   {
     name: 'Velvet Records',
@@ -182,6 +217,7 @@ const templates = [
     linkStyle: 'bg-[#ff1744]/20 text-[#ff8a80] border border-[#ff1744]/30',
     textColor: 'text-white',
     bioColor: 'text-red-300/60',
+    accent: '#ff1744',
   },
   {
     name: 'StyleHaus',
@@ -196,6 +232,7 @@ const templates = [
     textColor: 'text-[#3e2723]',
     bioColor: 'text-[#6d4c41]',
     tag: 'Trending',
+    accent: '#8d6e63',
   },
   {
     name: 'Mindful Maya',
@@ -209,6 +246,7 @@ const templates = [
     linkStyle: 'bg-[#a1887f]/15 text-[#5d4037] border border-[#a1887f]/25',
     textColor: 'text-[#4e342e]',
     bioColor: 'text-[#795548]',
+    accent: '#a1887f',
   },
   {
     name: 'ByteBot',
@@ -223,6 +261,7 @@ const templates = [
     textColor: 'text-white',
     bioColor: 'text-[#8892b0]',
     tag: 'New',
+    accent: '#64ffda',
   },
   {
     name: 'Neon Nights',
@@ -236,6 +275,7 @@ const templates = [
     linkStyle: 'bg-[#ff00ff]/15 text-white border border-[#ff00ff]/30',
     textColor: 'text-white',
     bioColor: 'text-purple-200/60',
+    accent: '#ff00ff',
   },
   {
     name: 'Chef Marco',
@@ -249,6 +289,7 @@ const templates = [
     linkStyle: 'bg-[#ffb74d]/20 text-[#ffe0b2] border border-[#ffb74d]/30',
     textColor: 'text-white',
     bioColor: 'text-orange-200/70',
+    accent: '#ffb74d',
   },
   {
     name: 'EduSpark',
@@ -262,6 +303,7 @@ const templates = [
     linkStyle: 'bg-white/15 text-white border border-white/20',
     textColor: 'text-white',
     bioColor: 'text-blue-200/70',
+    accent: '#ffd740',
   },
   {
     name: 'Pixel Art Co.',
@@ -275,6 +317,7 @@ const templates = [
     linkStyle: 'bg-[#76ff03]/12 text-[#76ff03] border border-[#76ff03]/25',
     textColor: 'text-white',
     bioColor: 'text-gray-400',
+    accent: '#76ff03',
   },
   {
     name: 'Telegram Hub',
@@ -288,6 +331,7 @@ const templates = [
     linkStyle: 'bg-white/20 text-white border border-white/25',
     textColor: 'text-white',
     bioColor: 'text-blue-100/70',
+    accent: '#0088cc',
   },
   {
     name: 'WA Business',
@@ -301,6 +345,7 @@ const templates = [
     linkStyle: 'bg-[#25d366]/20 text-white border border-[#25d366]/30',
     textColor: 'text-white',
     bioColor: 'text-green-100/70',
+    accent: '#25d366',
   },
   {
     name: 'AdPro',
@@ -314,110 +359,364 @@ const templates = [
     linkStyle: 'bg-white/90 text-[#e65100]',
     textColor: 'text-white',
     bioColor: 'text-orange-100/80',
+    accent: '#ff6f00',
   },
 ];
 
-const tagConfig: Record<string, { icon: typeof Star; bg: string; text: string }> = {
-  Popular: { icon: Star, bg: 'bg-amber-400/90', text: 'text-amber-900' },
-  Trending: { icon: TrendingUp, bg: 'bg-rose-500/90', text: 'text-white' },
-  New: { icon: Sparkles, bg: 'bg-emerald-500/90', text: 'text-white' },
+const tagConfig: Record<string, { icon: typeof Star; bg: string; text: string; glow: string }> = {
+  Popular: { icon: Star, bg: 'bg-gradient-to-r from-amber-400 to-yellow-400', text: 'text-amber-900', glow: 'shadow-amber-400/30' },
+  Trending: { icon: TrendingUp, bg: 'bg-gradient-to-r from-rose-500 to-pink-500', text: 'text-white', glow: 'shadow-rose-500/30' },
+  New: { icon: Sparkles, bg: 'bg-gradient-to-r from-emerald-400 to-teal-500', text: 'text-white', glow: 'shadow-emerald-400/30' },
 };
 
-function TemplateCard({ t, index, onUse }: { t: typeof templates[0]; index: number; onUse: () => void }) {
+// ─── Template Card ───────────────────────────────────────────────
+function TemplateCard({
+  t, index, onUse, onPreview,
+}: {
+  t: typeof templates[0]; index: number; onUse: () => void; onPreview: () => void;
+}) {
   const tag = t.tag ? tagConfig[t.tag] : null;
   const TagIcon = tag?.icon;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 28 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.04 }}
-      className="rounded-2xl overflow-hidden shadow-md hover:shadow-2xl cursor-pointer group transition-all duration-300 hover:-translate-y-1.5 relative"
+      transition={{ duration: 0.45, delay: index * 0.04, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="rounded-[20px] overflow-hidden shadow-md hover:shadow-2xl cursor-pointer group transition-all duration-500 hover:-translate-y-2 relative"
+      style={{ aspectRatio: '3/4.5' }}
     >
       {/* Tag Badge */}
       {tag && TagIcon && (
-        <div className={`absolute top-3 right-3 z-20 ${tag.bg} ${tag.text} backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1 shadow-lg`}>
+        <div className={`absolute top-3 right-3 z-20 ${tag.bg} ${tag.text} px-2.5 py-1 rounded-full flex items-center gap-1 shadow-lg ${tag.glow}`}>
           <TagIcon size={11} />
           <span className="text-[10px] font-bold tracking-wide">{t.tag}</span>
         </div>
       )}
 
-      {/* Background Image */}
+      {/* Background */}
       <div className="absolute inset-0">
         <img
           src={t.bgImage}
           alt=""
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           loading="lazy"
         />
         <div className={`absolute inset-0 bg-gradient-to-b ${t.overlay}`} />
+        {/* Accent glow at bottom */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-32 opacity-0 group-hover:opacity-40 transition-opacity duration-500 blur-2xl"
+          style={{ backgroundColor: t.accent }}
+        />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 px-5 pt-7 pb-6 flex flex-col items-center text-center">
+      <div className="relative z-10 h-full flex flex-col px-5 pt-8 pb-5">
         {/* Avatar */}
-        <div
-          className="w-16 h-16 rounded-full flex items-center justify-center mb-3 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300 shadow-lg group-hover:shadow-xl"
-          style={{ backgroundColor: t.avatarBg }}
-        >
-          {t.avatarText ? (
-            <span className="text-white text-sm font-semibold italic">{t.avatarText}</span>
-          ) : (
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-white/30 to-white/10" />
-          )}
+        <div className="flex justify-center mb-3">
+          <div
+            className="w-[68px] h-[68px] rounded-full flex items-center justify-center ring-[3px] ring-white/25 group-hover:ring-white/50 transition-all duration-500 shadow-xl group-hover:shadow-2xl group-hover:scale-105"
+            style={{ backgroundColor: t.avatarBg }}
+          >
+            {t.avatarText ? (
+              <span className="text-white text-sm font-semibold italic drop-shadow-sm">{t.avatarText}</span>
+            ) : (
+              <div className="w-full h-full rounded-full bg-gradient-to-br from-white/30 to-white/10" />
+            )}
+          </div>
         </div>
 
-        <h4 className={`text-base font-bold drop-shadow-sm ${t.textColor}`}>{t.name}</h4>
-        <p className={`text-xs mt-1 leading-relaxed ${t.bioColor} px-2`}>{t.bio}</p>
+        {/* Text */}
+        <div className="text-center mb-auto">
+          <h4 className={`text-[15px] font-bold drop-shadow-sm ${t.textColor} leading-tight`}>{t.name}</h4>
+          <p className={`text-[11px] mt-1.5 leading-relaxed ${t.bioColor} line-clamp-2 px-1`}>{t.bio}</p>
+        </div>
 
         {/* Links */}
-        <div className="w-full mt-4 space-y-2">
-          {t.links.map((link) => (
+        <div className="w-full space-y-[6px] mb-3">
+          {t.links.slice(0, 3).map((link) => (
             <div
               key={link}
-              className={`w-full py-2 rounded-lg text-xs font-medium text-center backdrop-blur-sm ${t.linkStyle}`}
+              className={`w-full py-[7px] rounded-lg text-[11px] font-medium text-center backdrop-blur-md ${t.linkStyle} transition-transform duration-300`}
             >
               {link}
             </div>
           ))}
+          {t.links.length > 3 && (
+            <div className={`text-center text-[10px] font-medium ${t.bioColor} mt-1`}>
+              +{t.links.length - 3} more
+            </div>
+          )}
         </div>
 
         {/* Social Icons */}
-        <div className="flex items-center gap-2.5 mt-4 opacity-50">
-          <Music2 size={13} className={t.textColor} />
-          <Youtube size={13} className={t.textColor} />
-          <Twitter size={13} className={t.textColor} />
-          <Instagram size={13} className={t.textColor} />
+        <div className="flex items-center justify-center gap-3 opacity-40 group-hover:opacity-60 transition-opacity">
+          <Music2 size={12} className={t.textColor} />
+          <Youtube size={12} className={t.textColor} />
+          <Twitter size={12} className={t.textColor} />
+          <Instagram size={12} className={t.textColor} />
         </div>
       </div>
 
-      {/* Hover Overlay with Use Button */}
-      <div className="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-end justify-center pb-5 px-5">
+      {/* Hover Overlay */}
+      <div className="absolute inset-0 z-20 bg-black/0 group-hover:bg-black/40 transition-all duration-400 flex flex-col items-center justify-end pb-5 px-4 gap-2">
         <button
-          onClick={onUse}
-          className="w-full py-2.5 rounded-xl bg-white text-gray-900 text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-gray-50"
+          onClick={(e) => { e.stopPropagation(); onPreview(); }}
+          className="w-full py-2.5 rounded-xl bg-white/20 backdrop-blur-md text-white text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:bg-white/30 flex items-center justify-center gap-1.5 border border-white/20"
         >
-          Use this template
+          <Eye size={13} /> Preview
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onUse(); }}
+          className="w-full py-2.5 rounded-xl bg-white text-gray-900 text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 delay-100 shadow-lg hover:shadow-xl hover:bg-gray-50 flex items-center justify-center gap-1.5"
+        >
+          <Rocket size={13} /> Use Template
         </button>
       </div>
     </motion.div>
   );
 }
 
+// ─── Preview Modal ───────────────────────────────────────────────
+function PreviewModal({
+  template, onClose, onUse,
+}: {
+  template: typeof templates[0]; onClose: () => void; onUse: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+
+      {/* Modal */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.92, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.92, y: 20 }}
+        transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-lg max-h-[85vh] overflow-hidden rounded-3xl shadow-2xl"
+      >
+        {/* Close */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-30 w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+        >
+          <X size={18} />
+        </button>
+
+        {/* Preview Content */}
+        <div className="relative overflow-y-auto max-h-[85vh]">
+          {/* Background */}
+          <div className="relative w-full" style={{ minHeight: '480px' }}>
+            <img
+              src={template.bgImage}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className={`absolute inset-0 bg-gradient-to-b ${template.overlay}`} />
+
+            {/* Content */}
+            <div className="relative z-10 px-8 pt-12 pb-8 flex flex-col items-center text-center">
+              {/* Avatar */}
+              <div
+                className="w-24 h-24 rounded-full flex items-center justify-center ring-4 ring-white/25 shadow-2xl mb-5"
+                style={{ backgroundColor: template.avatarBg }}
+              >
+                {template.avatarText ? (
+                  <span className="text-white text-xl font-semibold italic">{template.avatarText}</span>
+                ) : (
+                  <div className="w-full h-full rounded-full bg-gradient-to-br from-white/30 to-white/10" />
+                )}
+              </div>
+
+              <h3 className={`text-2xl font-bold ${template.textColor} drop-shadow-md`}>{template.name}</h3>
+              <p className={`text-sm mt-2 ${template.bioColor} max-w-xs leading-relaxed`}>{template.bio}</p>
+
+              {/* Links */}
+              <div className="w-full max-w-xs mt-6 space-y-2.5">
+                {template.links.map((link) => (
+                  <div
+                    key={link}
+                    className={`w-full py-3 rounded-xl text-sm font-medium text-center backdrop-blur-md ${template.linkStyle} transition-transform hover:scale-[1.02]`}
+                  >
+                    {link}
+                  </div>
+                ))}
+              </div>
+
+              {/* Social */}
+              <div className="flex items-center gap-4 mt-6 opacity-50">
+                <Music2 size={16} className={template.textColor} />
+                <Youtube size={16} className={template.textColor} />
+                <Twitter size={16} className={template.textColor} />
+                <Instagram size={16} className={template.textColor} />
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="bg-white px-6 py-5 flex items-center justify-between border-t border-gray-100">
+            <div>
+              <p className="text-sm font-bold text-gray-900">{template.name}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{template.category}</p>
+            </div>
+            <button
+              onClick={onUse}
+              className="flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-200"
+            >
+              <Rocket size={15} />
+              Use Template
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─── Featured Carousel ───────────────────────────────────────────
+function FeaturedCarousel({
+  items, onUse, onPreview,
+}: {
+  items: typeof templates;
+  onUse: (t: typeof templates[0]) => void;
+  onPreview: (t: typeof templates[0]) => void;
+}) {
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (dir: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.clientWidth * 0.7;
+      carouselRef.current.scrollBy({ left: dir === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="relative group/carousel">
+      {/* Scroll buttons */}
+      <button
+        onClick={() => scroll('left')}
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg text-gray-700 hover:bg-white opacity-0 group-hover/carousel:opacity-100 transition-all hover:scale-110"
+      >
+        <ChevronLeft size={20} />
+      </button>
+      <button
+        onClick={() => scroll('right')}
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg text-gray-700 hover:bg-white opacity-0 group-hover/carousel:opacity-100 transition-all hover:scale-110"
+      >
+        <ChevronRight size={20} />
+      </button>
+
+      <div
+        ref={carouselRef}
+        className="flex gap-5 overflow-x-auto scrollbar-hide pb-4 px-1 snap-x snap-mandatory"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {items.map((t, i) => (
+          <motion.div
+            key={t.name}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.08 }}
+            className="flex-shrink-0 w-[280px] sm:w-[300px] snap-start"
+          >
+            {/* Featured card: wider with side info */}
+            <div className="rounded-[20px] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5 group cursor-pointer relative"
+              style={{ aspectRatio: '3/4' }}
+            >
+              {/* Tag */}
+              {t.tag && tagConfig[t.tag] && (() => {
+                const tc = tagConfig[t.tag!];
+                const TIcon = tc.icon;
+                return (
+                  <div className={`absolute top-3 right-3 z-20 ${tc.bg} ${tc.text} px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg ${tc.glow}`}>
+                    <TIcon size={12} />
+                    <span className="text-[11px] font-bold">{t.tag}</span>
+                  </div>
+                );
+              })()}
+
+              {/* BG */}
+              <div className="absolute inset-0">
+                <img src={t.bgImage} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+                <div className={`absolute inset-0 bg-gradient-to-b ${t.overlay}`} />
+              </div>
+
+              {/* Content */}
+              <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 py-8">
+                <div
+                  className="w-20 h-20 rounded-full flex items-center justify-center ring-[3px] ring-white/30 shadow-2xl mb-4"
+                  style={{ backgroundColor: t.avatarBg }}
+                >
+                  {t.avatarText ? (
+                    <span className="text-white text-base font-semibold italic">{t.avatarText}</span>
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-gradient-to-br from-white/30 to-white/10" />
+                  )}
+                </div>
+                <h4 className={`text-lg font-bold ${t.textColor} drop-shadow-md`}>{t.name}</h4>
+                <p className={`text-xs mt-1.5 ${t.bioColor} max-w-[220px] leading-relaxed`}>{t.bio}</p>
+                <div className="w-full max-w-[220px] mt-5 space-y-2">
+                  {t.links.slice(0, 3).map((link) => (
+                    <div key={link} className={`w-full py-2 rounded-lg text-[11px] font-medium text-center backdrop-blur-md ${t.linkStyle}`}>
+                      {link}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Hover */}
+              <div className="absolute inset-0 z-20 bg-black/0 group-hover:bg-black/40 transition-all duration-400 flex flex-col items-center justify-end pb-5 px-5 gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); onPreview(t); }}
+                  className="w-full py-2.5 rounded-xl bg-white/20 backdrop-blur-md text-white text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:bg-white/30 flex items-center justify-center gap-1.5 border border-white/20"
+                >
+                  <Eye size={13} /> Preview
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onUse(t); }}
+                  className="w-full py-2.5 rounded-xl bg-white text-gray-900 text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 delay-100 shadow-lg hover:bg-gray-50 flex items-center justify-center gap-1.5"
+                >
+                  <Rocket size={13} /> Use Template
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Page ───────────────────────────────────────────────────
 export default function TemplatesPage() {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [previewTemplate, setPreviewTemplate] = useState<typeof templates[0] | null>(null);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const filtered = templates.filter((t) => {
     const matchCat = activeCategory === 'All' || t.category === activeCategory;
     const matchSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.bio.toLowerCase().includes(searchQuery.toLowerCase());
+      t.bio.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.category.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCat && matchSearch;
   });
 
-  const featuredTemplates = templates.filter((t) => t.tag === 'Popular');
+  const featuredTemplates = templates.filter((t) => t.tag);
+
+  const handleUse = (t: typeof templates[0]) => {
+    navigate('/create', { state: { template: t } });
+  };
 
   const scrollCategories = (dir: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -426,142 +725,200 @@ export default function TemplatesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafaf9]">
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
 
-        {/* Hero */}
+        {/* ── Hero ── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-14"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16 relative"
         >
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-            Find your perfect <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">template</span>
-          </h1>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            Browse beautiful templates to kickstart your OpenBio. Customize any template to match your brand.
-          </p>
+          {/* Decorative blobs */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] pointer-events-none">
+            <div className="absolute top-0 left-0 w-72 h-72 bg-purple-200/30 rounded-full blur-[80px]" />
+            <div className="absolute bottom-0 right-0 w-72 h-72 bg-pink-200/30 rounded-full blur-[80px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-200/20 rounded-full blur-[60px]" />
+          </div>
+
+          <div className="relative">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 bg-violet-50 border border-violet-100 rounded-full text-violet-600 text-xs font-medium mb-6"
+            >
+              <Layers size={13} />
+              {templates.length}+ Templates
+            </motion.div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-5 leading-tight">
+              Find your perfect
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600">
+                template
+              </span>
+            </h1>
+            <p className="text-base sm:text-lg text-gray-500 max-w-xl mx-auto leading-relaxed">
+              Browse beautifully crafted templates and customize any one
+              to match your brand in seconds.
+            </p>
+          </div>
         </motion.div>
 
-        {/* Featured Section */}
+        {/* ── Search ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="max-w-xl mx-auto mb-10"
+        >
+          <div className="relative group">
+            <Search size={19} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-violet-500 transition-colors" />
+            <input
+              type="text"
+              placeholder="Search by name, category, or keyword..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-13 pr-12 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all shadow-sm hover:shadow-md"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
+              >
+                <X size={13} />
+              </button>
+            )}
+          </div>
+        </motion.div>
+
+        {/* ── Category Filter ── */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.25 }}
+          className="relative mb-12"
+        >
+          {/* Mobile filter toggle */}
+          <button
+            onClick={() => setShowMobileFilters(!showMobileFilters)}
+            className="sm:hidden mb-3 flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 w-full justify-center"
+          >
+            <Filter size={15} />
+            {activeCategory === 'All' ? 'Filter by Category' : activeCategory}
+            {activeCategory !== 'All' && (
+              <span className="w-5 h-5 rounded-full bg-violet-100 text-violet-600 text-[10px] font-bold flex items-center justify-center">
+                1
+              </span>
+            )}
+          </button>
+
+          {/* Desktop: always show. Mobile: toggle */}
+          <div className={`${showMobileFilters ? 'block' : 'hidden'} sm:block relative`}>
+            {/* Scroll arrows */}
+            <button
+              onClick={() => scrollCategories('left')}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-900 shadow-md lg:hidden"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              onClick={() => scrollCategories('right')}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-900 shadow-md lg:hidden"
+            >
+              <ChevronRight size={16} />
+            </button>
+
+            <div
+              ref={scrollRef}
+              className="flex lg:flex-wrap lg:justify-center gap-2 overflow-x-auto scrollbar-hide px-10 lg:px-0 pb-2 lg:pb-0"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {categories.map((cat, i) => {
+                const count = cat === 'All' ? templates.length : templates.filter(t => t.category === cat).length;
+                const isActive = activeCategory === cat;
+                return (
+                  <motion.button
+                    key={cat}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.2, delay: 0.3 + i * 0.02 }}
+                    onClick={() => { setActiveCategory(cat); setShowMobileFilters(false); }}
+                    className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                      isActive
+                        ? 'bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-900/10'
+                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="text-sm">{categoryIcons[cat]}</span>
+                    {cat}
+                    <span className={`text-[11px] ${isActive ? 'text-gray-400' : 'text-gray-400'} ml-0.5`}>
+                      {count}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── Featured Section ── */}
         {activeCategory === 'All' && !searchQuery && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="mb-14"
           >
-            <div className="flex items-center gap-2 mb-5">
-              <Star size={18} className="text-amber-500 fill-amber-500" />
-              <h2 className="text-lg font-bold text-gray-900">Popular templates</h2>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-sm">
+                  <Star size={15} className="text-white fill-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900">Featured Templates</h2>
+                  <p className="text-xs text-gray-400">Hand-picked popular & trending templates</p>
+                </div>
+              </div>
+              <div className="text-xs text-gray-400">{featuredTemplates.length} templates</div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-              {featuredTemplates.map((t, i) => (
-                <TemplateCard
-                  key={`featured-${t.name}`}
-                  t={t}
-                  index={i}
-                  onUse={() => { navigate('/create', { state: { template: t } }); }}
-                />
-              ))}
-            </div>
+
+            <FeaturedCarousel
+              items={featuredTemplates}
+              onUse={handleUse}
+              onPreview={(t) => setPreviewTemplate(t)}
+            />
           </motion.div>
         )}
 
-        {/* Search Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="max-w-md mx-auto mb-8"
-        >
-          <div className="relative">
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search templates..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-400 transition-all shadow-sm"
-            />
-          </div>
-        </motion.div>
-
-        {/* Category Filter - Scrollable on mobile */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.15 }}
-          className="relative mb-12"
-        >
-          {/* Scroll arrows for mobile */}
-          <button
-            onClick={() => scrollCategories('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-900 shadow-sm sm:hidden"
-          >
-            <ChevronLeft size={16} />
-          </button>
-          <button
-            onClick={() => scrollCategories('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-900 shadow-sm sm:hidden"
-          >
-            <ChevronRight size={16} />
-          </button>
-
-          <div
-            ref={scrollRef}
-            className="flex sm:flex-wrap sm:justify-center gap-2 overflow-x-auto scrollbar-hide px-8 sm:px-0 pb-2 sm:pb-0"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {categories.map((cat, i) => {
-              const count = cat === 'All' ? templates.length : templates.filter(t => t.category === cat).length;
-              return (
-                <motion.button
-                  key={cat}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2, delay: 0.2 + i * 0.02 }}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 cursor-pointer ${
-                    activeCategory === cat
-                      ? 'bg-gray-900 text-white border-gray-900 shadow-md'
-                      : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-900 hover:text-white hover:border-gray-900'
-                  }`}
-                >
-                  {cat}
-                  <span className={`ml-1.5 text-xs ${activeCategory === cat ? 'text-gray-400' : 'text-gray-400'}`}>
-                    {count}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Templates Count + Active Filters */}
+        {/* ── Results header ── */}
         <div className="flex items-center justify-between mb-6">
-          <div className="text-sm text-gray-500">
-            {filtered.length} template{filtered.length !== 1 ? 's' : ''} found
-            {activeCategory !== 'All' && <span> in <strong>{activeCategory}</strong></span>}
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-bold text-gray-900">
+              {activeCategory === 'All' ? 'All Templates' : activeCategory}
+            </h2>
+            <span className="px-2.5 py-1 bg-gray-100 text-gray-500 text-xs font-medium rounded-full">
+              {filtered.length}
+            </span>
           </div>
           {(activeCategory !== 'All' || searchQuery) && (
             <button
               onClick={() => { setActiveCategory('All'); setSearchQuery(''); }}
-              className="text-sm font-medium text-purple-600 hover:text-purple-700 cursor-pointer"
+              className="flex items-center gap-1.5 text-sm font-medium text-violet-600 hover:text-violet-700 cursor-pointer"
             >
-              Clear filters
+              <X size={14} /> Clear
             </button>
           )}
         </div>
 
-        {/* Templates Grid */}
+        {/* ── Template Grid ── */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory + searchQuery}
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
+            exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
             className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5"
           >
@@ -570,67 +927,97 @@ export default function TemplatesPage() {
                 key={t.name}
                 t={t}
                 index={i}
-                onUse={() => { navigate('/create', { state: { template: t } }); }}
+                onUse={() => handleUse(t)}
+                onPreview={() => setPreviewTemplate(t)}
               />
             ))}
           </motion.div>
         </AnimatePresence>
 
-        {/* Empty State */}
+        {/* ── Empty State ── */}
         {filtered.length === 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-20"
+            className="text-center py-24"
           >
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Search size={24} className="text-gray-400" />
+            <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-sm">
+              <Search size={28} className="text-gray-300" />
             </div>
-            <p className="text-gray-900 text-lg font-semibold">No templates found</p>
-            <p className="text-gray-400 text-sm mt-1">Try adjusting your search or filters</p>
+            <p className="text-gray-900 text-xl font-bold">No templates found</p>
+            <p className="text-gray-400 text-sm mt-2 max-w-sm mx-auto">
+              We couldn't find any templates matching your search. Try different keywords or browse all templates.
+            </p>
             <button
               onClick={() => { setActiveCategory('All'); setSearchQuery(''); }}
-              className="mt-5 px-6 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-full hover:bg-gray-800 transition-colors cursor-pointer"
+              className="mt-6 px-8 py-3 text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-200 cursor-pointer"
             >
               View all templates
             </button>
           </motion.div>
         )}
 
-        {/* Bottom CTA Section */}
+        {/* ── Bottom CTA ── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mt-20 text-center"
+          className="mt-24"
         >
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl px-8 py-14 relative overflow-hidden">
-            {/* Decorative elements */}
-            <div className="absolute top-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+          <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-[28px] px-8 sm:px-12 py-16 overflow-hidden">
+            {/* Decorative */}
+            <div className="absolute top-0 left-0 w-80 h-80 bg-violet-500/15 rounded-full blur-[100px] -translate-x-1/3 -translate-y-1/3" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-pink-500/15 rounded-full blur-[100px] translate-x-1/3 translate-y-1/3" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-indigo-500/10 rounded-full blur-[80px]" />
 
-            <div className="relative z-10">
-              <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                <Rocket size={24} className="text-white" />
+            {/* Grid pattern */}
+            <div className="absolute inset-0 opacity-[0.03]" style={{
+              backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
+            }} />
+
+            <div className="relative z-10 text-center max-w-lg mx-auto">
+              <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 ring-1 ring-white/10">
+                <Rocket size={28} className="text-white" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">
                 Can't find what you need?
               </h2>
-              <p className="text-gray-400 max-w-md mx-auto mb-8">
-                Start from scratch and build your own unique page with our powerful editor.
+              <p className="text-gray-400 mb-8 leading-relaxed">
+                Start from scratch and build your own unique page with our powerful drag-and-drop editor.
               </p>
-              <button
-                onClick={() => navigate('/create')}
-                className="px-8 py-3 bg-white text-gray-900 text-sm font-bold rounded-full hover:bg-gray-100 transition-colors shadow-lg cursor-pointer"
-              >
-                Create from scratch
-              </button>
+              <div className="flex items-center justify-center gap-3 flex-wrap">
+                <button
+                  onClick={() => navigate('/create')}
+                  className="group flex items-center gap-2 px-8 py-3.5 bg-white text-gray-900 text-sm font-bold rounded-xl hover:bg-gray-100 transition-all shadow-lg cursor-pointer"
+                >
+                  Create from scratch
+                  <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                </button>
+                <button
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  className="px-8 py-3.5 bg-white/10 backdrop-blur-sm text-white text-sm font-medium rounded-xl hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+                >
+                  Back to top
+                </button>
+              </div>
             </div>
           </div>
         </motion.div>
 
       </div>
+
+      {/* ── Preview Modal ── */}
+      <AnimatePresence>
+        {previewTemplate && (
+          <PreviewModal
+            template={previewTemplate}
+            onClose={() => setPreviewTemplate(null)}
+            onUse={() => { handleUse(previewTemplate); }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

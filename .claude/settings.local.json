@@ -7,7 +7,8 @@
       "Bash(npx vite:*)",
       "Bash(git status:*)",
       "Bash(git log:*)",
-      "Bash(timeout 5 curl:*)"
+      "Bash(timeout 5 curl:*)",
+      "Bash(wc:*)"
     ]
   }
 }
