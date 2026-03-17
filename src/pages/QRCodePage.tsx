@@ -3,27 +3,73 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { motion } from 'motion/react';
 import { Download, Copy, Check, ExternalLink, QrCode, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import pb from '../lib/pb';
 
 export default function QRCodePage() {
-  const { username } = useAuth();
+  const { user, username } = useAuth();
   const [copied, setCopied] = useState(false);
   const [displayName, setDisplayName] = useState('');
+  const [url, setUrl] = useState('');
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  // ดึงชื่อจาก localStorage (openbio_preview) เหมือน PreviewPage
+  // Fetch displayName from PocketBase (authoritative source)
+  // This ensures the QR code URL matches what PreviewPage uses to look up the page
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem('openbio_preview');
-      if (raw) {
-        const data = JSON.parse(raw);
-        if (data.displayName) setDisplayName(data.displayName);
-      }
-    } catch { /* ignore */ }
-  }, []);
+    if (user?.id) {
+      (async () => {
+        try {
+          const pages = await pb.collection('pages').getList(1, 1, {
+            filter: `user = "${user.id}"`,
+          });
+          if (pages.items.length > 0) {
+            const name = pages.items[0].displayName || '';
+            setDisplayName(name);
+            const slug = name || username || 'my_page';
+            setUrl(`${window.location.origin}/#/${slug}`);
+          } else {
+            // No page in PB yet, fallback to username
+            const slug = username || 'my_page';
+            setDisplayName(slug);
+            setUrl(`${window.location.origin}/#/${slug}`);
+          }
+        } catch (err) {
+          console.error('Failed to fetch page:', err);
+          // Fallback to localStorage
+          try {
+            const raw = localStorage.getItem('openbio_preview');
+            if (raw) {
+              const data = JSON.parse(raw);
+              if (data.displayName) {
+                setDisplayName(data.displayName);
+                setUrl(`${window.location.origin}/#/${data.displayName}`);
+                return;
+              }
+            }
+          } catch { /* ignore */ }
+          const slug = username || 'my_page';
+          setDisplayName(slug);
+          setUrl(`${window.location.origin}/#/${slug}`);
+        }
+      })();
+    } else {
+      // Not logged in - use localStorage
+      try {
+        const raw = localStorage.getItem('openbio_preview');
+        if (raw) {
+          const data = JSON.parse(raw);
+          if (data.displayName) {
+            setDisplayName(data.displayName);
+            setUrl(`${window.location.origin}/#/${data.displayName}`);
+            return;
+          }
+        }
+      } catch { /* ignore */ }
+      setUrl(`${window.location.origin}/#/preview`);
+    }
+  }, [user?.id, username]);
 
-  const shortName = username || displayName || 'my_page';
-  const previewUrl = `${window.location.origin}/${shortName}`;
-  const [url, setUrl] = useState(previewUrl);
+  const shortName = displayName || username || 'my_page';
+  const previewUrl = `${window.location.origin}/#/${shortName}`;
 
   const handleCopy = useCallback(async () => {
     if (!url) return;
@@ -75,16 +121,19 @@ export default function QRCodePage() {
           transition={{ duration: 0.4 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8"
         >
-          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-gray-200 shadow-sm">
+          <a
+            href={`/${shortName}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-gray-200 shadow-sm hover:shadow-md hover:border-purple-200 transition-all cursor-pointer"
+          >
             <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
               <span className="text-white text-[8px] font-bold">LC</span>
             </div>
             <span className="text-sm text-gray-500">linkc.ee/</span>
             <span className="text-sm font-semibold text-gray-900">{shortName}</span>
-            <a href="/preview" target="_blank" rel="noopener noreferrer" className="ml-1 text-gray-400 hover:text-purple-500 transition-colors">
-              <ExternalLink size={13} />
-            </a>
-          </div>
+            <ExternalLink size={13} className="ml-1 text-gray-400" />
+          </a>
           <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Live Preview</span>
         </motion.div>
 
@@ -151,7 +200,7 @@ export default function QRCodePage() {
                   />
                 ) : (
                   <div className="flex items-center justify-center bg-gray-50 rounded-xl" style={{ width: 200, height: 200 }}>
-                    <p className="text-gray-300 text-sm text-center px-4">กรอก URL เพื่อสร้าง QR Code</p>
+                    <p className="text-gray-300 text-sm text-center px-4">กำลังโหลด...</p>
                   </div>
                 )}
               </div>

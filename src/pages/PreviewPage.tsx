@@ -3,6 +3,8 @@ import {
   Instagram, Youtube, Twitter, Music2, Facebook, Twitch, Github, Globe,
   AtSign, Mail, Send, Phone, User, ExternalLink,
 } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import pb, { getFileUrl } from '../lib/pb';
 
 // Same themes as CreatePage
 const themes = [
@@ -91,6 +93,10 @@ interface LinkItem {
 }
 
 export default function PreviewPage() {
+  const { username } = useParams<{ username: string }>();
+  const [pbPageId, setPbPageId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(!!username);
+  const [notFound, setNotFound] = useState(false);
   const [data, setData] = useState<{
     displayName: string; bio: string; avatar: string;
     selectedTheme: string; selectedButton: string; selectedFont: string;
@@ -101,34 +107,145 @@ export default function PreviewPage() {
   } | null>(null);
 
   useEffect(() => {
-    const raw = localStorage.getItem('openbio_preview');
-    if (raw) setData(JSON.parse(raw));
+    if (username) {
+      // Public route /:username → fetch from PocketBase
+      const abortController = new AbortController();
+      setLoading(true);
+      setNotFound(false);
+      (async () => {
+        try {
+          // Try looking up by displayName first
+          let pages = await pb.collection('pages').getList(1, 1, {
+            filter: `displayName = "${username}"`,
+            requestKey: null,
+          });
 
-    // Track page view
-    try {
-      const analyticsRaw = localStorage.getItem('openbio_analytics');
-      const analytics = analyticsRaw
-        ? JSON.parse(analyticsRaw)
-        : { pageViews: 0, linkClicks: [], viewHistory: [] };
-      analytics.pageViews = (analytics.pageViews || 0) + 1;
-      if (!analytics.viewHistory) analytics.viewHistory = [];
-      analytics.viewHistory.push(new Date().toISOString());
-      localStorage.setItem('openbio_analytics', JSON.stringify(analytics));
-    } catch { /* ignore */ }
+          // Fallback: if not found by displayName, try finding a user with that name
+          // then get their page
+          if (pages.items.length === 0) {
+            try {
+              const users = await pb.collection('users').getList(1, 1, {
+                filter: `name = "${username}"`,
+                requestKey: null,
+              });
+              if (users.items.length > 0) {
+                pages = await pb.collection('pages').getList(1, 1, {
+                  filter: `user = "${users.items[0].id}"`,
+                  requestKey: null,
+                });
+              }
+            } catch { /* ignore fallback errors */ }
+          }
 
-    // Listen for storage changes (from CreatePage)
-    const handler = () => {
-      const updated = localStorage.getItem('openbio_preview');
-      if (updated) setData(JSON.parse(updated));
-    };
-    window.addEventListener('storage', handler);
-    return () => window.removeEventListener('storage', handler);
-  }, []);
+          if (abortController.signal.aborted) return;
+
+          if (pages.items.length === 0) {
+            setNotFound(true);
+            setLoading(false);
+            return;
+          }
+
+          const p = pages.items[0];
+          setPbPageId(p.id);
+
+          const linksResult = await pb.collection('links').getFullList({
+            filter: `page = "${p.id}"`,
+            sort: 'order',
+            requestKey: null,
+          });
+
+          setData({
+            displayName: p.displayName || '',
+            bio: p.bio || '',
+            avatar: p.avatar ? getFileUrl(p, p.avatar) : '',
+            selectedTheme: p.selectedTheme || 'minimal',
+            selectedButton: p.selectedButton || 'rounded',
+            selectedFont: p.selectedFont || 'inter',
+            customTextColor: p.customTextColor || '',
+            customBgColor: p.customBgColor || '#6366f1',
+            customBgSecondary: p.customBgSecondary || '#4f46e5',
+            links: linksResult.map((l: any) => ({
+              id: l.id, title: l.title, url: l.url,
+              enabled: l.enabled, color: l.color || '',
+            })),
+            activeSocials: p.activeSocials || [],
+            socialUrls: p.socialUrls || {},
+            selectedPattern: p.selectedPattern || 'none',
+            patternGlow: !!p.patternGlow,
+          });
+
+          // Track page view
+          pb.collection('analytics').create({
+            page: p.id, type: 'view',
+          }, { requestKey: null }).catch(() => {});
+        } catch (err: any) {
+          if (abortController.signal.aborted) return;
+          // Only show 404 for real errors, not auto-cancellation
+          if (err?.status === 0 || err?.isAbort) {
+            console.warn('Request was cancelled:', err);
+            return;
+          }
+          console.error('Failed to load public page:', err);
+          setNotFound(true);
+        } finally {
+          if (!abortController.signal.aborted) {
+            setLoading(false);
+          }
+        }
+      })();
+      return () => { abortController.abort(); };
+    } else {
+      // /preview route → read from localStorage
+      const raw = localStorage.getItem('openbio_preview');
+      if (raw) setData(JSON.parse(raw));
+
+      // Track page view in localStorage
+      try {
+        const analyticsRaw = localStorage.getItem('openbio_analytics');
+        const analytics = analyticsRaw
+          ? JSON.parse(analyticsRaw)
+          : { pageViews: 0, linkClicks: [], viewHistory: [] };
+        analytics.pageViews = (analytics.pageViews || 0) + 1;
+        if (!analytics.viewHistory) analytics.viewHistory = [];
+        analytics.viewHistory.push(new Date().toISOString());
+        localStorage.setItem('openbio_analytics', JSON.stringify(analytics));
+      } catch { /* ignore */ }
+
+      // Listen for storage changes (from CreatePage)
+      const handler = () => {
+        const updated = localStorage.getItem('openbio_preview');
+        if (updated) setData(JSON.parse(updated));
+      };
+      window.addEventListener('storage', handler);
+      return () => window.removeEventListener('storage', handler);
+    }
+  }, [username]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="w-8 h-8 border-2 border-gray-300 border-t-violet-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+        <div className="text-center">
+          <h1 className="text-6xl font-bold text-gray-200 mb-4">404</h1>
+          <p className="text-gray-500 text-lg mb-2">ไม่พบหน้านี้</p>
+          <p className="text-gray-400 text-sm mb-6">ลิงก์ <span className="font-medium text-gray-600">/{username}</span> ยังไม่มีในระบบ</p>
+          <a href="#/" className="text-violet-500 hover:text-violet-700 text-sm font-medium underline">กลับหน้าหลัก</a>
+        </div>
+      </div>
+    );
+  }
 
   if (!data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-400">No preview data found. Go to <a href="/create" className="text-violet-500 underline">Create</a> first.</p>
+        <p className="text-gray-400">No preview data found. Go to <a href="#/create" className="text-violet-500 underline">Create</a> first.</p>
       </div>
     );
   }
@@ -161,6 +278,14 @@ export default function PreviewPage() {
   const enabledLinks = links.filter(l => l.title && l.enabled);
 
   const trackLinkClick = (link: LinkItem) => {
+    // Track to PocketBase if viewing a public page
+    if (pbPageId) {
+      pb.collection('analytics').create({
+        page: pbPageId, type: 'click',
+        linkId: link.id, linkTitle: link.title, linkUrl: link.url,
+      }).catch(() => {});
+    }
+    // Also track to localStorage
     try {
       const analyticsRaw = localStorage.getItem('openbio_analytics');
       const analytics = analyticsRaw
@@ -303,7 +428,7 @@ export default function PreviewPage() {
 
       {/* Footer */}
       <div className="mt-auto pb-6 relative z-[1]">
-        <a href="/" className="text-xs opacity-30 hover:opacity-50 transition-opacity" style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
+        <a href="#/" className="text-xs opacity-30 hover:opacity-50 transition-opacity" style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
           LinkCenter
         </a>
       </div>

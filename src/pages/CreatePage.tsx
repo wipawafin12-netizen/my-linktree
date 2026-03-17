@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Plus, Trash2, GripVertical, ExternalLink, Image, Eye, EyeOff,
@@ -17,8 +17,9 @@ import {
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import pb, { getFileUrl } from '../lib/pb';
 
-// ── Sidebar nav items ──
+
 const sidebarMain = [
   { icon: Link2, label: 'My OpenBio', id: 'links' },
   { icon: Coins, label: 'Earn', id: 'earn' },
@@ -33,7 +34,6 @@ const sidebarTools = [
   { icon: Lightbulb, label: 'Post ideas', id: 'ideas' },
 ];
 
-// ── Theme presets ──
 const themes = [
   { id: 'minimal', label: 'Minimal', bg: 'bg-white', card: 'bg-gray-100', cardBorder: '', text: 'text-gray-900', subtext: 'text-gray-500', preview: '#ffffff' },
   { id: 'dark', label: 'Dark', bg: 'bg-[#1a1a2e]', card: 'bg-white/10', cardBorder: 'border border-white/5', text: 'text-white', subtext: 'text-white/50', preview: '#1a1a2e' },
@@ -375,9 +375,14 @@ const addSuggestedItems = [
 type LinkItem = { id: string; title: string; url: string; enabled: boolean; thumbnail?: string; clicks?: number; color?: string };
 
 export default function CreatePage() {
-  const { username, logout } = useAuth();
+  const { username, user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [pbPageId, setPbPageId] = useState<string | null>(null);
+  const [pbPageRecord, setPbPageRecord] = useState<any>(null);
+  const [pbLoaded, setPbLoaded] = useState(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const linkSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [displayName, setDisplayName] = useState(username || '');
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
@@ -457,6 +462,142 @@ export default function CreatePage() {
   const [patternAnimDropdownOpen, setPatternAnimDropdownOpen] = useState(false);
   const [patternGlow, setPatternGlow] = useState(false);
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
+
+  // ── Load page data from PocketBase on mount ──
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const pages = await pb.collection('pages').getList(1, 1, {
+          filter: `user = "${user.id}"`,
+        });
+        if (cancelled) return;
+        if (pages.items.length > 0) {
+          const p = pages.items[0];
+          setPbPageId(p.id);
+          setPbPageRecord(p);
+          setDisplayName(p.displayName || username || '');
+          setBio(p.bio || '');
+          if (p.avatar) setAvatar(getFileUrl(p, p.avatar));
+          if (p.selectedTheme) setSelectedTheme(p.selectedTheme);
+          if (p.selectedButton) setSelectedButton(p.selectedButton);
+          if (p.selectedFont) setSelectedFont(p.selectedFont);
+          if (p.customTextColor) setCustomTextColor(p.customTextColor);
+          if (p.customBgColor) setCustomBgColor(p.customBgColor);
+          if (p.customBgSecondary) setCustomBgSecondary(p.customBgSecondary);
+          if (p.selectedPattern) setSelectedPattern(p.selectedPattern);
+          if (p.selectedPatternAnim) setSelectedPatternAnim(p.selectedPatternAnim);
+          setPatternGlow(!!p.patternGlow);
+          setButtonAnimation(p.buttonAnimation !== false);
+          if (p.activeSocials) setActiveSocials(p.activeSocials);
+          if (p.socialUrls) setSocialUrls(p.socialUrls);
+
+          // Load links
+          const linksResult = await pb.collection('links').getFullList({
+            filter: `page = "${p.id}"`,
+            sort: 'order',
+          });
+          if (!cancelled && linksResult.length > 0) {
+            setLinks(linksResult.map((l: any) => ({
+              id: l.id,
+              title: l.title,
+              url: l.url,
+              enabled: l.enabled,
+              thumbnail: l.thumbnail ? getFileUrl(l, l.thumbnail) : undefined,
+              clicks: l.clicks || 0,
+              color: l.color || '',
+            })));
+          }
+        } else {
+          // First time: create page
+          const newPage = await pb.collection('pages').create({
+            user: user.id,
+            displayName: username || '',
+            selectedTheme: 'minimal',
+            selectedButton: 'rounded',
+            selectedFont: 'inter',
+            customBgColor: '#6366f1',
+            customBgSecondary: '#4f46e5',
+            buttonAnimation: true,
+            activeSocials: [],
+            socialUrls: {},
+          });
+          if (!cancelled) {
+            setPbPageId(newPage.id);
+            setPbPageRecord(newPage);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load page from PocketBase:', err);
+      } finally {
+        if (!cancelled) setPbLoaded(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
+  // ── Debounced save page data to PocketBase ──
+  const debouncedSavePage = useCallback((pageId: string, data: Record<string, any>) => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(async () => {
+      try {
+        await pb.collection('pages').update(pageId, data);
+      } catch (err) {
+        console.error('Failed to save page:', err);
+      }
+    }, 1000);
+  }, []);
+
+  // ── Debounced sync links to PocketBase ──
+  const debouncedSaveLinks = useCallback((pageId: string, currentLinks: typeof links) => {
+    if (linkSaveTimerRef.current) clearTimeout(linkSaveTimerRef.current);
+    linkSaveTimerRef.current = setTimeout(async () => {
+      try {
+        // Get existing PB links
+        const existing = await pb.collection('links').getFullList({
+          filter: `page = "${pageId}"`,
+        });
+        const existingIds = new Set(existing.map((l: any) => l.id));
+        const currentIds = new Set(currentLinks.map(l => l.id));
+
+        // Delete removed links
+        for (const ex of existing) {
+          if (!currentIds.has(ex.id)) {
+            await pb.collection('links').delete(ex.id);
+          }
+        }
+
+        // Create or update links
+        for (let i = 0; i < currentLinks.length; i++) {
+          const link = currentLinks[i];
+          if (!link.title && !link.url) continue; // skip empty drafts
+          const data = {
+            page: pageId,
+            title: link.title || 'Untitled',
+            url: link.url || 'https://example.com',
+            enabled: link.enabled,
+            color: link.color || '',
+            order: i,
+            clicks: link.clicks || 0,
+          };
+          if (existingIds.has(link.id)) {
+            await pb.collection('links').update(link.id, data);
+          } else {
+            try {
+              const created = await pb.collection('links').create(data);
+              // Update local id to match PB id (will take effect next render)
+              link.id = created.id;
+            } catch {
+              // Skip if create fails (e.g., invalid URL)
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to sync links:', err);
+      }
+    }, 1500);
+  }, []);
 
   // Apply template data from TemplatesPage navigation
   useEffect(() => {
@@ -574,9 +715,21 @@ export default function CreatePage() {
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Instant local preview
       const reader = new FileReader();
       reader.onload = (ev) => setAvatar(ev.target?.result as string);
       reader.readAsDataURL(file);
+      // Upload to PocketBase in background
+      if (pbPageId) {
+        const formData = new FormData();
+        formData.append('avatar', file);
+        pb.collection('pages').update(pbPageId, formData).then((updated) => {
+          if (updated.avatar) {
+            setPbPageRecord(updated);
+            setAvatar(getFileUrl(updated, updated.avatar));
+          }
+        }).catch(err => console.error('Avatar upload failed:', err));
+      }
     }
   };
 
@@ -592,7 +745,7 @@ export default function CreatePage() {
     }
   };
 
-  const previewUrl = `${window.location.origin}/${displayName || 'preview'}`;
+  const previewUrl = `${window.location.origin}/#/${displayName || 'preview'}`;
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(previewUrl);
@@ -626,16 +779,28 @@ export default function CreatePage() {
 
   const visibleLinks = showArchive ? links : links.filter((l) => l.enabled);
 
-  // Save preview data to localStorage so PreviewPage can read it
+  // Save preview data to localStorage + debounced save to PocketBase
   useEffect(() => {
     localStorage.setItem('openbio_preview', JSON.stringify({
       displayName, bio, avatar, selectedTheme, selectedButton, selectedFont,
       customTextColor, customBgColor, customBgSecondary,
       links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
     }));
+
+    // Debounced save to PocketBase
+    if (pbPageId && pbLoaded) {
+      debouncedSavePage(pbPageId, {
+        displayName, bio, selectedTheme, selectedButton, selectedFont,
+        customTextColor, customBgColor, customBgSecondary,
+        selectedPattern, selectedPatternAnim, patternGlow,
+        buttonAnimation, activeSocials, socialUrls,
+      });
+      debouncedSaveLinks(pbPageId, links);
+    }
   }, [displayName, bio, avatar, selectedTheme, selectedButton, selectedFont,
       customTextColor, customBgColor, customBgSecondary,
-      links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow]);
+      links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
+      pbPageId, pbLoaded, debouncedSavePage, debouncedSaveLinks, buttonAnimation]);
 
   return (
     <div

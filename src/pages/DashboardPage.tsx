@@ -8,8 +8,9 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import pb from '../lib/pb';
 
-// ─── Types ───────────────────────────────────────────────────────
+
 interface LinkClick {
   linkId: string;
   linkTitle: string;
@@ -150,7 +151,7 @@ function StatCard({
   );
 }
 
-// ─── Bar Chart Tooltip ───────────────────────────────────────────
+
 function ChartBar({
   day, maxVal, index,
 }: {
@@ -204,19 +205,57 @@ function ChartBar({
 // ─── Main Dashboard Component ────────────────────────────────────
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { isLoggedIn, username } = useAuth();
-  const [analytics, setAnalytics] = useState<AnalyticsData>(getAnalytics());
+  const { isLoggedIn, username, user } = useAuth();
+  const [analytics, setAnalytics] = useState<AnalyticsData>({ pageViews: 0, linkClicks: [], viewHistory: [] });
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'links'>('overview');
+  const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/login');
       return;
     }
-    const interval = setInterval(() => setAnalytics(getAnalytics()), 3000);
-    return () => clearInterval(interval);
-  }, [isLoggedIn, navigate]);
+
+    // Fetch analytics from PocketBase
+    if (user?.id) {
+      (async () => {
+        try {
+          const pages = await pb.collection('pages').getList(1, 1, {
+            filter: `user = "${user.id}"`,
+          });
+          if (pages.items.length > 0) {
+            const page = pages.items[0];
+            const pageId = page.id;
+            // Use displayName from PocketBase for consistent URL
+            if (page.displayName) setDisplayName(page.displayName);
+            const allAnalytics = await pb.collection('analytics').getFullList({
+              filter: `page = "${pageId}"`,
+              sort: '-created',
+            });
+            const views = allAnalytics.filter((a: any) => a.type === 'view');
+            const clicks = allAnalytics.filter((a: any) => a.type === 'click');
+            setAnalytics({
+              pageViews: views.length,
+              linkClicks: clicks.map((c: any) => ({
+                linkId: c.linkId || '',
+                linkTitle: c.linkTitle || '',
+                linkUrl: c.linkUrl || '',
+                timestamp: c.created,
+              })),
+              viewHistory: views.map((v: any) => v.created),
+            });
+          }
+        } catch (err) {
+          console.error('Failed to fetch analytics:', err);
+          // Fallback to localStorage
+          setAnalytics(getAnalytics());
+        }
+      })();
+    } else {
+      setAnalytics(getAnalytics());
+    }
+  }, [isLoggedIn, navigate, user?.id]);
 
   // ── Computed data ──
   const clicksPerLink = useMemo(() => getClicksPerLink(analytics.linkClicks), [analytics.linkClicks]);
@@ -245,9 +284,11 @@ export default function DashboardPage() {
 
   const hasData = totalViews > 0 || totalClicks > 0;
 
+  const pageSlug = displayName || username || 'preview';
+
   // ── Actions ──
   const handleCopyLink = async () => {
-    const link = `${window.location.origin}/${username || 'preview'}`;
+    const link = `${window.location.origin}/#/${pageSlug}`;
     await navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -297,7 +338,7 @@ export default function DashboardPage() {
               {copied ? 'Copied!' : 'Copy Link'}
             </button>
             <button
-              onClick={() => navigate(`/${username || 'preview'}`)}
+              onClick={() => navigate(`/${pageSlug}`)}
               className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-sm shadow-violet-200"
             >
               <ExternalLink size={15} />

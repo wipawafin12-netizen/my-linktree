@@ -8,7 +8,18 @@
       "Bash(git status:*)",
       "Bash(git log:*)",
       "Bash(timeout 5 curl:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "mcp__pocketbase__list_collections",
+      "mcp__pocketbase__create_collection",
+      "mcp__pocketbase__update_collection",
+      "Bash(xargs:*)",
+      "Bash(node --version:*)",
+      "Bash(git reset:*)",
+      "Bash(git add:*)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "pocketbase"
+  ]
 }
