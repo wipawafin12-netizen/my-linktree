@@ -16,7 +16,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
-  username: '',
+  username: '', 
   user: null,
   loading: true,
   error: null,
@@ -34,13 +34,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const username = user?.name || user?.email?.split('@')[0] || '';
 
   useEffect(() => {
-    // Check if existing auth is valid
+ 
     if (pb.authStore.isValid) {
       setUser(pb.authStore.record);
     }
     setLoading(false);
 
-    // Listen for auth changes
+  
     const unsubscribe = pb.authStore.onChange((_token, record) => {
       setUser(record);
     });
@@ -54,7 +54,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await pb.collection('users').authWithPassword(email, password);
       setUser(result.record);
     } catch (err: any) {
-      const message = err?.response?.message || 'Login failed. Please check your credentials.';
+      let message = err?.response?.message || 'Login failed. Please check your credentials.';
+      const fieldErrors = err?.response?.data;
+      if (fieldErrors && typeof fieldErrors === 'object' && Object.keys(fieldErrors).length > 0) {
+        const details = Object.entries(fieldErrors)
+          .map(([field, info]: [string, any]) => `${field}: ${info?.message || 'invalid'}`)
+          .join(', ');
+        if (details) message = details;
+      }
       setError(message);
       throw err;
     }
@@ -73,7 +80,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await pb.collection('users').authWithPassword(email, password);
       setUser(result.record);
     } catch (err: any) {
-      const message = err?.response?.message || 'Signup failed. Please try again.';
+      // Extract detailed field errors from PocketBase response
+      let message = err?.response?.message || 'Signup failed. Please try again.';
+      const fieldErrors = err?.response?.data;
+      if (fieldErrors && typeof fieldErrors === 'object') {
+        const details = Object.entries(fieldErrors)
+          .map(([field, info]: [string, any]) => `${field}: ${info?.message || 'invalid'}`)
+          .join(', ');
+        if (details) message = details;
+      }
       setError(message);
       throw err;
     }

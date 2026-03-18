@@ -25,12 +25,12 @@ export default function QRCodePage() {
             const name = pages.items[0].displayName || '';
             setDisplayName(name);
             const slug = name || username || 'my_page';
-            setUrl(`${window.location.origin}/#/${slug}`);
+            setUrl(`${import.meta.env.VITE_SITE_URL || window.location.origin}/${slug}`);
           } else {
             // No page in PB yet, fallback to username
             const slug = username || 'my_page';
             setDisplayName(slug);
-            setUrl(`${window.location.origin}/#/${slug}`);
+            setUrl(`${import.meta.env.VITE_SITE_URL || window.location.origin}/${slug}`);
           }
         } catch (err) {
           console.error('Failed to fetch page:', err);
@@ -41,14 +41,14 @@ export default function QRCodePage() {
               const data = JSON.parse(raw);
               if (data.displayName) {
                 setDisplayName(data.displayName);
-                setUrl(`${window.location.origin}/#/${data.displayName}`);
+                setUrl(`${import.meta.env.VITE_SITE_URL || window.location.origin}/${data.displayName}`);
                 return;
               }
             }
           } catch { /* ignore */ }
           const slug = username || 'my_page';
           setDisplayName(slug);
-          setUrl(`${window.location.origin}/#/${slug}`);
+          setUrl(`${import.meta.env.VITE_SITE_URL || window.location.origin}/${slug}`);
         }
       })();
     } else {
@@ -59,17 +59,18 @@ export default function QRCodePage() {
           const data = JSON.parse(raw);
           if (data.displayName) {
             setDisplayName(data.displayName);
-            setUrl(`${window.location.origin}/#/${data.displayName}`);
+            setUrl(`${import.meta.env.VITE_SITE_URL || window.location.origin}/${data.displayName}`);
             return;
           }
         }
       } catch { /* ignore */ }
-      setUrl(`${window.location.origin}/#/preview`);
+      setUrl(`${import.meta.env.VITE_SITE_URL || window.location.origin}/preview`);
     }
   }, [user?.id, username]);
 
+  const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
   const shortName = displayName || username || 'my_page';
-  const previewUrl = `${window.location.origin}/#/${shortName}`;
+  const previewUrl = `${siteUrl}/${shortName}`;
 
   const handleCopy = useCallback(async () => {
     if (!url) return;
@@ -122,7 +123,7 @@ export default function QRCodePage() {
           className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8"
         >
           <a
-            href={`/${shortName}`}
+            href={`${siteUrl}/${shortName}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-gray-200 shadow-sm hover:shadow-md hover:border-purple-200 transition-all cursor-pointer"

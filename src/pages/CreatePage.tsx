@@ -745,7 +745,8 @@ export default function CreatePage() {
     }
   };
 
-  const previewUrl = `${window.location.origin}/#/${displayName || 'preview'}`;
+  const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+  const previewUrl = `${siteUrl}/${displayName || 'preview'}`;
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(previewUrl);

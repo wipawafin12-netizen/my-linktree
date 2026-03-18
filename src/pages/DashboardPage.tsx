@@ -287,8 +287,10 @@ export default function DashboardPage() {
   const pageSlug = displayName || username || 'preview';
 
   // ── Actions ──
+  const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+
   const handleCopyLink = async () => {
-    const link = `${window.location.origin}/#/${pageSlug}`;
+    const link = `${siteUrl}/${pageSlug}`;
     await navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -338,7 +340,7 @@ export default function DashboardPage() {
               {copied ? 'Copied!' : 'Copy Link'}
             </button>
             <button
-              onClick={() => navigate(`/${pageSlug}`)}
+              onClick={() => window.open(`/${pageSlug}`, '_blank')}
               className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-sm shadow-violet-200"
             >
               <ExternalLink size={15} />
