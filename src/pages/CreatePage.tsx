@@ -780,7 +780,7 @@ export default function CreatePage() {
 
   const visibleLinks = showArchive ? links : links.filter((l) => l.enabled);
 
-  // Save preview data to localStorage + debounced save to PocketBase
+  // Save preview data to localStorage + debounced save to PocketBase (excludes Name/Bio — those use manual save)
   useEffect(() => {
     localStorage.setItem('openbio_preview', JSON.stringify({
       displayName, bio, avatar, selectedTheme, selectedButton, selectedFont,
@@ -788,10 +788,10 @@ export default function CreatePage() {
       links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
     }));
 
-    // Debounced save to PocketBase
+    // Debounced save to PocketBase (without displayName/bio)
     if (pbPageId && pbLoaded) {
       debouncedSavePage(pbPageId, {
-        displayName, bio, selectedTheme, selectedButton, selectedFont,
+        selectedTheme, selectedButton, selectedFont,
         customTextColor, customBgColor, customBgSecondary,
         selectedPattern, selectedPatternAnim, patternGlow,
         buttonAnimation, activeSocials, socialUrls,
@@ -802,6 +802,22 @@ export default function CreatePage() {
       customTextColor, customBgColor, customBgSecondary,
       links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
       pbPageId, pbLoaded, debouncedSavePage, debouncedSaveLinks, buttonAnimation]);
+
+  // Manual save for Name/Bio
+  const [profileSaving, setProfileSaving] = useState(false);
+  const handleSaveProfile = async () => {
+    if (!pbPageId) return;
+    setProfileSaving(true);
+    try {
+      await pb.collection('pages').update(pbPageId, { displayName, bio });
+      showToast('Profile saved!');
+    } catch (err) {
+      console.error('Failed to save profile:', err);
+      showToast('Failed to save profile');
+    } finally {
+      setProfileSaving(false);
+    }
+  };
 
   return (
     <div
@@ -1748,6 +1764,17 @@ export default function CreatePage() {
                       className="flex-1 text-sm text-gray-600 placeholder-gray-300 bg-transparent focus:outline-none"
                     />
                     <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
+                  </div>
+
+                  {/* Save Profile button */}
+                  <div className="px-6 py-3 border-b border-gray-50">
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={profileSaving}
+                      className="px-4 py-1.5 text-xs font-medium text-white bg-[#7c3aed] rounded-lg hover:bg-[#6d28d9] transition-colors disabled:opacity-50"
+                    >
+                      {profileSaving ? 'Saving...' : 'Save Profile'}
+                    </button>
                   </div>
 
                   {/* Social row */}
