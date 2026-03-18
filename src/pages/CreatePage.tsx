@@ -812,15 +812,36 @@ export default function CreatePage() {
 
   const visibleLinks = showArchive ? links : links.filter((l) => l.enabled);
 
+  // Compress avatar for localStorage (resize to small thumbnail)
+  const [compressedAvatar, setCompressedAvatar] = useState('');
+  useEffect(() => {
+    if (!avatar || avatar.startsWith('http')) {
+      // URL-based avatar (from PocketBase) — store the URL directly
+      setCompressedAvatar(avatar);
+      return;
+    }
+    // base64 avatar — compress to small thumbnail
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const size = 150;
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, size, size);
+      setCompressedAvatar(canvas.toDataURL('image/jpeg', 0.6));
+    };
+    img.src = avatar;
+  }, [avatar]);
+
   // Save preview data to localStorage + debounced save to PocketBase
   useEffect(() => {
     // Don't overwrite localStorage until initial load is complete
     if (!pbLoaded) return;
 
     try {
-      // Exclude avatar from localStorage to avoid QuotaExceededError (base64 images are too large)
       localStorage.setItem('openbio_preview', JSON.stringify({
-        displayName, bio, selectedTheme, selectedButton, selectedFont,
+        displayName, bio, avatar: compressedAvatar, selectedTheme, selectedButton, selectedFont,
         customTextColor, customBgColor, customBgSecondary,
         links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
       }));
@@ -837,7 +858,7 @@ export default function CreatePage() {
       });
       debouncedSaveLinks(pbPageId, links);
     }
-  }, [displayName, bio, avatar, selectedTheme, selectedButton, selectedFont,
+  }, [displayName, bio, compressedAvatar, selectedTheme, selectedButton, selectedFont,
       customTextColor, customBgColor, customBgSecondary,
       links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
       pbPageId, pbLoaded, debouncedSavePage, debouncedSaveLinks, buttonAnimation]);
