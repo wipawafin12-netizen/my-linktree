@@ -463,7 +463,32 @@ export default function CreatePage() {
   const [patternGlow, setPatternGlow] = useState(false);
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
 
-  // ── Load page data from PocketBase on mount ──
+  // ── Helper: restore state from localStorage ──
+  const loadFromLocalStorage = useCallback(() => {
+    try {
+      const raw = localStorage.getItem('openbio_preview');
+      if (!raw) return false;
+      const d = JSON.parse(raw);
+      if (d.displayName) setDisplayName(d.displayName);
+      if (d.bio) setBio(d.bio);
+      if (d.avatar) setAvatar(d.avatar);
+      if (d.selectedTheme) setSelectedTheme(d.selectedTheme);
+      if (d.selectedButton) setSelectedButton(d.selectedButton);
+      if (d.selectedFont) setSelectedFont(d.selectedFont);
+      if (d.customTextColor) setCustomTextColor(d.customTextColor);
+      if (d.customBgColor) setCustomBgColor(d.customBgColor);
+      if (d.customBgSecondary) setCustomBgSecondary(d.customBgSecondary);
+      if (d.selectedPattern) setSelectedPattern(d.selectedPattern);
+      if (d.selectedPatternAnim) setSelectedPatternAnim(d.selectedPatternAnim);
+      if (d.patternGlow !== undefined) setPatternGlow(d.patternGlow);
+      if (d.activeSocials) setActiveSocials(d.activeSocials);
+      if (d.socialUrls) setSocialUrls(d.socialUrls);
+      if (d.links && d.links.length > 0) setLinks(d.links);
+      return true;
+    } catch { return false; }
+  }, []);
+
+  // ── Load page data from PocketBase on mount (fallback to localStorage) ──
   useEffect(() => {
     if (!user?.id) return;
     let cancelled = false;
@@ -510,26 +535,33 @@ export default function CreatePage() {
             })));
           }
         } else {
-          // First time: create page
-          const newPage = await pb.collection('pages').create({
-            user: user.id,
-            displayName: username || '',
-            selectedTheme: 'minimal',
-            selectedButton: 'rounded',
-            selectedFont: 'inter',
-            customBgColor: '#6366f1',
-            customBgSecondary: '#4f46e5',
-            buttonAnimation: true,
-            activeSocials: [],
-            socialUrls: {},
-          });
-          if (!cancelled) {
-            setPbPageId(newPage.id);
-            setPbPageRecord(newPage);
+          // No page in PocketBase yet — try creating one
+          try {
+            const newPage = await pb.collection('pages').create({
+              user: user.id,
+              displayName: username || '',
+              selectedTheme: 'minimal',
+              selectedButton: 'rounded',
+              selectedFont: 'inter',
+              customBgColor: '#6366f1',
+              customBgSecondary: '#4f46e5',
+              buttonAnimation: true,
+              activeSocials: [],
+              socialUrls: {},
+            });
+            if (!cancelled) {
+              setPbPageId(newPage.id);
+              setPbPageRecord(newPage);
+            }
+          } catch {
+            // PocketBase collection might not exist — fall back to localStorage
+            if (!cancelled) loadFromLocalStorage();
           }
         }
       } catch (err) {
         console.error('Failed to load page from PocketBase:', err);
+        // Fallback: restore saved data from localStorage
+        if (!cancelled) loadFromLocalStorage();
       } finally {
         if (!cancelled) setPbLoaded(true);
       }
@@ -780,17 +812,24 @@ export default function CreatePage() {
 
   const visibleLinks = showArchive ? links : links.filter((l) => l.enabled);
 
-  // Save preview data to localStorage + debounced save to PocketBase (excludes Name/Bio — those use manual save)
+  // Save preview data to localStorage + debounced save to PocketBase
   useEffect(() => {
-    localStorage.setItem('openbio_preview', JSON.stringify({
-      displayName, bio, avatar, selectedTheme, selectedButton, selectedFont,
-      customTextColor, customBgColor, customBgSecondary,
-      links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
-    }));
+    // Don't overwrite localStorage until initial load is complete
+    if (!pbLoaded) return;
 
-    // Debounced save to PocketBase (without displayName/bio)
+    try {
+      // Exclude avatar from localStorage to avoid QuotaExceededError (base64 images are too large)
+      localStorage.setItem('openbio_preview', JSON.stringify({
+        displayName, bio, selectedTheme, selectedButton, selectedFont,
+        customTextColor, customBgColor, customBgSecondary,
+        links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
+      }));
+    } catch { /* ignore quota errors */ }
+
+    // Debounced save to PocketBase (includes displayName/bio for public URL to work)
     if (pbPageId && pbLoaded) {
       debouncedSavePage(pbPageId, {
+        displayName, bio,
         selectedTheme, selectedButton, selectedFont,
         customTextColor, customBgColor, customBgSecondary,
         selectedPattern, selectedPatternAnim, patternGlow,
