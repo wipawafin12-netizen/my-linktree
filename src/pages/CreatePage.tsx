@@ -821,15 +821,19 @@ export default function CreatePage() {
       return;
     }
     // base64 avatar — compress to small thumbnail
-    const img = new Image();
+    const img = document.createElement('img');
     img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const size = 150;
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d')!;
-      ctx.drawImage(img, 0, 0, size, size);
-      setCompressedAvatar(canvas.toDataURL('image/jpeg', 0.6));
+      try {
+        const canvas = document.createElement('canvas');
+        const size = 150;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, size, size);
+          setCompressedAvatar(canvas.toDataURL('image/jpeg', 0.6));
+        }
+      } catch { setCompressedAvatar(''); }
     };
     img.src = avatar;
   }, [avatar]);
