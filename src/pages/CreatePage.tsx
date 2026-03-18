@@ -558,9 +558,8 @@ export default function CreatePage() {
             if (!cancelled) loadFromLocalStorage();
           }
         }
-      } catch (err) {
-        console.error('Failed to load page from PocketBase:', err);
-        // Fallback: restore saved data from localStorage
+      } catch {
+        // PocketBase unavailable — silently fall back to localStorage
         if (!cancelled) loadFromLocalStorage();
       } finally {
         if (!cancelled) setPbLoaded(true);
@@ -576,7 +575,7 @@ export default function CreatePage() {
       try {
         await pb.collection('pages').update(pageId, data);
       } catch (err) {
-        console.error('Failed to save page:', err);
+        // PocketBase save failed silently
       }
     }, 1000);
   }, []);
@@ -626,7 +625,7 @@ export default function CreatePage() {
           }
         }
       } catch (err) {
-        console.error('Failed to sync links:', err);
+        // PocketBase link sync failed silently
       }
     }, 1500);
   }, []);
@@ -760,7 +759,7 @@ export default function CreatePage() {
             setPbPageRecord(updated);
             setAvatar(getFileUrl(updated, updated.avatar));
           }
-        }).catch(err => console.error('Avatar upload failed:', err));
+        }).catch(() => {});
       }
     }
   };
@@ -876,7 +875,7 @@ export default function CreatePage() {
       await pb.collection('pages').update(pbPageId, { displayName, bio });
       showToast('Profile saved!');
     } catch (err) {
-      console.error('Failed to save profile:', err);
+      // Profile save failed silently
       showToast('Failed to save profile');
     } finally {
       setProfileSaving(false);

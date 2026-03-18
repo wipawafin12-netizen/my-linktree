@@ -106,22 +106,34 @@ export default function PreviewPage() {
     patternGlow?: boolean;
   } | null>(null);
 
+  // Helper: load profile from localStorage
+  const loadLocal = (name: string) => {
+    try {
+      const raw = localStorage.getItem('openbio_preview');
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.displayName === name || !d.displayName) return d;
+      }
+    } catch { /* ignore */ }
+    return null;
+  };
+
   useEffect(() => {
     if (username) {
-      // Public route /:username → fetch from PocketBase
       const abortController = new AbortController();
       setLoading(true);
       setNotFound(false);
       (async () => {
+        // Try localStorage first (instant, always available)
+        const localData = loadLocal(username);
+
+        // Then try PocketBase
         try {
-          // Try looking up by displayName first
           let pages = await pb.collection('pages').getList(1, 1, {
             filter: `displayName = "${username}"`,
             requestKey: null,
           });
 
-          // Fallback: if not found by displayName, try finding a user with that name
-          // then get their page
           if (pages.items.length === 0) {
             try {
               const users = await pb.collection('users').getList(1, 1, {
@@ -134,24 +146,13 @@ export default function PreviewPage() {
                   requestKey: null,
                 });
               }
-            } catch { /* ignore fallback errors */ }
+            } catch { /* ignore */ }
           }
 
           if (abortController.signal.aborted) return;
 
           if (pages.items.length === 0) {
-            // Fallback: try localStorage
-            try {
-              const raw = localStorage.getItem('openbio_preview');
-              if (raw) {
-                const localData = JSON.parse(raw);
-                if (localData.displayName === username || !localData.displayName) {
-                  setData(localData);
-                  setLoading(false);
-                  return;
-                }
-              }
-            } catch { /* ignore */ }
+            if (localData) { setData(localData); setLoading(false); return; }
             setNotFound(true);
             setLoading(false);
             return;
@@ -186,34 +187,16 @@ export default function PreviewPage() {
             patternGlow: !!p.patternGlow,
           });
 
-          // Track page view
           pb.collection('analytics').create({
             page: p.id, type: 'view',
           }, { requestKey: null }).catch(() => {});
-        } catch (err: any) {
+        } catch {
+          // PocketBase unavailable — use localStorage silently
           if (abortController.signal.aborted) return;
-          // Only show 404 for real errors, not auto-cancellation
-          if (err?.status === 0 || err?.isAbort) {
-            console.warn('Request was cancelled:', err);
-            return;
-          }
-          console.error('Failed to load public page:', err);
-          // Fallback: try localStorage if PocketBase fails
-          try {
-            const raw = localStorage.getItem('openbio_preview');
-            if (raw) {
-              const localData = JSON.parse(raw);
-              if (localData.displayName === username || !localData.displayName) {
-                setData(localData);
-                return;
-              }
-            }
-          } catch { /* ignore */ }
-          setNotFound(true);
+          if (localData) { setData(localData); }
+          else { setNotFound(true); }
         } finally {
-          if (!abortController.signal.aborted) {
-            setLoading(false);
-          }
+          if (!abortController.signal.aborted) setLoading(false);
         }
       })();
       return () => { abortController.abort(); };
