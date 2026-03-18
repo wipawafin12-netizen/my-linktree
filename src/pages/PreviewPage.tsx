@@ -140,6 +140,18 @@ export default function PreviewPage() {
           if (abortController.signal.aborted) return;
 
           if (pages.items.length === 0) {
+            // Fallback: try localStorage
+            try {
+              const raw = localStorage.getItem('openbio_preview');
+              if (raw) {
+                const localData = JSON.parse(raw);
+                if (localData.displayName === username || !localData.displayName) {
+                  setData(localData);
+                  setLoading(false);
+                  return;
+                }
+              }
+            } catch { /* ignore */ }
             setNotFound(true);
             setLoading(false);
             return;
@@ -186,6 +198,17 @@ export default function PreviewPage() {
             return;
           }
           console.error('Failed to load public page:', err);
+          // Fallback: try localStorage if PocketBase fails
+          try {
+            const raw = localStorage.getItem('openbio_preview');
+            if (raw) {
+              const localData = JSON.parse(raw);
+              if (localData.displayName === username || !localData.displayName) {
+                setData(localData);
+                return;
+              }
+            }
+          } catch { /* ignore */ }
           setNotFound(true);
         } finally {
           if (!abortController.signal.aborted) {
@@ -236,7 +259,7 @@ export default function PreviewPage() {
           <h1 className="text-6xl font-bold text-gray-200 mb-4">404</h1>
           <p className="text-gray-500 text-lg mb-2">ไม่พบหน้านี้</p>
           <p className="text-gray-400 text-sm mb-6">ลิงก์ <span className="font-medium text-gray-600">/{username}</span> ยังไม่มีในระบบ</p>
-          <a href="#/" className="text-violet-500 hover:text-violet-700 text-sm font-medium underline">กลับหน้าหลัก</a>
+          <a href="/" className="text-violet-500 hover:text-violet-700 text-sm font-medium underline">กลับหน้าหลัก</a>
         </div>
       </div>
     );
@@ -245,7 +268,7 @@ export default function PreviewPage() {
   if (!data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-400">No preview data found. Go to <a href="#/create" className="text-violet-500 underline">Create</a> first.</p>
+        <p className="text-gray-400">No preview data found. Go to <a href="/create" className="text-violet-500 underline">Create</a> first.</p>
       </div>
     );
   }
@@ -428,7 +451,7 @@ export default function PreviewPage() {
 
       {/* Footer */}
       <div className="mt-auto pb-6 relative z-[1]">
-        <a href="#/" className="text-xs opacity-30 hover:opacity-50 transition-opacity" style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
+        <a href="/" className="text-xs opacity-30 hover:opacity-50 transition-opacity" style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
           LinkCenter
         </a>
       </div>
