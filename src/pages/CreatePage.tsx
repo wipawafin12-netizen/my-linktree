@@ -756,7 +756,7 @@ export default function CreatePage() {
   };
 
   const handleOpenPreview = () => {
-    window.open(`/${displayName || 'preview'}`, '_blank');
+    navigate(`/${displayName || 'preview'}`);
   };
 
 
