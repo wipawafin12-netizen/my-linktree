@@ -18,5 +18,8 @@ View your app in AI Studio: https://ai.studio/apps/d1911c9c-0133-405f-ba41-4d98c
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
-"# linktree" 
-"# my-linktree" 
+# linktree
+# my-linktree
+
+## Database Connection
+Connected to PocketBase: https://web-linkcenter.chhindustry.com 
