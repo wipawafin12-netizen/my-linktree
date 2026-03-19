@@ -4,7 +4,7 @@ import {
   AtSign, Mail, Send, Phone, User, ExternalLink, X,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import pb, { getFileUrl } from '../lib/pb';
+import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
 
 // Same themes as CreatePage
 const themes = [
@@ -130,6 +130,14 @@ export default function PreviewPage() {
       (async () => {
         // Try localStorage first (instant, always available)
         const localData = loadLocal(username);
+
+        // Only try PocketBase if it's enabled
+        if (!isPocketBaseEnabled) {
+          if (localData) { setData(localData); }
+          else { setNotFound(true); }
+          setLoading(false);
+          return;
+        }
 
         // Then try PocketBase
         try {

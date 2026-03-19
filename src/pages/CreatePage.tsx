@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import pb, { getFileUrl } from '../lib/pb';
+import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
 
 
 const sidebarMain = [
@@ -500,7 +500,7 @@ export default function CreatePage() {
 
   // ── Load page data from PocketBase on mount (fallback to localStorage) ──
   useEffect(() => {
-    if (!user?.id) {
+    if (!user?.id || !isPocketBaseEnabled) {
       if (!pendingTemplate) loadFromLocalStorage();
       setPbLoaded(true);
       return;
@@ -597,6 +597,7 @@ export default function CreatePage() {
 
   // ── Debounced save page data to PocketBase ──
   const debouncedSavePage = useCallback((pageId: string, data: Record<string, any>) => {
+    if (!isPocketBaseEnabled) return;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(async () => {
       try {
@@ -609,6 +610,7 @@ export default function CreatePage() {
 
   // ── Debounced sync links to PocketBase ──
   const debouncedSaveLinks = useCallback((pageId: string, currentLinks: typeof links) => {
+    if (!isPocketBaseEnabled) return;
     if (linkSaveTimerRef.current) clearTimeout(linkSaveTimerRef.current);
     linkSaveTimerRef.current = setTimeout(async () => {
       try {
