@@ -23,3 +23,4 @@ View your app in AI Studio: https://ai.studio/apps/d1911c9c-0133-405f-ba41-4d98c
 
 ## Database Connection
 Connected to PocketBase: https://web-linkcenter.chhindustry.com 
+# Force deployment update - พฤ. 19 มี.ค. 2569 13:09:18    
