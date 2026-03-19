@@ -2340,12 +2340,11 @@ export default function CreatePage() {
                                 >
                                   <Image size={13} />
                                 </button>
-                                <button
-                                  onClick={() => showToast(`${link.clicks || 0} clicks`)}
-                                  className="p-1.5 rounded-lg text-gray-300 hover:text-purple-500 transition-colors"
-                                >
-                                  <BarChart3 size={13} />
-                                </button>
+                                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 border border-gray-100">
+                                  <BarChart3 size={12} className="text-gray-400" />
+                                  <span className="text-xs font-medium text-gray-600">{link.clicks || 0}</span>
+                                  <span className="text-[10px] text-gray-400">clicks</span>
+                                </div>
                                 <button
                                   onClick={() => toggleLink(link.id)}
                                   className={`relative w-11 h-6 rounded-full transition-all duration-300 ease-in-out ${link.enabled ? 'bg-gradient-to-r from-pink-400 to-pink-500 shadow-md shadow-pink-200' : 'bg-gray-200'}`}
