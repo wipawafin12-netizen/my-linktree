@@ -2686,29 +2686,6 @@ export default function CreatePage() {
             {/* ── Live Preview (desktop) ── */}
             <div className="hidden xl:block w-[360px] flex-shrink-0 p-6">
               <div className="sticky top-36">
-                {/* Preview header */}
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={handleOpenPreview}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-100/80 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/10 hover:border-[#a78bfa]/30 transition-all duration-300 group"
-                    >
-                      <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#7c3aed] to-[#a78bfa] flex items-center justify-center">
-                        <Globe size={10} className="text-white" />
-                      </div>
-                      <span className="text-xs text-gray-400 group-hover:text-[#7c3aed] transition-colors">linkc.ee/</span>
-                      <span className="text-xs font-bold text-gray-900">{displayName || 'username'}</span>
-                      <ExternalLink size={11} className="text-gray-300 ml-1 group-hover:text-[#7c3aed] transition-colors" />
-                    </button>
-                    <button
-                      onClick={handleCopyUrl}
-                      className="p-2.5 bg-white/90 backdrop-blur-sm rounded-xl border border-gray-100/80 shadow-sm hover:shadow-lg hover:shadow-[#7c3aed]/10 hover:border-[#a78bfa]/30 transition-all duration-300"
-                    >
-                      {copied ? <CheckCircle2 size={13} className="text-green-500" /> : <Copy size={13} className="text-gray-300 hover:text-[#7c3aed] transition-colors" />}
-                    </button>
-                  </div>
-                </div>
-
                 {/* Phone Frame */}
                 <div
                   className="mx-auto w-[290px]"

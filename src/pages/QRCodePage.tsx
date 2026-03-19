@@ -117,28 +117,6 @@ export default function QRCodePage() {
     <div className="min-h-screen bg-[#f5f3f0] pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
-        {/* URL Bar + Live Preview label */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8"
-        >
-          <a
-            href={`${siteUrl}/${shortName}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-gray-200 shadow-sm hover:shadow-md hover:border-purple-200 transition-all cursor-pointer"
-          >
-            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-              <span className="text-white text-[8px] font-bold">LC</span>
-            </div>
-            <span className="text-sm text-gray-500">linkc.ee/</span>
-            <span className="text-sm font-semibold text-gray-900">{shortName}</span>
-            <ExternalLink size={13} className="ml-1 text-gray-400" />
-          </a>
-        </motion.div>
-
         <div className="grid lg:grid-cols-[1fr_340px] gap-10 items-start">
 
           {/* Left: Phone Preview */}
