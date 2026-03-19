@@ -1,0 +1,267 @@
+{
+  "collections": [
+    {
+      "name": "pages",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {
+          "name": "user",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "_pb_users_auth_",
+            "cascadeDelete": true,
+            "minSelect": null,
+            "maxSelect": 1,
+            "displayFields": ["email"]
+          }
+        },
+        {
+          "name": "displayName",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "bio",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": 500,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "avatar",
+          "type": "file",
+          "required": false,
+          "options": {
+            "maxSelect": 1,
+            "maxSize": 5242880,
+            "mimeTypes": ["image/jpeg", "image/png", "image/gif", "image/webp"],
+            "thumbs": ["100x100"]
+          }
+        },
+        {
+          "name": "bgImage",
+          "type": "file",
+          "required": false,
+          "options": {
+            "maxSelect": 1,
+            "maxSize": 5242880,
+            "mimeTypes": ["image/jpeg", "image/png", "image/gif", "image/webp"]
+          }
+        },
+        {
+          "name": "selectedTheme",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "selectedButton",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "selectedFont",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "customBgColor",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "customBgSecondary",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "buttonAnimation",
+          "type": "bool",
+          "required": false
+        },
+        {
+          "name": "activeSocials",
+          "type": "json",
+          "required": false
+        },
+        {
+          "name": "socialUrls",
+          "type": "json",
+          "required": false
+        },
+        {
+          "name": "productImages",
+          "type": "json",
+          "required": false
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_pages_user ON pages (user)"],
+      "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "viewRule": "",
+      "createRule": "@request.auth.id != \"\"",
+      "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+    },
+    {
+      "name": "links",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {
+          "name": "page",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "pages",
+            "cascadeDelete": true,
+            "minSelect": null,
+            "maxSelect": 1,
+            "displayFields": ["displayName"]
+          }
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "options": {
+            "min": 1,
+            "max": 200,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "url",
+          "type": "url",
+          "required": true,
+          "options": {
+            "exceptDomains": [],
+            "onlyDomains": []
+          }
+        },
+        {
+          "name": "enabled",
+          "type": "bool",
+          "required": false
+        },
+        {
+          "name": "color",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "order",
+          "type": "number",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "name": "clicks",
+          "type": "number",
+          "required": false,
+          "options": {
+            "min": 0,
+            "max": null
+          }
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_links_page ON links (page)",
+        "CREATE INDEX idx_links_order ON links (order)"
+      ],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": "@request.auth.id != \"\" && page.user = @request.auth.id",
+      "updateRule": "@request.auth.id != \"\" && page.user = @request.auth.id",
+      "deleteRule": "@request.auth.id != \"\" && page.user = @request.auth.id"
+    },
+    {
+      "name": "analytics",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {
+          "name": "page",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "pages",
+            "cascadeDelete": true,
+            "minSelect": null,
+            "maxSelect": 1,
+            "displayFields": ["displayName"]
+          }
+        },
+        {
+          "name": "type",
+          "type": "select",
+          "required": true,
+          "options": {
+            "maxSelect": 1,
+            "values": ["view", "click"]
+          }
+        },
+        {
+          "name": "linkId",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null,
+            "pattern": ""
+          }
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_analytics_page ON analytics (page)",
+        "CREATE INDEX idx_analytics_created ON analytics (created)"
+      ],
+      "listRule": "@request.auth.id != \"\" && page.user = @request.auth.id",
+      "viewRule": "@request.auth.id != \"\" && page.user = @request.auth.id",
+      "createRule": "",
+      "updateRule": null,
+      "deleteRule": "@request.auth.id != \"\" && page.user = @request.auth.id"
+    }
+  ]
+}
