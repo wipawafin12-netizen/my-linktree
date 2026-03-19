@@ -3,7 +3,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { motion } from 'motion/react';
 import { Download, Copy, Check, ExternalLink, QrCode, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import pb from '../lib/pb';
+import pb, { isPocketBaseEnabled } from '../lib/pb';
 
 export default function QRCodePage() {
   const { user, username } = useAuth();
@@ -15,7 +15,7 @@ export default function QRCodePage() {
   // Fetch displayName from PocketBase (authoritative source)
   // This ensures the QR code URL matches what PreviewPage uses to look up the page
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && isPocketBaseEnabled) {
       (async () => {
         try {
           const pages = await pb.collection('pages').getList(1, 1, {
@@ -52,7 +52,7 @@ export default function QRCodePage() {
         }
       })();
     } else {
-      // Not logged in - use localStorage
+      // Not logged in or PocketBase disabled - use localStorage
       try {
         const raw = localStorage.getItem('openbio_preview');
         if (raw) {
@@ -64,7 +64,9 @@ export default function QRCodePage() {
           }
         }
       } catch { /* ignore */ }
-      setUrl(`${import.meta.env.VITE_SITE_URL || window.location.origin}/preview`);
+      const slug = username || 'my_page';
+      setDisplayName(slug);
+      setUrl(`${import.meta.env.VITE_SITE_URL || window.location.origin}/${slug}`);
     }
   }, [user?.id, username]);
 

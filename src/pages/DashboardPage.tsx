@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import pb from '../lib/pb';
+import pb, { isPocketBaseEnabled } from '../lib/pb';
 
 
 interface LinkClick {
@@ -218,7 +218,7 @@ export default function DashboardPage() {
     }
 
     // Fetch analytics from PocketBase
-    if (user?.id) {
+    if (user?.id && isPocketBaseEnabled) {
       (async () => {
         try {
           const pages = await pb.collection('pages').getList(1, 1, {
