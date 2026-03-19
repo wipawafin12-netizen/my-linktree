@@ -104,6 +104,7 @@ export default function PreviewPage() {
     links: LinkItem[]; activeSocials: string[]; socialUrls: Record<string, string>;
     selectedPattern: string;
     patternGlow?: boolean;
+    bgImage?: string;
   } | null>(null);
 
   // Helper: load profile from localStorage
@@ -185,6 +186,7 @@ export default function PreviewPage() {
             socialUrls: p.socialUrls || {},
             selectedPattern: p.selectedPattern || 'none',
             patternGlow: !!p.patternGlow,
+            bgImage: localData?.bgImage || '',
           });
 
           pb.collection('analytics').create({
@@ -261,7 +263,7 @@ export default function PreviewPage() {
     selectedTheme = 'minimal', selectedButton = 'rounded', selectedFont = 'inter',
     customTextColor = '', customBgColor = '#6366f1', customBgSecondary = '#4f46e5',
     links = [], activeSocials = [], socialUrls = {}, selectedPattern = 'none',
-    patternGlow = false,
+    patternGlow = false, bgImage = '',
   } = data;
 
   const isCustom = selectedTheme === 'custom';
@@ -330,6 +332,16 @@ export default function PreviewPage() {
             75% { transform: translate(-8%, -5%) scale(1.12); }
           }
         `}</style>
+      )}
+      {/* Background image from template */}
+      {bgImage && (
+        <>
+          <img src={bgImage} alt="" className="absolute inset-0 w-full h-full object-cover z-0" />
+          <div
+            className="absolute inset-0 z-0"
+            style={{ background: `linear-gradient(to bottom, ${customBgColor}E6, ${customBgSecondary}B3)` }}
+          />
+        </>
       )}
       {/* Pattern overlay */}
       {patternStyle && (

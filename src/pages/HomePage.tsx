@@ -14,8 +14,9 @@ function PhoneMockup() {
       animate={{ opacity: 1, y: 0, rotateY: 0 }}
       transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
       className="relative w-[260px] sm:w-[280px] mx-auto"
-      style={{ perspective: 1200 }}
+      style={{ perspective: 1200 }}                 
     >
+      
       {/* Glow behind phone */}
       <div className="absolute -inset-8 bg-gradient-to-b from-violet-500/20 via-indigo-500/10 to-transparent rounded-full blur-3xl" />
 
@@ -244,7 +245,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════ HOW IT WORKS ══════ */}
       <section className="py-24 sm:py-32 px-4 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-500/[0.03] to-transparent" />
         <div className="relative max-w-5xl mx-auto">

@@ -381,6 +381,11 @@ export default function CreatePage() {
   const [pbPageId, setPbPageId] = useState<string | null>(null);
   const [pbPageRecord, setPbPageRecord] = useState<any>(null);
   const [pbLoaded, setPbLoaded] = useState(false);
+  const [pendingTemplate] = useState(() => {
+    const s = location.state as { template?: any } | null;
+    return s?.template || null;
+  });
+  const [templateApplied, setTemplateApplied] = useState(false);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const linkSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [displayName, setDisplayName] = useState(username || '');
@@ -462,6 +467,7 @@ export default function CreatePage() {
   const [patternAnimDropdownOpen, setPatternAnimDropdownOpen] = useState(false);
   const [patternGlow, setPatternGlow] = useState(false);
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
+  const [bgImage, setBgImage] = useState('');
 
   // ── Helper: restore state from localStorage ──
   const loadFromLocalStorage = useCallback(() => {
@@ -484,13 +490,18 @@ export default function CreatePage() {
       if (d.activeSocials) setActiveSocials(d.activeSocials);
       if (d.socialUrls) setSocialUrls(d.socialUrls);
       if (d.links && d.links.length > 0) setLinks(d.links);
+      if (d.bgImage !== undefined) setBgImage(d.bgImage);
       return true;
     } catch { return false; }
   }, []);
 
   // ── Load page data from PocketBase on mount (fallback to localStorage) ──
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      if (!pendingTemplate) loadFromLocalStorage();
+      setPbLoaded(true);
+      return;
+    }
     let cancelled = false;
     (async () => {
       try {
@@ -502,37 +513,50 @@ export default function CreatePage() {
           const p = pages.items[0];
           setPbPageId(p.id);
           setPbPageRecord(p);
-          setDisplayName(p.displayName || username || '');
-          setBio(p.bio || '');
-          if (p.avatar) setAvatar(getFileUrl(p, p.avatar));
-          if (p.selectedTheme) setSelectedTheme(p.selectedTheme);
-          if (p.selectedButton) setSelectedButton(p.selectedButton);
-          if (p.selectedFont) setSelectedFont(p.selectedFont);
-          if (p.customTextColor) setCustomTextColor(p.customTextColor);
-          if (p.customBgColor) setCustomBgColor(p.customBgColor);
-          if (p.customBgSecondary) setCustomBgSecondary(p.customBgSecondary);
-          if (p.selectedPattern) setSelectedPattern(p.selectedPattern);
-          if (p.selectedPatternAnim) setSelectedPatternAnim(p.selectedPatternAnim);
-          setPatternGlow(!!p.patternGlow);
-          setButtonAnimation(p.buttonAnimation !== false);
-          if (p.activeSocials) setActiveSocials(p.activeSocials);
-          if (p.socialUrls) setSocialUrls(p.socialUrls);
 
-          // Load links
-          const linksResult = await pb.collection('links').getFullList({
-            filter: `page = "${p.id}"`,
-            sort: 'order',
-          });
-          if (!cancelled && linksResult.length > 0) {
-            setLinks(linksResult.map((l: any) => ({
-              id: l.id,
-              title: l.title,
-              url: l.url,
-              enabled: l.enabled,
-              thumbnail: l.thumbnail ? getFileUrl(l, l.thumbnail) : undefined,
-              clicks: l.clicks || 0,
-              color: l.color || '',
-            })));
+          // Skip restoring page data if a template is about to be applied
+          if (!pendingTemplate) {
+            setDisplayName(p.displayName || username || '');
+            setBio(p.bio || '');
+            if (p.avatar) setAvatar(getFileUrl(p, p.avatar));
+            if (p.selectedTheme) setSelectedTheme(p.selectedTheme);
+            if (p.selectedButton) setSelectedButton(p.selectedButton);
+            if (p.selectedFont) setSelectedFont(p.selectedFont);
+            if (p.customTextColor) setCustomTextColor(p.customTextColor);
+            if (p.customBgColor) setCustomBgColor(p.customBgColor);
+            if (p.customBgSecondary) setCustomBgSecondary(p.customBgSecondary);
+            if (p.selectedPattern) setSelectedPattern(p.selectedPattern);
+            if (p.selectedPatternAnim) setSelectedPatternAnim(p.selectedPatternAnim);
+            setPatternGlow(!!p.patternGlow);
+            setButtonAnimation(p.buttonAnimation !== false);
+            if (p.activeSocials) setActiveSocials(p.activeSocials);
+            if (p.socialUrls) setSocialUrls(p.socialUrls);
+
+            // Restore bgImage from localStorage (not stored in PocketBase)
+            try {
+              const raw = localStorage.getItem('openbio_preview');
+              if (raw) {
+                const d = JSON.parse(raw);
+                if (d.bgImage) setBgImage(d.bgImage);
+              }
+            } catch { /* ignore */ }
+
+            // Load links
+            const linksResult = await pb.collection('links').getFullList({
+              filter: `page = "${p.id}"`,
+              sort: 'order',
+            });
+            if (!cancelled && linksResult.length > 0) {
+              setLinks(linksResult.map((l: any) => ({
+                id: l.id,
+                title: l.title,
+                url: l.url,
+                enabled: l.enabled,
+                thumbnail: l.thumbnail ? getFileUrl(l, l.thumbnail) : undefined,
+                clicks: l.clicks || 0,
+                color: l.color || '',
+              })));
+            }
           }
         } else {
           // No page in PocketBase yet — try creating one
@@ -555,12 +579,12 @@ export default function CreatePage() {
             }
           } catch {
             // PocketBase collection might not exist — fall back to localStorage
-            if (!cancelled) loadFromLocalStorage();
+            if (!cancelled && !pendingTemplate) loadFromLocalStorage();
           }
         }
       } catch {
         // PocketBase unavailable — silently fall back to localStorage
-        if (!cancelled) loadFromLocalStorage();
+        if (!cancelled && !pendingTemplate) loadFromLocalStorage();
       } finally {
         if (!cancelled) setPbLoaded(true);
       }
@@ -630,26 +654,56 @@ export default function CreatePage() {
     }, 1500);
   }, []);
 
-  // Apply template data from TemplatesPage navigation
+  // Apply template data from TemplatesPage navigation (runs AFTER PB/localStorage load)
   useEffect(() => {
-    const state = location.state as { template?: { name: string; bio: string; links: string[]; avatarBg: string; avatarText?: string; overlay: string } } | null;
-    if (state?.template) {
-      const t = state.template;
-      setDisplayName(t.name);
-      setBio(t.bio);
-      setLinks(
-        t.links.map((title, i) => ({
-          id: `tpl-${Date.now()}-${i}`,
-          title,
-          url: '',
-          enabled: true,
-          clicks: 0,
-        }))
-      );
-      // Clear the state so refreshing doesn't re-apply
-      window.history.replaceState({}, '');
+    if (!pbLoaded || !pendingTemplate || templateApplied) return;
+    setTemplateApplied(true);
+
+    const t = pendingTemplate;
+    setDisplayName(t.name);
+    setBio(t.bio);
+    setLinks(
+      t.links.map((title: string, i: number) => ({
+        id: `tpl-${Date.now()}-${i}`,
+        title,
+        url: '',
+        enabled: true,
+        clicks: 0,
+      }))
+    );
+
+    // Apply template background image & theme
+    if (t.bgImage) {
+      setBgImage(t.bgImage);
+      setSelectedTheme('custom');
+
+      // Extract colors from overlay (e.g. "from-[#3d4a32]/90 to-[#3d4a32]/70")
+      const hexColors = (t.overlay || '').match(/#[0-9a-fA-F]{6}/g) || [];
+      const primary = hexColors[0] || ((t.overlay || '').includes('black') ? '#000000' : '#333333');
+      const secondary = hexColors[1] || primary;
+      setCustomBgColor(primary);
+      setCustomBgSecondary(secondary);
+
+      // Extract text color from Tailwind class
+      if (t.textColor) {
+        const textHex = t.textColor.match(/#[0-9a-fA-F]{3,6}/)?.[0];
+        if (textHex) {
+          setCustomTextColor(textHex.length === 4
+            ? `#${textHex[1]}${textHex[1]}${textHex[2]}${textHex[2]}${textHex[3]}${textHex[3]}`
+            : textHex);
+        } else if (t.textColor.includes('white')) {
+          setCustomTextColor('#ffffff');
+        } else if (t.textColor.includes('gray-900')) {
+          setCustomTextColor('#111827');
+        } else if (t.textColor.includes('gray-800')) {
+          setCustomTextColor('#1f2937');
+        }
+      }
     }
-  }, []);
+
+    // Clear the state so refreshing doesn't re-apply
+    window.history.replaceState({}, '');
+  }, [pbLoaded, pendingTemplate, templateApplied]);
 
   const isLightColor = (hex: string) => {
     const r = parseInt(hex.slice(1, 3), 16) / 255;
@@ -847,6 +901,7 @@ export default function CreatePage() {
         displayName, bio, avatar: compressedAvatar, selectedTheme, selectedButton, selectedFont,
         customTextColor, customBgColor, customBgSecondary,
         links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
+        bgImage,
       }));
     } catch { /* ignore quota errors */ }
 
@@ -864,7 +919,7 @@ export default function CreatePage() {
   }, [displayName, bio, compressedAvatar, selectedTheme, selectedButton, selectedFont,
       customTextColor, customBgColor, customBgSecondary,
       links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
-      pbPageId, pbLoaded, debouncedSavePage, debouncedSaveLinks, buttonAnimation]);
+      pbPageId, pbLoaded, debouncedSavePage, debouncedSaveLinks, buttonAnimation, bgImage]);
 
   // Manual save for Name/Bio
   const [profileSaving, setProfileSaving] = useState(false);
@@ -2564,6 +2619,16 @@ export default function CreatePage() {
                       className={`rounded-[2.2rem] overflow-hidden ${!isCustom ? theme.bg : ''} min-h-[480px] flex flex-col ${fontStyle.cls} relative`}
                       style={isCustom ? customTheme.bgStyle : undefined}
                     >
+                      {/* Background image from template */}
+                      {bgImage && (
+                        <>
+                          <img src={bgImage} alt="" className="absolute inset-0 w-full h-full object-cover z-0" />
+                          <div
+                            className="absolute inset-0 z-0"
+                            style={{ background: `linear-gradient(to bottom, ${customBgColor}E6, ${customBgSecondary}B3)` }}
+                          />
+                        </>
+                      )}
                       {/* Pattern overlay */}
                       {selectedPattern !== 'none' && (
                         <div
