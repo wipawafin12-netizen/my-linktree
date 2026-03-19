@@ -192,6 +192,7 @@ export default function PreviewPage() {
             links: linksResult.map((l: any) => ({
               id: l.id, title: l.title, url: l.url,
               enabled: l.enabled, color: l.color || '',
+              thumbnail: l.thumbnail ? getFileUrl(l, l.thumbnail) : '',
             })),
             activeSocials: p.activeSocials || [],
             socialUrls: p.socialUrls || {},

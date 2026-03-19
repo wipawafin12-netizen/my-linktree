@@ -21,7 +21,9 @@
       "WebFetch(domain:linkcenter.chhindustry.com)",
       "Bash(python3:*)",
       "Bash(node setup-pb.js:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(check-deployment.md:*)",
+      "mcp__pocketbase__get_collection"
     ]
   },
   "enableAllProjectMcpServers": true,
