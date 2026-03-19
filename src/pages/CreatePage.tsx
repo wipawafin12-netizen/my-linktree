@@ -391,6 +391,7 @@ export default function CreatePage() {
   const [displayName, setDisplayName] = useState(username || '');
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
+  const [productImages, setProductImages] = useState<string[]>([]);
   const [selectedTheme, setSelectedTheme] = useState('minimal');
   const [selectedButton, setSelectedButton] = useState('rounded');
   const [buttonAnimation, setButtonAnimation] = useState(true);
@@ -416,6 +417,7 @@ export default function CreatePage() {
   const [toast, setToast] = useState('');
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const linkImageInputRef = useRef<HTMLInputElement>(null);
+  const productImagesInputRef = useRef<HTMLInputElement>(null);
   const [imageTargetLinkId, setImageTargetLinkId] = useState<string | null>(null);
 
   // Earn section
@@ -478,6 +480,7 @@ export default function CreatePage() {
       if (d.displayName) setDisplayName(d.displayName);
       if (d.bio) setBio(d.bio);
       if (d.avatar) setAvatar(d.avatar);
+      if (d.productImages) setProductImages(d.productImages);
       if (d.selectedTheme) setSelectedTheme(d.selectedTheme);
       if (d.selectedButton) setSelectedButton(d.selectedButton);
       if (d.selectedFont) setSelectedFont(d.selectedFont);
@@ -830,6 +833,38 @@ export default function CreatePage() {
     }
   };
 
+  const handleProductImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newImages: string[] = [];
+      let loadedCount = 0;
+
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          if (ev.target?.result) {
+            newImages.push(ev.target.result as string);
+          }
+          loadedCount++;
+
+          // When all files are loaded, update state
+          if (loadedCount === files.length) {
+            setProductImages((prev) => [...prev, ...newImages]);
+            showToast(`Added ${newImages.length} product image${newImages.length > 1 ? 's' : ''}!`);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    // Reset input so the same file can be selected again
+    e.target.value = '';
+  };
+
+  const removeProductImage = (index: number) => {
+    setProductImages((prev) => prev.filter((_, i) => i !== index));
+    showToast('Product image removed');
+  };
+
   const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
   const previewUrl = `${siteUrl}/${displayName || 'preview'}`;
 
@@ -842,6 +877,36 @@ export default function CreatePage() {
 
   const handleOpenPreview = () => {
     navigate(`/${displayName || 'preview'}`);
+  };
+
+  const handleStartFresh = () => {
+    if (!window.confirm('Are you sure you want to start fresh? This will clear all your current profile data.')) {
+      return;
+    }
+
+    // Clear all states
+    setDisplayName('');
+    setBio('');
+    setAvatar('');
+    setProductImages([]);
+    setLinks([]);
+    setActiveSocials([]);
+    setSocialUrls({});
+    setSelectedTheme('minimal');
+    setSelectedButton('rounded');
+    setSelectedFont('inter');
+    setCustomTextColor('');
+    setCustomBgColor('#6366f1');
+    setCustomBgSecondary('#4f46e5');
+    setSelectedPattern('none');
+    setSelectedPatternAnim('none');
+    setPatternGlow(false);
+    setBgImage('');
+
+    // Clear localStorage
+    localStorage.removeItem('openbio_preview');
+
+    showToast('Started fresh! Your profile has been cleared.');
   };
 
 
@@ -863,7 +928,8 @@ export default function CreatePage() {
     showToast('Setup complete! Your OpenBio is ready');
   };
 
-  const visibleLinks = showArchive ? links : links.filter((l) => l.enabled);
+  // Show all links (enabled and disabled) - disabled links will have visual indicator
+  const visibleLinks = links;
 
   // Compress avatar for localStorage (resize to small thumbnail)
   const [compressedAvatar, setCompressedAvatar] = useState('');
@@ -901,7 +967,7 @@ export default function CreatePage() {
         displayName, bio, avatar: compressedAvatar, selectedTheme, selectedButton, selectedFont,
         customTextColor, customBgColor, customBgSecondary,
         links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
-        bgImage,
+        bgImage, productImages,
       }));
     } catch { /* ignore quota errors */ }
 
@@ -919,7 +985,7 @@ export default function CreatePage() {
   }, [displayName, bio, compressedAvatar, selectedTheme, selectedButton, selectedFont,
       customTextColor, customBgColor, customBgSecondary,
       links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
-      pbPageId, pbLoaded, debouncedSavePage, debouncedSaveLinks, buttonAnimation, bgImage]);
+      pbPageId, pbLoaded, debouncedSavePage, debouncedSaveLinks, buttonAnimation, bgImage, productImages]);
 
   // Manual save for Name/Bio
   const [profileSaving, setProfileSaving] = useState(false);
@@ -1112,6 +1178,13 @@ export default function CreatePage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={handleStartFresh}
+                  className="px-3.5 py-1.5 text-xs font-medium text-red-500 bg-red-50 hover:bg-red-100 rounded-full border border-red-200/80 transition-all hover:text-red-600 hover:border-red-300"
+                  title="Clear all data and start fresh"
+                >
+                  New Profile
+                </button>
                 <button
                   onClick={handleCopyUrl}
                   className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-full border border-gray-200/80 transition-all hover:text-[#6d28d9] hover:border-[#a78bfa]/30"
@@ -1816,6 +1889,7 @@ export default function CreatePage() {
                 {/* Hidden file inputs */}
                 <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
                 <input ref={linkImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleLinkImageUpload} />
+                <input ref={productImagesInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleProductImagesUpload} />
 
                 {/* ── Profile Settings Card (row-based like settings page) ── */}
                 <motion.div
@@ -1882,6 +1956,43 @@ export default function CreatePage() {
                       className="flex-1 text-sm text-gray-600 placeholder-gray-300 bg-transparent focus:outline-none"
                     />
                     <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
+                  </div>
+
+                  {/* Product Images row */}
+                  <div className="px-6 py-4 border-b border-gray-50">
+                    <div className="flex items-start gap-4">
+                      <span className="text-sm text-gray-500 w-28 flex-shrink-0 mt-1">Products</span>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-3">
+                          <button
+                            onClick={() => productImagesInputRef.current?.click()}
+                            className="px-3 py-1.5 text-xs font-medium text-pink-500 bg-pink-50 rounded-lg hover:bg-pink-100 transition-colors flex items-center gap-1.5"
+                          >
+                            <Plus size={12} />
+                            Add product photos
+                          </button>
+                          {productImages.length > 0 && (
+                            <span className="text-xs text-gray-400">{productImages.length} photo{productImages.length > 1 ? 's' : ''}</span>
+                          )}
+                        </div>
+
+                        {productImages.length > 0 && (
+                          <div className="grid grid-cols-3 gap-2">
+                            {productImages.map((img, idx) => (
+                              <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100">
+                                <img src={img} alt={`Product ${idx + 1}`} className="w-full h-full object-cover" />
+                                <button
+                                  onClick={() => removeProductImage(idx)}
+                                  className="absolute top-1 right-1 w-5 h-5 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <X size={12} className="text-white" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Save Profile button */}
@@ -2012,12 +2123,6 @@ export default function CreatePage() {
                       >
                         <FolderOpen size={10} /> Collection
                       </button>
-                      <button
-                        onClick={() => setShowArchive(!showArchive)}
-                        className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium rounded-md transition-colors ${showArchive ? 'text-pink-600 bg-pink-50' : 'text-gray-500 bg-gray-50 hover:bg-gray-100'}`}
-                      >
-                        <Archive size={10} /> Archive
-                      </button>
                     </div>
                   </div>
 
@@ -2066,13 +2171,18 @@ export default function CreatePage() {
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <input
-                                  type="text"
-                                  value={link.title}
-                                  onChange={(e) => updateLink(link.id, 'title', e.target.value)}
-                                  placeholder="Title"
-                                  className="block w-full text-sm font-medium text-gray-800 placeholder-gray-300 bg-transparent focus:outline-none"
-                                />
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="text"
+                                    value={link.title}
+                                    onChange={(e) => updateLink(link.id, 'title', e.target.value)}
+                                    placeholder="Title"
+                                    className="flex-1 text-sm font-medium text-gray-800 placeholder-gray-300 bg-transparent focus:outline-none"
+                                  />
+                                  {!link.enabled && (
+                                    <span className="px-2 py-0.5 text-[10px] font-medium text-gray-400 bg-gray-100 rounded-full">Hidden</span>
+                                  )}
+                                </div>
                                 <input
                                   type="url"
                                   value={link.url}
@@ -2102,9 +2212,10 @@ export default function CreatePage() {
                                 </button>
                                 <button
                                   onClick={() => toggleLink(link.id)}
-                                  className={`relative w-9 h-5 rounded-full transition-colors ${link.enabled ? 'bg-pink-400' : 'bg-gray-200'}`}
+                                  className={`relative w-11 h-6 rounded-full transition-all duration-300 ease-in-out ${link.enabled ? 'bg-gradient-to-r from-pink-400 to-pink-500 shadow-md shadow-pink-200' : 'bg-gray-200'}`}
+                                  title={link.enabled ? 'Hide link from preview' : 'Show link in preview'}
                                 >
-                                  <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${link.enabled ? 'translate-x-[16px]' : 'translate-x-0.5'}`} />
+                                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-300 ease-out ${link.enabled ? 'translate-x-5' : 'translate-x-1'}`} />
                                 </button>
                                 <button
                                   onClick={() => removeLink(link.id)}
@@ -2697,6 +2808,27 @@ export default function CreatePage() {
                         </div>
                       )}
 
+                      {/* Product Gallery */}
+                      {productImages.length > 0 && (
+                        <div className="px-4 pb-3 relative z-[1]">
+                          <div className="grid grid-cols-2 gap-2">
+                            {productImages.map((img, idx) => (
+                              <div
+                                key={idx}
+                                className={`aspect-square rounded-xl overflow-hidden ${!isCustom ? theme.card : ''} ${!isCustom ? theme.cardBorder : ''}`}
+                                style={isCustom ? customTheme.cardStyle : undefined}
+                              >
+                                <img
+                                  src={img}
+                                  alt={`Product ${idx + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Links */}
                       <div className="px-4 pb-4 space-y-2 flex-1 relative z-[1]">
                         {links.filter((l) => l.title && l.enabled).length === 0 && (
@@ -2716,13 +2848,16 @@ export default function CreatePage() {
                               whileHover={buttonAnimation ? { scale: 1.03, y: -1 } : undefined}
                               whileTap={buttonAnimation ? { scale: 0.97 } : undefined}
                               transition={buttonAnimation ? { type: 'spring', stiffness: 400, damping: 17 } : undefined}
-                              className={`${!link.color && !isCustom ? `${theme.card} ${theme.cardBorder}` : ''} ${btnStyle.cls} px-4 py-2.5 text-center relative z-[1] ${buttonAnimation ? 'cursor-pointer' : ''}`}
+                              className={`${!link.color && !isCustom ? `${theme.card} ${theme.cardBorder}` : ''} ${btnStyle.cls} px-4 py-2.5 ${link.thumbnail ? 'flex items-center gap-2' : 'text-center'} relative z-[1] ${buttonAnimation ? 'cursor-pointer' : ''}`}
                               style={link.color
                                 ? { backgroundColor: link.color, border: '1px solid rgba(0,0,0,0.06)' }
                                 : isCustom ? customTheme.cardStyle : undefined
                               }
                             >
-                              <span className={`text-[11px] font-medium ${!link.color && !resolvedTextColor && !isCustom ? theme.text : ''}`} style={resolvedTextColor ? { color: resolvedTextColor } : link.color ? { color: '#374151' } : undefined}>{link.title}</span>
+                              {link.thumbnail && (
+                                <img src={link.thumbnail} alt="" className="w-5 h-5 rounded object-cover flex-shrink-0" />
+                              )}
+                              <span className={`text-[11px] font-medium ${!link.color && !resolvedTextColor && !isCustom ? theme.text : ''} ${link.thumbnail ? 'flex-1 text-left' : ''}`} style={resolvedTextColor ? { color: resolvedTextColor } : link.color ? { color: '#374151' } : undefined}>{link.title}</span>
                             </motion.div>
                           ))}
                       </div>

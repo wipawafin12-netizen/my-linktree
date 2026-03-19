@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Instagram, Youtube, Twitter, Music2, Facebook, Twitch, Github, Globe,
-  AtSign, Mail, Send, Phone, User, ExternalLink,
+  AtSign, Mail, Send, Phone, User, ExternalLink, X,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import pb, { getFileUrl } from '../lib/pb';
@@ -89,7 +89,7 @@ const socialIcons: Record<string, React.ComponentType<{ size?: number; className
 };
 
 interface LinkItem {
-  id: string; title: string; url: string; enabled: boolean; color?: string;
+  id: string; title: string; url: string; enabled: boolean; color?: string; thumbnail?: string;
 }
 
 export default function PreviewPage() {
@@ -97,6 +97,8 @@ export default function PreviewPage() {
   const [pbPageId, setPbPageId] = useState<string | null>(null);
   const [loading, setLoading] = useState(!!username);
   const [notFound, setNotFound] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState('');
   const [data, setData] = useState<{
     displayName: string; bio: string; avatar: string;
     selectedTheme: string; selectedButton: string; selectedFont: string;
@@ -105,6 +107,7 @@ export default function PreviewPage() {
     selectedPattern: string;
     patternGlow?: boolean;
     bgImage?: string;
+    productImages?: string[];
   } | null>(null);
 
   // Helper: load profile from localStorage
@@ -187,6 +190,7 @@ export default function PreviewPage() {
             selectedPattern: p.selectedPattern || 'none',
             patternGlow: !!p.patternGlow,
             bgImage: localData?.bgImage || '',
+            productImages: localData?.productImages || [],
           });
 
           pb.collection('analytics').create({
@@ -263,7 +267,7 @@ export default function PreviewPage() {
     selectedTheme = 'minimal', selectedButton = 'rounded', selectedFont = 'inter',
     customTextColor = '', customBgColor = '#6366f1', customBgSecondary = '#4f46e5',
     links = [], activeSocials = [], socialUrls = {}, selectedPattern = 'none',
-    patternGlow = false, bgImage = '',
+    patternGlow = false, bgImage = '', productImages = [],
   } = data;
 
   const isCustom = selectedTheme === 'custom';
@@ -413,6 +417,31 @@ export default function PreviewPage() {
         </div>
       )}
 
+      {/* Product Gallery */}
+      {productImages.length > 0 && (
+        <div className="px-5 pb-6 w-full max-w-md relative z-[1]">
+          <div className="grid grid-cols-2 gap-3">
+            {productImages.map((img, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  setLightboxImage(img);
+                  setLightboxOpen(true);
+                }}
+                className={`aspect-square rounded-2xl overflow-hidden ${!isCustom ? theme.card : ''} ${!isCustom ? theme.cardBorder : ''} hover:scale-[1.03] transition-transform cursor-pointer`}
+                style={isCustom ? customCardStyle : undefined}
+              >
+                <img
+                  src={img}
+                  alt={`Product ${idx + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Links */}
       <div className="px-5 pb-10 space-y-3 w-full max-w-md relative z-[1]">
         {enabledLinks.length === 0 && (
@@ -428,14 +457,17 @@ export default function PreviewPage() {
             target={link.url ? '_blank' : undefined}
             rel="noopener noreferrer"
             onClick={() => trackLinkClick(link)}
-            className={`block ${!link.color && !isCustom ? `${theme.card} ${theme.cardBorder}` : ''} ${btnCls} px-5 py-3.5 text-center hover:scale-[1.02] transition-transform`}
+            className={`${link.thumbnail ? 'flex items-center gap-3' : 'block text-center'} ${!link.color && !isCustom ? `${theme.card} ${theme.cardBorder}` : ''} ${btnCls} px-5 py-3.5 hover:scale-[1.02] transition-transform`}
             style={link.color
               ? { backgroundColor: link.color, border: '1px solid rgba(0,0,0,0.06)' }
               : isCustom ? customCardStyle : undefined
             }
           >
+            {link.thumbnail && (
+              <img src={link.thumbnail} alt="" className="w-6 h-6 rounded object-cover flex-shrink-0" />
+            )}
             <span
-              className={`text-sm font-medium ${!link.color && !resolvedTextColor && !isCustom ? theme.text : ''}`}
+              className={`text-sm font-medium ${!link.color && !resolvedTextColor && !isCustom ? theme.text : ''} ${link.thumbnail ? 'flex-1 text-left' : ''}`}
               style={resolvedTextColor ? { color: resolvedTextColor } : link.color ? { color: '#374151' } : undefined}
             >
               {link.title}
@@ -450,6 +482,27 @@ export default function PreviewPage() {
           LinkCenter
         </a>
       </div>
+
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+          >
+            <X size={20} className="text-white" />
+          </button>
+          <img
+            src={lightboxImage}
+            alt="Product"
+            className="max-w-full max-h-full object-contain rounded-xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

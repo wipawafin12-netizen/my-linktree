@@ -20,7 +20,8 @@
       "Bash(git push:*)",
       "WebFetch(domain:linkcenter.chhindustry.com)",
       "Bash(python3:*)",
-      "Bash(node setup-pb.js:*)"
+      "Bash(node setup-pb.js:*)",
+      "Bash(npm run dev:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
