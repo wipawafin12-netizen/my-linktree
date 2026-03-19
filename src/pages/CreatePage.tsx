@@ -645,9 +645,8 @@ export default function CreatePage() {
             await pb.collection('links').update(link.id, data);
           } else {
             try {
-              const created = await pb.collection('links').create(data);
-              // Update local id to match PB id (will take effect next render)
-              link.id = created.id;
+              await pb.collection('links').create(data);
+              // Note: ID sync will happen on next page load from PocketBase
             } catch {
               // Skip if create fails (e.g., invalid URL)
             }
