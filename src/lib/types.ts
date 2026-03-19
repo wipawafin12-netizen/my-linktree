@@ -54,6 +54,8 @@ export interface LinkItem {
   url: string;
   enabled: boolean;
   thumbnail?: string;
+  thumbnailFile?: File;
+  thumbnailUploading?: boolean;
   clicks?: number;
   color?: string;
   order?: number;

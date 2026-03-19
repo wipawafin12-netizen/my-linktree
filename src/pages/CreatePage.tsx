@@ -632,7 +632,8 @@ export default function CreatePage() {
         for (let i = 0; i < currentLinks.length; i++) {
           const link = currentLinks[i];
           if (!link.title && !link.url) continue; // skip empty drafts
-          const data = {
+
+          const data: any = {
             page: pageId,
             title: link.title || 'Untitled',
             url: link.url || 'https://example.com',
@@ -641,12 +642,48 @@ export default function CreatePage() {
             order: i,
             clicks: link.clicks || 0,
           };
+
+          // Prepare FormData if there's a thumbnail file to upload
+          let payload: any = data;
+          if (link.thumbnailFile) {
+            const formData = new FormData();
+            Object.keys(data).forEach(key => {
+              formData.append(key, data[key]);
+            });
+            formData.append('thumbnail', link.thumbnailFile);
+            payload = formData;
+          }
+
           if (existingIds.has(link.id)) {
-            await pb.collection('links').update(link.id, data);
+            const updated = await pb.collection('links').update(link.id, payload);
+            // Update state with actual file URL
+            if (link.thumbnailFile && updated.thumbnail) {
+              setLinks(prev => prev.map(l =>
+                l.id === link.id
+                  ? {
+                      ...l,
+                      thumbnail: getFileUrl(updated, updated.thumbnail),
+                      thumbnailFile: undefined
+                    }
+                  : l
+              ));
+            }
           } else {
             try {
-              await pb.collection('links').create(data);
-              // Note: ID sync will happen on next page load from PocketBase
+              const created = await pb.collection('links').create(payload);
+              // Update state with actual link ID and thumbnail URL
+              setLinks(prev => prev.map(l =>
+                l.id === link.id
+                  ? {
+                      ...l,
+                      id: created.id,
+                      thumbnail: link.thumbnailFile && created.thumbnail
+                        ? getFileUrl(created, created.thumbnail)
+                        : l.thumbnail,
+                      thumbnailFile: undefined
+                    }
+                  : l
+              ));
             } catch {
               // Skip if create fails (e.g., invalid URL)
             }
@@ -824,14 +861,36 @@ export default function CreatePage() {
 
   const handleLinkImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && imageTargetLinkId) {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        setLinks(links.map((l) => l.id === imageTargetLinkId ? { ...l, thumbnail: ev.target?.result as string } : l));
-      };
-      reader.readAsDataURL(file);
-      setImageTargetLinkId(null);
+    if (!file || !imageTargetLinkId) return;
+
+    // Validate file size (2MB limit)
+    if (file.size > 2 * 1024 * 1024) {
+      showToast('Image must be less than 2MB');
+      return;
     }
+
+    // Validate file type
+    if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
+      showToast('Only JPEG, PNG, GIF, and WebP images are supported');
+      return;
+    }
+
+    // Create preview URL for immediate display
+    const previewUrl = URL.createObjectURL(file);
+
+    // Update state with file and preview
+    setLinks(links.map((l) =>
+      l.id === imageTargetLinkId
+        ? {
+            ...l,
+            thumbnail: previewUrl,
+            thumbnailFile: file,
+            thumbnailUploading: false
+          }
+        : l
+    ));
+
+    setImageTargetLinkId(null);
   };
 
   const handleProductImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -987,6 +1046,17 @@ export default function CreatePage() {
       customTextColor, customBgColor, customBgSecondary,
       links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
       pbPageId, pbLoaded, debouncedSavePage, debouncedSaveLinks, buttonAnimation, bgImage, productImages]);
+
+  // Cleanup object URLs to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      links.forEach(link => {
+        if (link.thumbnail && link.thumbnail.startsWith('blob:')) {
+          URL.revokeObjectURL(link.thumbnail);
+        }
+      });
+    };
+  }, [links]);
 
   // Manual save for Name/Bio
   const [profileSaving, setProfileSaving] = useState(false);
@@ -2167,8 +2237,13 @@ export default function CreatePage() {
                                 style={{ backgroundColor: link.color || ['#ec4899', '#a855f7', '#6366f1', '#10b981', '#f59e0b', '#f43f5e'][linkIndex % 6] }}
                               />
                               {link.thumbnail && (
-                                <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 ring-1 ring-gray-100">
+                                <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 ring-1 ring-gray-100">
                                   <img src={link.thumbnail} alt="" className="w-full h-full object-cover" />
+                                  {link.thumbnailUploading && (
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    </div>
+                                  )}
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">

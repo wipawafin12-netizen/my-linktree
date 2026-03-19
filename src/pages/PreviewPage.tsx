@@ -473,7 +473,15 @@ export default function PreviewPage() {
             }
           >
             {link.thumbnail && (
-              <img src={link.thumbnail} alt="" className="w-6 h-6 rounded object-cover flex-shrink-0" />
+              <img
+                src={link.thumbnail}
+                alt=""
+                className="w-6 h-6 rounded object-cover flex-shrink-0"
+                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                  // Hide thumbnail if image fails to load
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
             )}
             <span
               className={`text-sm font-medium ${!link.color && !resolvedTextColor && !isCustom ? theme.text : ''} ${link.thumbnail ? 'flex-1 text-left' : ''}`}
