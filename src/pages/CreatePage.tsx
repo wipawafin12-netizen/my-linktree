@@ -859,38 +859,106 @@ export default function CreatePage() {
     }
   };
 
-  const handleLinkImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLinkImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !imageTargetLinkId) return;
+    const targetLinkId = imageTargetLinkId;
+    if (!file || !targetLinkId) return;
 
     // Validate file size (2MB limit)
     if (file.size > 2 * 1024 * 1024) {
       showToast('Image must be less than 2MB');
+      setImageTargetLinkId(null);
       return;
     }
 
     // Validate file type
     if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
       showToast('Only JPEG, PNG, GIF, and WebP images are supported');
+      setImageTargetLinkId(null);
       return;
     }
 
     // Create preview URL for immediate display
     const previewUrl = URL.createObjectURL(file);
 
-    // Update state with file and preview
-    setLinks(links.map((l) =>
-      l.id === imageTargetLinkId
+    // Update state with preview and mark as uploading
+    setLinks(prev => prev.map((l) =>
+      l.id === targetLinkId
         ? {
             ...l,
             thumbnail: previewUrl,
-            thumbnailFile: file,
-            thumbnailUploading: false
+            thumbnailUploading: true
           }
         : l
     ));
 
     setImageTargetLinkId(null);
+
+    // Upload to PocketBase immediately if link exists
+    if (isPocketBaseEnabled && pbPageId) {
+      try {
+        // Find the link in PocketBase
+        const existing = await pb.collection('links').getFullList({
+          filter: `page = "${pbPageId}"`,
+        });
+        const pbLink = existing.find((l: any) => l.id === targetLinkId);
+
+        if (pbLink) {
+          // Update existing link with thumbnail
+          const formData = new FormData();
+          formData.append('thumbnail', file);
+
+          const updated = await pb.collection('links').update(targetLinkId, formData);
+
+          // Update state with PocketBase file URL
+          setLinks(prev => prev.map(l =>
+            l.id === targetLinkId
+              ? {
+                  ...l,
+                  thumbnail: getFileUrl(updated, updated.thumbnail),
+                  thumbnailUploading: false
+                }
+              : l
+          ));
+
+          showToast('Thumbnail uploaded!');
+        } else {
+          // Link doesn't exist in PocketBase yet - keep preview URL
+          setLinks(prev => prev.map(l =>
+            l.id === targetLinkId
+              ? {
+                  ...l,
+                  thumbnailUploading: false,
+                  thumbnailFile: file
+                }
+              : l
+          ));
+        }
+      } catch (error) {
+        console.error('Thumbnail upload failed:', error);
+        setLinks(prev => prev.map(l =>
+          l.id === targetLinkId
+            ? {
+                ...l,
+                thumbnailUploading: false,
+                thumbnailFile: file
+              }
+            : l
+        ));
+        showToast('Upload failed, will retry on save');
+      }
+    } else {
+      // PocketBase disabled - keep preview URL and file
+      setLinks(prev => prev.map(l =>
+        l.id === targetLinkId
+          ? {
+              ...l,
+              thumbnailUploading: false,
+              thumbnailFile: file
+            }
+          : l
+      ));
+    }
   };
 
   const handleProductImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
