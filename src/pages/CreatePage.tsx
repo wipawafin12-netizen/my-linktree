@@ -22,16 +22,11 @@ import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
 
 const sidebarMain = [
   { icon: Link2, label: 'My OpenBio', id: 'links' },
-  { icon: Coins, label: 'Earn', id: 'earn' },
   { icon: Users, label: 'Audience', id: 'audience' },
-  { icon: BarChart3, label: 'Insights', id: 'insights' },
 ];
 
 const sidebarTools = [
-  { icon: Calendar, label: 'Social planner', id: 'planner' },
-  { icon: MessageSquare, label: 'Instagram auto-reply', id: 'autoreply' },
   { icon: Scissors, label: 'Link shortener', id: 'shortener' },
-  { icon: Lightbulb, label: 'Post ideas', id: 'ideas' },
 ];
 
 const themes = [
