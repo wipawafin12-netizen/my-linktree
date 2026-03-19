@@ -2292,9 +2292,6 @@ export default function CreatePage() {
                             className={`border-b border-gray-50 last:border-b-0 transition-colors ${!link.enabled ? 'opacity-40' : 'hover:bg-gray-50/40'}`}
                           >
                             <div className="flex items-center gap-3 px-6 py-3.5">
-                              <div className="text-gray-300 cursor-grab hover:text-gray-400 active:text-pink-500 transition-colors">
-                                <GripVertical size={14} />
-                              </div>
                               <div
                                 className="w-1.5 h-8 rounded-full flex-shrink-0"
                                 style={{ backgroundColor: link.color || ['#ec4899', '#a855f7', '#6366f1', '#10b981', '#f59e0b', '#f43f5e'][linkIndex % 6] }}
