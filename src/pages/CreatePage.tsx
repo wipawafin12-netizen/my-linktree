@@ -2850,7 +2850,6 @@ export default function CreatePage() {
                       {copied ? <CheckCircle2 size={13} className="text-green-500" /> : <Copy size={13} className="text-gray-300 hover:text-[#7c3aed] transition-colors" />}
                     </button>
                   </div>
-                  <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Live Preview</span>
                 </div>
 
                 {/* Phone Frame */}
