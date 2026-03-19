@@ -137,7 +137,6 @@ export default function QRCodePage() {
             <span className="text-sm font-semibold text-gray-900">{shortName}</span>
             <ExternalLink size={13} className="ml-1 text-gray-400" />
           </a>
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Live Preview</span>
         </motion.div>
 
         <div className="grid lg:grid-cols-[1fr_340px] gap-10 items-start">
