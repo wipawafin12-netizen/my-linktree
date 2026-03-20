@@ -24,7 +24,10 @@
       "Bash(npm run dev:*)",
       "Bash(check-deployment.md:*)",
       "mcp__pocketbase__get_collection",
-      "mcp__pocketbase__list_records"
+      "mcp__pocketbase__list_records",
+      "WebFetch(domain:my-linktree-tan.vercel.app)",
+      "WebFetch(domain:linktree.chhindustry.com)",
+      "Bash(git remote get-url:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

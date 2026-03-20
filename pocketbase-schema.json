@@ -251,6 +251,26 @@
             "max": null,
             "pattern": ""
           }
+        },
+        {
+          "name": "linkTitle",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "linkUrl",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null,
+            "pattern": ""
+          }
         }
       ],
       "indexes": [

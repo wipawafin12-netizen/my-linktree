@@ -544,6 +544,20 @@ export default function CreatePage() {
               filter: `page = "${p.id}"`,
               sort: 'order',
             });
+
+            // Count clicks from analytics records
+            let clickCounts: Record<string, number> = {};
+            try {
+              const clickRecords = await pb.collection('analytics').getFullList({
+                filter: `page = "${p.id}" && type = "click"`,
+              });
+              clickRecords.forEach((r: any) => {
+                if (r.linkId) {
+                  clickCounts[r.linkId] = (clickCounts[r.linkId] || 0) + 1;
+                }
+              });
+            } catch { /* ignore */ }
+
             if (!cancelled && linksResult.length > 0) {
               setLinks(linksResult.map((l: any) => ({
                 id: l.id,
@@ -551,7 +565,7 @@ export default function CreatePage() {
                 url: l.url,
                 enabled: l.enabled,
                 thumbnail: l.thumbnail ? getFileUrl(l, l.thumbnail) : undefined,
-                clicks: l.clicks || 0,
+                clicks: clickCounts[l.id] || 0,
                 color: l.color || '',
               })));
             }
