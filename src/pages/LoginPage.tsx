@@ -47,14 +47,14 @@ export default function LoginPage() {
           <Link to="/" className="inline-flex items-center gap-1">
             <img src="/linkcenter.png" alt="LinkCenter" className="h-10" />
           </Link>
-          <p className="text-gray-400 text-sm mt-2">Welcome back! Log in to your account.</p>
+          <p className="text-gray-400 text-sm mt-2">ยินดีต้อนรับกลับมา! เข้าสู่ระบบบัญชีของคุณ</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
           {/* Email */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">Email</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">อีเมล</label>
             <div className="relative">
               <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-300" />
               <input
@@ -70,14 +70,14 @@ export default function LoginPage() {
 
           {/* Password */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">Password</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">รหัสผ่าน</label>
             <div className="relative">
               <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-300" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder="กรอกรหัสผ่านของคุณ"
                 autoComplete="new-password"
                 className="w-full pl-10 pr-11 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300 transition-all"
               />
@@ -98,7 +98,7 @@ export default function LoginPage() {
               onClick={() => setShowForgotPassword(true)}
               className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
             >
-              Forgot password?
+              ลืมรหัสผ่าน?
             </button>
           </div>
 
@@ -115,15 +115,15 @@ export default function LoginPage() {
             disabled={isSubmitting}
             className="w-full py-3 bg-gray-900 text-white text-sm font-semibold rounded-full hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
-            {isSubmitting ? 'Logging in...' : 'Log in'}
+            {isSubmitting ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
           </motion.button>
         </form>
 
         {/* Sign up link */}
         <p className="text-center text-sm text-gray-400 mt-8">
-          Don't have an account?{' '}
+          ยังไม่มีบัญชี?{' '}
           <Link to="/signup" className="text-gray-900 font-medium hover:underline">
-            Sign up free
+            สมัครฟรี
           </Link>
         </p>
       </motion.div>
@@ -148,8 +148,8 @@ export default function LoginPage() {
               {resetSent ? (
                 <div className="text-center py-4">
                   <CheckCircle2 size={40} className="text-green-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Check your email</h3>
-                  <p className="text-sm text-gray-500">We sent a reset link to <strong>{resetEmail}</strong></p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">ตรวจสอบอีเมลของคุณ</h3>
+                  <p className="text-sm text-gray-500">เราส่งลิงก์รีเซ็ตไปที่ <strong>{resetEmail}</strong></p>
                 </div>
               ) : (
                 <>
@@ -157,10 +157,10 @@ export default function LoginPage() {
                     onClick={() => setShowForgotPassword(false)}
                     className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
                   >
-                    <ArrowLeft size={16} /> Back to login
+                    <ArrowLeft size={16} /> กลับไปหน้าเข้าสู่ระบบ
                   </button>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Reset your password</h3>
-                  <p className="text-sm text-gray-500 mb-5">Enter your email and we'll send you a reset link.</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">รีเซ็ตรหัสผ่าน</h3>
+                  <p className="text-sm text-gray-500 mb-5">กรอกอีเมลของคุณ แล้วเราจะส่งลิงก์รีเซ็ตไปให้</p>
                   <form onSubmit={handleResetPassword} className="space-y-4">
                     <div className="relative">
                       <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-300" />
@@ -177,7 +177,7 @@ export default function LoginPage() {
                       type="submit"
                       className="w-full py-3 bg-gray-900 text-white text-sm font-semibold rounded-full hover:bg-gray-800 transition-colors"
                     >
-                      Send reset link
+                      ส่งลิงก์รีเซ็ต
                     </button>
                   </form>
                 </>

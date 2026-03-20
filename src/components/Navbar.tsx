@@ -5,8 +5,8 @@ import { Menu, X, User, LogOut, Store } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const navLinks = [
-  { label: 'Products', to: '/products' },
-  { label: 'Templates', to: '/templates' },
+  { label: 'ผลิตภัณฑ์', to: '/products' },
+  { label: 'เทมเพลต', to: '/templates' },
 ];
 
 export default function Navbar() {
@@ -82,20 +82,13 @@ export default function Navbar() {
                           onClick={() => setUserMenuOpen(false)}
                           className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
                         >
-                          <User size={14} /> Dashboard
-                        </Link>
-                        <Link
-                          to="/marketplace"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-                        >
-                          <Store size={14} /> Marketplace
+                          <User size={14} /> แดชบอร์ด
                         </Link>
                         <button
                           onClick={() => { logout(); setUserMenuOpen(false); navigate('/'); }}
                           className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
                         >
-                          <LogOut size={14} /> Log out
+                          <LogOut size={14} /> ออกจากระบบ
                         </button>
                       </div>
                     </>
@@ -108,13 +101,13 @@ export default function Navbar() {
                   to="/login"
                   className={`px-5 py-2 text-sm font-medium rounded-full transition-all ${isHome ? 'text-gray-300 hover:text-white border border-white/10 hover:border-white/20' : 'text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-300'}`}
                 >
-                  Log in
+                  เข้าสู่ระบบ
                 </Link>
                 <Link
                   to="/signup"
                   className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:brightness-110 rounded-full shadow-md shadow-violet-500/20 transition-all"
                 >
-                  Sign up free
+                  สมัครฟรี
                 </Link>
               </>
             )}
@@ -157,22 +150,22 @@ export default function Navbar() {
               {isLoggedIn ? (
                 <>
                   <Link to="/create" onClick={() => setMobileOpen(false)} className="block text-center px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-full transition-colors">
-                    My OpenBio
+                    OpenBio ของฉัน
                   </Link>
                   <button
                     onClick={() => { logout(); setMobileOpen(false); navigate('/'); }}
                     className="flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-red-500 border border-red-200 rounded-full hover:bg-red-50 transition-colors"
                   >
-                    <LogOut size={14} /> Log out
+                    <LogOut size={14} /> ออกจากระบบ
                   </button>
                 </>
               ) : (
                 <>
                   <Link to="/login" onClick={() => setMobileOpen(false)} className="block text-center px-5 py-2.5 text-sm font-medium text-gray-500 border border-gray-200 rounded-full hover:bg-gray-50 transition-colors">
-                    Log in
+                    เข้าสู่ระบบ
                   </Link>
                   <Link to="/signup" onClick={() => setMobileOpen(false)} className="block text-center px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-full transition-colors">
-                    Sign up free
+                    สมัครฟรี
                   </Link>
                 </>
               )}

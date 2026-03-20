@@ -39,14 +39,14 @@ export default function SignupPage() {
           <Link to="/" className="inline-flex items-center gap-1">
             <img src="/linkcenter.png" alt="LinkCenter" className="h-10" />
           </Link>
-          <p className="text-gray-400 text-sm mt-2">Create your free account in seconds.</p>
+          <p className="text-gray-400 text-sm mt-2">สร้างบัญชีฟรีได้ในไม่กี่วินาที</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
           {/* Name */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">Username</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">ชื่อผู้ใช้</label>
             <div className="relative">
               <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-300" />
               <input
@@ -67,7 +67,7 @@ export default function SignupPage() {
 
           {/* Email */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">Email</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">อีเมล</label>
             <div className="relative">
               <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-300" />
               <input
@@ -83,14 +83,14 @@ export default function SignupPage() {
 
           {/* Password */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">Password</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">รหัสผ่าน</label>
             <div className="relative">
               <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-300" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Create a password"
+                placeholder="สร้างรหัสผ่าน"
                 autoComplete="new-password"
                 className="w-full pl-10 pr-11 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300 transition-all"
               />
@@ -124,9 +124,9 @@ export default function SignupPage() {
 
           {/* Terms */}
           <p className="text-[11px] text-gray-400 leading-relaxed">
-            By creating an account, you agree to OpenBio's{' '}
-            <a href="https://linkc.ee/s/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">Terms of Service</a> and{' '}
-            <a href="https://linkc.ee/s/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">Privacy Policy</a>.
+            การสร้างบัญชีหมายความว่าคุณยอมรับ{' '}
+            <a href="https://linkc.ee/s/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">ข้อกำหนดการให้บริการ</a> และ{' '}
+            <a href="https://linkc.ee/s/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600">นโยบายความเป็นส่วนตัว</a> ของ OpenBio
           </p>
 
           {/* Error */}
@@ -142,15 +142,15 @@ export default function SignupPage() {
             disabled={isSubmitting}
             className="w-full flex items-center justify-center gap-2 py-3 bg-gray-900 text-white text-sm font-semibold rounded-full hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
-            {isSubmitting ? 'Creating account...' : <> Create account <ArrowRight size={16} /></>}
+            {isSubmitting ? 'กำลังสร้างบัญชี...' : <> สร้างบัญชี <ArrowRight size={16} /></>}
           </motion.button>
         </form>
 
         {/* Login link */}
         <p className="text-center text-sm text-gray-400 mt-8">
-          Already have an account?{' '}
+          มีบัญชีอยู่แล้ว?{' '}
           <Link to="/login" className="text-gray-900 font-medium hover:underline">
-            Log in
+            เข้าสู่ระบบ
           </Link>
         </p>
       </motion.div>

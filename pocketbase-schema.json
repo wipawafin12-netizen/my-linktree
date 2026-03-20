@@ -127,6 +127,21 @@
           "name": "productImages",
           "type": "json",
           "required": false
+        },
+        {
+          "name": "showSubscribe",
+          "type": "bool",
+          "required": false
+        },
+        {
+          "name": "emailFormTitle",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": 200,
+            "pattern": ""
+          }
         }
       ],
       "indexes": ["CREATE INDEX idx_pages_user ON pages (user)"],
@@ -276,6 +291,48 @@
       "indexes": [
         "CREATE INDEX idx_analytics_page ON analytics (page)",
         "CREATE INDEX idx_analytics_created ON analytics (created)"
+      ],
+      "listRule": "@request.auth.id != \"\" && page.user = @request.auth.id",
+      "viewRule": "@request.auth.id != \"\" && page.user = @request.auth.id",
+      "createRule": "",
+      "updateRule": null,
+      "deleteRule": "@request.auth.id != \"\" && page.user = @request.auth.id"
+    },
+    {
+      "name": "subscribers",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {
+          "name": "page",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "pages",
+            "cascadeDelete": true,
+            "minSelect": null,
+            "maxSelect": 1,
+            "displayFields": ["displayName"]
+          }
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "name": "source",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": null,
+            "pattern": ""
+          }
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_subscribers_page ON subscribers (page)"
       ],
       "listRule": "@request.auth.id != \"\" && page.user = @request.auth.id",
       "viewRule": "@request.auth.id != \"\" && page.user = @request.auth.id",

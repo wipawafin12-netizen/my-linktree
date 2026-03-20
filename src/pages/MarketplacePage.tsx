@@ -11,35 +11,35 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const categories = [
-  { id: 'all', label: 'All Apps', icon: Grid3X3 },
-  { id: 'content', label: 'Share Content', icon: Share2 },
-  { id: 'money', label: 'Make Money', icon: DollarSign },
-  { id: 'grow', label: 'Grow Audience', icon: TrendingUp },
+  { id: 'all', label: 'แอปทั้งหมด', icon: Grid3X3 },
+  { id: 'content', label: 'แชร์คอนเทนต์', icon: Share2 },
+  { id: 'money', label: 'สร้างรายได้', icon: DollarSign },
+  { id: 'grow', label: 'ขยายผู้ติดตาม', icon: TrendingUp },
 ];
 
 const apps = [
-  { name: 'Spotify', desc: 'Share tracks, albums, and playlists directly on your OpenBio.', category: 'content', icon: Headphones, color: '#1DB954', tag: 'Popular', featured: true, installs: '2.4M' },
-  { name: 'YouTube', desc: 'Embed and showcase your latest videos for visitors to watch.', category: 'content', icon: Video, color: '#FF0000', tag: 'Popular', featured: true, installs: '3.1M' },
-  { name: 'SoundCloud', desc: 'Stream your tracks right from your profile page.', category: 'content', icon: Music, color: '#FF5500', installs: '890K' },
-  { name: 'TikTok', desc: 'Feature your best TikTok videos on your OpenBio.', category: 'content', icon: Video, color: '#000000', tag: 'Trending', installs: '1.8M' },
-  { name: 'Twitch', desc: 'Show your live stream status and embed your channel.', category: 'content', icon: Camera, color: '#9146FF', installs: '620K' },
-  { name: 'Podcast Player', desc: 'Embed your latest podcast episodes for easy listening.', category: 'content', icon: Podcast, color: '#8B5CF6', installs: '340K' },
-  { name: 'Instagram Feed', desc: 'Display your latest Instagram posts in a beautiful grid.', category: 'content', icon: Camera, color: '#E1306C', tag: 'Popular', installs: '2.8M' },
-  { name: 'Pinterest Boards', desc: 'Showcase your curated Pinterest boards and pins.', category: 'content', icon: Heart, color: '#E60023', installs: '410K' },
-  { name: 'Shopify', desc: 'Sell products directly from your OpenBio profile.', category: 'money', icon: ShoppingBag, color: '#96BF48', tag: 'Popular', featured: true, installs: '1.5M' },
-  { name: 'PayPal', desc: 'Accept tips, donations, and payments instantly.', category: 'money', icon: CreditCard, color: '#003087', installs: '980K' },
-  { name: 'GoFundMe', desc: 'Share your fundraising campaigns with supporters.', category: 'money', icon: Gift, color: '#00B964', installs: '230K' },
-  { name: 'Spring', desc: 'Sell custom merch — t-shirts, mugs, and more.', category: 'money', icon: ShoppingCart, color: '#FF6B6B', installs: '560K' },
-  { name: 'Ko-fi', desc: 'Let your fans support you with one-time donations.', category: 'money', icon: Heart, color: '#FF5E5B', installs: '710K' },
-  { name: 'Gumroad', desc: 'Sell digital products, courses, and memberships.', category: 'money', icon: DollarSign, color: '#FF90E8', tag: 'New', installs: '440K' },
-  { name: 'Typeform', desc: 'Create beautiful surveys and collect feedback.', category: 'grow', icon: MessageCircle, color: '#262627', installs: '520K' },
-  { name: 'SMS Subscribers', desc: 'Collect phone numbers and grow your SMS list.', category: 'grow', icon: MessageCircle, color: '#10B981', tag: 'New', installs: '180K' },
-  { name: 'Email Signup', desc: 'Build your mailing list with embedded signup forms.', category: 'grow', icon: Users, color: '#6366F1', tag: 'Popular', featured: true, installs: '1.9M' },
-  { name: 'Gleam', desc: 'Run giveaways and competitions to boost engagement.', category: 'grow', icon: Gift, color: '#1EAAF1', installs: '290K' },
-  { name: 'Analytics Pro', desc: 'Deep insights into your audience and link performance.', category: 'grow', icon: BarChart3, color: '#F59E0B', installs: '870K' },
-  { name: 'Zapier', desc: 'Automate workflows and connect 5,000+ apps.', category: 'grow', icon: Zap, color: '#FF4A00', installs: '650K' },
-  { name: 'Calendly', desc: 'Let visitors book meetings directly from your profile.', category: 'grow', icon: Globe, color: '#006BFF', installs: '730K' },
-  { name: 'Discord', desc: 'Invite fans to your Discord server with one click.', category: 'grow', icon: MessageCircle, color: '#5865F2', installs: '1.1M' },
+  { name: 'Spotify', desc: 'แชร์เพลง อัลบั้ม และเพลย์ลิสต์โดยตรงบน OpenBio ของคุณ', category: 'content', icon: Headphones, color: '#1DB954', tag: 'ยอดนิยม', featured: true, installs: '2.4M' },
+  { name: 'YouTube', desc: 'ฝังและแสดงวิดีโอล่าสุดของคุณให้ผู้เยี่ยมชมรับชม', category: 'content', icon: Video, color: '#FF0000', tag: 'ยอดนิยม', featured: true, installs: '3.1M' },
+  { name: 'SoundCloud', desc: 'สตรีมเพลงของคุณได้โดยตรงจากหน้าโปรไฟล์', category: 'content', icon: Music, color: '#FF5500', installs: '890K' },
+  { name: 'TikTok', desc: 'โชว์วิดีโอ TikTok ที่ดีที่สุดของคุณบน OpenBio', category: 'content', icon: Video, color: '#000000', tag: 'มาแรง', installs: '1.8M' },
+  { name: 'Twitch', desc: 'แสดงสถานะไลฟ์สตรีมและฝังช่องของคุณ', category: 'content', icon: Camera, color: '#9146FF', installs: '620K' },
+  { name: 'Podcast Player', desc: 'ฝังตอนพอดแคสต์ล่าสุดของคุณเพื่อฟังได้ง่าย', category: 'content', icon: Podcast, color: '#8B5CF6', installs: '340K' },
+  { name: 'Instagram Feed', desc: 'แสดงโพสต์ Instagram ล่าสุดของคุณในกริดที่สวยงาม', category: 'content', icon: Camera, color: '#E1306C', tag: 'ยอดนิยม', installs: '2.8M' },
+  { name: 'Pinterest Boards', desc: 'แสดงบอร์ดและพินที่คุณรวบรวมจาก Pinterest', category: 'content', icon: Heart, color: '#E60023', installs: '410K' },
+  { name: 'Shopify', desc: 'ขายสินค้าโดยตรงจากโปรไฟล์ OpenBio ของคุณ', category: 'money', icon: ShoppingBag, color: '#96BF48', tag: 'ยอดนิยม', featured: true, installs: '1.5M' },
+  { name: 'PayPal', desc: 'รับทิป บริจาค และชำระเงินได้ทันที', category: 'money', icon: CreditCard, color: '#003087', installs: '980K' },
+  { name: 'GoFundMe', desc: 'แชร์แคมเปญระดมทุนของคุณกับผู้สนับสนุน', category: 'money', icon: Gift, color: '#00B964', installs: '230K' },
+  { name: 'Spring', desc: 'ขายสินค้าที่กำหนดเอง — เสื้อยืด แก้ว และอื่นๆ', category: 'money', icon: ShoppingCart, color: '#FF6B6B', installs: '560K' },
+  { name: 'Ko-fi', desc: 'ให้แฟนๆ สนับสนุนคุณด้วยการบริจาคครั้งเดียว', category: 'money', icon: Heart, color: '#FF5E5B', installs: '710K' },
+  { name: 'Gumroad', desc: 'ขายสินค้าดิจิทัล คอร์ส และสมาชิกภาพ', category: 'money', icon: DollarSign, color: '#FF90E8', tag: 'ใหม่', installs: '440K' },
+  { name: 'Typeform', desc: 'สร้างแบบสำรวจที่สวยงามและรวบรวมความคิดเห็น', category: 'grow', icon: MessageCircle, color: '#262627', installs: '520K' },
+  { name: 'SMS Subscribers', desc: 'รวบรวมหมายเลขโทรศัพท์และขยายรายชื่อ SMS ของคุณ', category: 'grow', icon: MessageCircle, color: '#10B981', tag: 'ใหม่', installs: '180K' },
+  { name: 'Email Signup', desc: 'สร้างรายชื่ออีเมลด้วยฟอร์มสมัครสมาชิกแบบฝัง', category: 'grow', icon: Users, color: '#6366F1', tag: 'ยอดนิยม', featured: true, installs: '1.9M' },
+  { name: 'Gleam', desc: 'จัดกิจกรรมแจกของรางวัลและการแข่งขันเพื่อเพิ่มการมีส่วนร่วม', category: 'grow', icon: Gift, color: '#1EAAF1', installs: '290K' },
+  { name: 'Analytics Pro', desc: 'ข้อมูลเชิงลึกเกี่ยวกับผู้ชมและประสิทธิภาพลิงก์ของคุณ', category: 'grow', icon: BarChart3, color: '#F59E0B', installs: '870K' },
+  { name: 'Zapier', desc: 'ทำงานอัตโนมัติและเชื่อมต่อแอปกว่า 5,000 รายการ', category: 'grow', icon: Zap, color: '#FF4A00', installs: '650K' },
+  { name: 'Calendly', desc: 'ให้ผู้เยี่ยมชมจองการประชุมได้โดยตรงจากโปรไฟล์ของคุณ', category: 'grow', icon: Globe, color: '#006BFF', installs: '730K' },
+  { name: 'Discord', desc: 'เชิญแฟนๆ เข้าเซิร์ฟเวอร์ Discord ของคุณด้วยคลิกเดียว', category: 'grow', icon: MessageCircle, color: '#5865F2', installs: '1.1M' },
 ];
 
 const featuredApps = apps.filter((a) => a.featured);
@@ -83,14 +83,14 @@ export default function MarketplacePage() {
             className="text-center"
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-sm text-white/90 text-xs font-semibold rounded-full mb-6 border border-white/10">
-              <Sparkles size={14} className="text-yellow-400" /> 22+ integrations available
+              <Sparkles size={14} className="text-yellow-400" /> การเชื่อมต่อกว่า 22 รายการ
             </div>
             <h1 className="text-4xl sm:text-6xl font-bold text-white mb-5 leading-tight">
-              Discover apps for your<br />
+              ค้นพบแอปสำหรับ<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400">OpenBio</span>
             </h1>
             <p className="text-lg text-white/60 max-w-xl mx-auto mb-10">
-              Share content, make money, and grow your audience with powerful integrations.
+              แชร์คอนเทนต์ สร้างรายได้ และขยายผู้ติดตามด้วยการเชื่อมต่อที่ทรงพลัง
             </p>
 
             {/* Search */}
@@ -98,7 +98,7 @@ export default function MarketplacePage() {
               <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-white/40" />
               <input
                 type="text"
-                placeholder="Search apps..."
+                placeholder="ค้นหาแอป..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-14 pr-5 py-4 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-400/50 transition-all text-sm"
@@ -124,7 +124,7 @@ export default function MarketplacePage() {
         >
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <Star size={20} className="text-yellow-500" /> Featured
+              <Star size={20} className="text-yellow-500" /> แนะนำ
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -144,7 +144,7 @@ export default function MarketplacePage() {
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-gray-900">{app.name}</h3>
-                      <p className="text-[11px] text-gray-400">{app.installs} installs</p>
+                      <p className="text-[11px] text-gray-400">{app.installs} การติดตั้ง</p>
                     </div>
                   </div>
                   <p className="text-xs text-gray-500 leading-relaxed mb-4 line-clamp-2">{app.desc}</p>
@@ -156,7 +156,7 @@ export default function MarketplacePage() {
                         : 'bg-gray-900 text-white hover:bg-gray-800'
                     }`}
                   >
-                    {installedApps.includes(app.name) ? 'Installed' : 'Add to OpenBio'}
+                    {installedApps.includes(app.name) ? 'ติดตั้งแล้ว' : 'เพิ่มใน OpenBio'}
                   </button>
                 </div>
               </motion.div>
@@ -172,7 +172,7 @@ export default function MarketplacePage() {
           className="mb-16"
         >
           <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
-            <Sparkles size={20} className="text-purple-500" /> Editor's Picks
+            <Sparkles size={20} className="text-purple-500" /> ตัวเลือกของบรรณาธิการ
           </h2>
           <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 rounded-2xl p-6 border border-purple-100/50">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -190,7 +190,7 @@ export default function MarketplacePage() {
                     </div>
                     <div className="min-w-0">
                       <h4 className="text-sm font-semibold text-gray-900 truncate">{app.name}</h4>
-                      <p className="text-[11px] text-gray-400">{app.installs} installs</p>
+                      <p className="text-[11px] text-gray-400">{app.installs} การติดตั้ง</p>
                     </div>
                   </div>
                   <p className="text-xs text-gray-500 line-clamp-2 mb-3">{app.desc}</p>
@@ -202,7 +202,7 @@ export default function MarketplacePage() {
                         : 'text-purple-600 hover:text-purple-700'
                     }`}
                   >
-                    {installedApps.includes(app.name) ? 'Installed' : '+ Add'}
+                    {installedApps.includes(app.name) ? 'ติดตั้งแล้ว' : '+ เพิ่ม'}
                   </button>
                 </motion.div>
               ))}
@@ -217,8 +217,8 @@ export default function MarketplacePage() {
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Browse All</h2>
-            <p className="text-sm text-gray-400">{filtered.length} app{filtered.length !== 1 ? 's' : ''}</p>
+            <h2 className="text-xl font-bold text-gray-900">ดูทั้งหมด</h2>
+            <p className="text-sm text-gray-400">{filtered.length} แอป</p>
           </div>
 
           {/* Tabs */}
@@ -271,20 +271,20 @@ export default function MarketplacePage() {
                           <h3 className="text-sm font-bold text-gray-900 truncate">{app.name}</h3>
                           {app.tag && (
                             <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 ${
-                              app.tag === 'Popular' ? 'bg-amber-100 text-amber-700' :
-                              app.tag === 'Trending' ? 'bg-purple-100 text-purple-700' :
+                              app.tag === 'ยอดนิยม' ? 'bg-amber-100 text-amber-700' :
+                              app.tag === 'มาแรง' ? 'bg-purple-100 text-purple-700' :
                               'bg-emerald-100 text-emerald-700'
                             }`}>
                               {app.tag}
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-400 mb-2">{app.installs} installs</p>
+                        <p className="text-xs text-gray-400 mb-2">{app.installs} การติดตั้ง</p>
                         <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{app.desc}</p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
-                      <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">Free</span>
+                      <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">ฟรี</span>
                       <button
                         onClick={() => toggleInstall(app.name)}
                         className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
@@ -294,9 +294,9 @@ export default function MarketplacePage() {
                         }`}
                       >
                         {installed ? (
-                          <>Installed</>
+                          <>ติดตั้งแล้ว</>
                         ) : (
-                          <><Plus size={14} /> Add</>
+                          <><Plus size={14} /> เพิ่ม</>
                         )}
                       </button>
                     </div>
@@ -310,13 +310,13 @@ export default function MarketplacePage() {
           {filtered.length === 0 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-24">
               <Search size={40} className="text-gray-200 mx-auto mb-4" />
-              <p className="text-gray-400 text-lg mb-1">No apps found</p>
-              <p className="text-gray-300 text-sm mb-4">Try a different search or category</p>
+              <p className="text-gray-400 text-lg mb-1">ไม่พบแอป</p>
+              <p className="text-gray-300 text-sm mb-4">ลองค้นหาอื่นหรือเปลี่ยนหมวดหมู่</p>
               <button
                 onClick={() => { setActiveCategory('all'); setSearchQuery(''); }}
                 className="text-sm font-medium text-purple-600 hover:text-purple-700"
               >
-                Clear all filters
+                ล้างตัวกรองทั้งหมด
               </button>
             </motion.div>
           )}
@@ -334,17 +334,17 @@ export default function MarketplacePage() {
           <div className="relative flex flex-col sm:flex-row items-center gap-8">
             <div className="flex-1">
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-                Build your own Link App
+                สร้าง Link App ของคุณเอง
               </h2>
               <p className="text-white/50 text-base max-w-lg">
-                Partner with OpenBio and reach millions of creators. Build integrations that help creators share, sell, and grow.
+                ร่วมเป็นพาร์ทเนอร์กับ OpenBio และเข้าถึงครีเอเตอร์นับล้าน สร้างการเชื่อมต่อที่ช่วยครีเอเตอร์แชร์ ขาย และเติบโต
               </p>
             </div>
             <Link
-              to={isLoggedIn ? '/create' : '/signup'}
+              to={isLoggedIn ? '/create' : '/signup'} 
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-gray-900 font-semibold rounded-full hover:bg-gray-100 transition-colors flex-shrink-0"
             >
-              Become a partner <ArrowRight size={18} />
+              เป็นพาร์ทเนอร์ <ArrowRight size={18} />
             </Link>
           </div>
         </motion.div>
@@ -353,3 +353,4 @@ export default function MarketplacePage() {
     </div>
   );
 }
+   

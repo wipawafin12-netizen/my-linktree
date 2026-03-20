@@ -33,7 +33,7 @@ function PhoneMockup() {
               <span className="text-2xl">🎨</span>
             </div>
             <h4 className="text-white font-bold text-sm">Alex Creator</h4>
-            <p className="text-white/50 text-[10px] mt-0.5">Digital Artist & Developer</p>
+            <p className="text-white/50 text-[10px] mt-0.5">นักออกแบบ & นักพัฒนา</p>
 
             {/* Social icons */}
             <div className="flex gap-2 mt-3">
@@ -46,7 +46,7 @@ function PhoneMockup() {
 
             {/* Links */}
             <div className="w-full mt-5 space-y-2">
-              {['My Portfolio', 'YouTube Channel', 'Latest Project', 'Book a Call'].map((title, i) => (
+              {['ผลงานของฉัน', 'ช่อง YouTube', 'โปรเจกต์ล่าสุด', 'นัดหมายพูดคุย'].map((title, i) => (
                 <motion.div
                   key={title}
                   initial={{ opacity: 0, x: -10 }}
@@ -110,7 +110,7 @@ export default function HomePage() {
                 className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs font-semibold text-violet-300 mb-8 backdrop-blur-sm"
               >
                 <Sparkles size={12} />
-                Trusted by 70M+ creators worldwide
+                ครีเอเตอร์กว่า 70 ล้านคนทั่วโลกไว้วางใจ
               </motion.div>
 
               <motion.h1
@@ -119,11 +119,11 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: 0.08 }}
                 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.06] mb-6"
               >
-                Everything you are.
+                ทุกอย่างที่เป็นคุณ
                 <br />
-                In one{' '}
+                ใน{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-indigo-400 to-purple-400">
-                  simple link.
+                  ลิงก์เดียว
                 </span>
               </motion.h1>
 
@@ -133,8 +133,8 @@ export default function HomePage() {
                 transition={{ duration: 0.5, delay: 0.16 }}
                 className="text-lg text-gray-400 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed"
               >
-                One link to share everything you create, curate, and sell —
-                from your Instagram, TikTok, Twitter, and beyond.
+                ลิงก์เดียวเพื่อแชร์ทุกอย่างที่คุณสร้าง รวบรวม และขาย —
+                จาก Instagram, TikTok, Twitter และอื่น ๆ
               </motion.p>
 
               {/* CTA */}
@@ -148,14 +148,14 @@ export default function HomePage() {
                   to="/create"
                   className="group inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-full shadow-lg shadow-violet-500/25 hover:shadow-xl hover:shadow-violet-500/40 hover:brightness-110 transition-all duration-300"
                 >
-                  Get started free
+                  เริ่มต้นใช้งานฟรี
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
                 <Link
                   to="/templates"
                   className="inline-flex items-center gap-2 px-7 py-3.5 text-gray-300 font-medium text-sm rounded-full border border-white/10 hover:border-violet-500/30 hover:text-white hover:bg-white/5 transition-all duration-300"
                 >
-                  Browse templates
+                  ดูเทมเพลต
                 </Link>
               </motion.div>
 
@@ -181,13 +181,13 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
-              Everything you need to{' '}
+              ทุกอย่างที่คุณต้องการเพื่อ{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">
-                stand out
+                โดดเด่น
               </span>
             </h2>
             <p className="text-gray-500 text-lg max-w-xl mx-auto">
-              Powerful tools to grow your audience, track performance, and monetize your content.
+              เครื่องมือทรงพลังเพื่อขยายผู้ติดตาม ติดตามผลลัพธ์ และสร้างรายได้จากคอนเทนต์ของคุณ
             </p>
           </motion.div>
 
@@ -206,9 +206,9 @@ export default function HomePage() {
                 <div className="w-12 h-12 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-5">
                   <Palette size={22} className="text-violet-400" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Unlimited customization</h3>
+                <h3 className="text-xl font-bold mb-2">ปรับแต่งได้ไม่จำกัด</h3>
                 <p className="text-gray-500 text-sm leading-relaxed max-w-md">
-                  Choose from 17+ themes, 25+ fonts, custom colors, background patterns, and button styles. Make your page truly yours.
+                  เลือกจากธีมกว่า 17 แบบ, ฟอนต์กว่า 25 แบบ, สีที่กำหนดเอง, ลายพื้นหลัง และสไตล์ปุ่ม ทำให้หน้าเพจเป็นของคุณอย่างแท้จริง
                 </p>
                 <div className="flex gap-2 mt-6">
                   {['#7c3aed', '#ec4899', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'].map((c) => (
@@ -231,9 +231,9 @@ export default function HomePage() {
                 <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-5">
                   <QrCode size={22} className="text-indigo-400" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">QR Codes</h3>
+                <h3 className="text-xl font-bold mb-2">QR Code</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">
-                  Generate beautiful QR codes that link to your page. Download and share anywhere.
+                  สร้าง QR Code สวย ๆ ที่ลิงก์ไปยังหน้าเพจของคุณ ดาวน์โหลดและแชร์ได้ทุกที่
                 </p>
               </div>
             </motion.div>
@@ -253,19 +253,19 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
-              Get started in{' '}
+              เริ่มต้นใน{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">
-                3 simple steps
+                3 ขั้นตอนง่าย ๆ
               </span>
             </h2>
-            <p className="text-gray-500 text-lg">Create your page in under 60 seconds.</p>
+            <p className="text-gray-500 text-lg">สร้างหน้าเพจของคุณได้ในไม่ถึง 60 วินาที</p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { step: '01', title: 'Claim your link', desc: 'Sign up and grab your unique linkc.ee/yourname URL.', icon: Link2 },
-              { step: '02', title: 'Make it yours', desc: 'Choose a template, add your links, and customize.', icon: Paintbrush },
-              { step: '03', title: 'Share everywhere', desc: 'Drop your link in your bio and start driving traffic.', icon: Zap },
+              { step: '01', title: 'จอง URL ของคุณ', desc: 'สมัครสมาชิกและรับ URL เฉพาะตัว linkc.ee/yourname', icon: Link2 },
+              { step: '02', title: 'ปรับแต่งตามใจ', desc: 'เลือกเทมเพลต เพิ่มลิงก์ และปรับแต่งได้ตามต้องการ', icon: Paintbrush },
+              { step: '03', title: 'แชร์ได้ทุกที่', desc: 'ใส่ลิงก์ของคุณในไบโอและเริ่มดึงทราฟฟิก', icon: Zap },
             ].map(({ step, title, desc, icon: Icon }, i) => (
               <motion.div
                 key={step}
@@ -314,26 +314,26 @@ export default function HomePage() {
 
             <div className="relative px-8 sm:px-16 py-16 sm:py-20 text-center">
               <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
-                Ready to build your
+                พร้อมสร้าง
                 <br />
-                LinkCenter?
+                LinkCenter ของคุณแล้วหรือยัง?
               </h2>
               <p className="text-white/60 text-lg max-w-lg mx-auto mb-10">
-                Join millions of creators. Create your page in seconds — it's free, forever.
+                เข้าร่วมกับครีเอเตอร์นับล้าน สร้างหน้าเพจได้ในไม่กี่วินาที — ฟรีตลอดไป
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   to="/create"
                   className="group inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 font-bold text-sm rounded-full hover:shadow-xl hover:shadow-white/20 transition-all duration-300"
                 >
-                  Get started free
+                  เริ่มต้นใช้งานฟรี
                   <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
                 </Link>
                 <Link
                   to="/templates"
                   className="inline-flex items-center gap-2 px-8 py-4 text-white/80 font-semibold text-sm rounded-full border border-white/20 hover:bg-white/10 transition-all duration-300"
                 >
-                  Browse templates
+                  ดูเทมเพลต
                 </Link>
               </div>
             </div>
@@ -360,11 +360,11 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600">
-            <span>&copy; 2026 LinkCenter. All rights reserved.</span>
+            <span>&copy; 2026 LinkCenter. สงวนลิขสิทธิ์</span>
             <div className="flex items-center gap-6">
-              <a href="#" className="hover:text-violet-400 transition-colors">Privacy</a>
-              <a href="#" className="hover:text-violet-400 transition-colors">Terms</a>
-              <a href="#" className="hover:text-violet-400 transition-colors">Cookies</a>
+              <a href="#" className="hover:text-violet-400 transition-colors">ความเป็นส่วนตัว</a>
+              <a href="#" className="hover:text-violet-400 transition-colors">ข้อกำหนด</a>
+              <a href="#" className="hover:text-violet-400 transition-colors">คุกกี้</a>
             </div>
           </div>
         </div>

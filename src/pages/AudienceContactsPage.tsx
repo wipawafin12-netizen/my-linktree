@@ -1,9 +1,11 @@
-import { useState, useRef } from 'react';
-import { Bell, Plus, ChevronRight, ChevronLeft, MessageSquare, Calendar, Tag, Music2, ShoppingBag } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Bell, Plus, ChevronRight, ChevronLeft, MessageSquare, Calendar, Music2, ShoppingBag, Trash2, Download, Users } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import pb, { isPocketBaseEnabled } from '../lib/pb';
 
 const toolCards = [
   {
-    title: 'Collect emails & phone numbers',
+    title: 'เก็บอีเมลและเบอร์โทรศัพท์',
     bg: 'bg-[#f5f0e8]',
     preview: (
       <div className="relative w-full h-full flex items-center justify-center">
@@ -30,7 +32,7 @@ const toolCards = [
     ),
   },
   {
-    title: 'Create a survey or quiz',
+    title: 'สร้างแบบสำรวจหรือแบบทดสอบ',
     bg: 'bg-[#d4c9a8]',
     preview: (
       <div className="bg-white rounded-xl shadow-md p-4 mx-auto max-w-[180px]">
@@ -42,7 +44,7 @@ const toolCards = [
         <div className="mb-3">
           <label className="text-[10px] text-gray-500">Field Type</label>
           <div className="border border-gray-200 rounded-md px-2 py-1 text-xs text-gray-700 mt-0.5 flex items-center gap-1">
-            <span className="text-gray-400">◎</span> Dropdown
+            <span className="text-gray-400">&#9788;</span> Dropdown
           </div>
         </div>
         <button className="w-full bg-[#6d28d9] text-white text-xs font-semibold rounded-lg py-1.5">Save</button>
@@ -50,7 +52,7 @@ const toolCards = [
     ),
   },
   {
-    title: 'Sell digital products & links',
+    title: 'ขายสินค้าดิจิทัลและลิงก์',
     bg: 'bg-[#8b2020]',
     preview: (
       <div className="flex items-center justify-center h-full">
@@ -66,7 +68,7 @@ const toolCards = [
     ),
   },
   {
-    title: 'Offer a booking link',
+    title: 'เสนอลิงก์จองนัดหมาย',
     bg: 'bg-[#c9a96e]',
     preview: (
       <div className="flex items-end justify-center h-full pb-4">
@@ -86,7 +88,7 @@ const toolCards = [
     ),
   },
   {
-    title: 'Offer a discount code',
+    title: 'เสนอโค้ดส่วนลด',
     bg: 'bg-[#b8d435]',
     preview: (
       <div className="flex items-center justify-center h-full">
@@ -96,7 +98,7 @@ const toolCards = [
             alt="shoes"
             className="w-[140px] h-[100px] object-cover rounded-lg"
           />
-          <div className="absolute -top-2 -right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-gray-400 text-sm cursor-pointer shadow">×</div>
+          <div className="absolute -top-2 -right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-gray-400 text-sm cursor-pointer shadow">&times;</div>
           <div className="mt-2 text-center">
             <p className="text-xs text-gray-800">Use my code</p>
             <div className="bg-black text-[#b8d435] font-bold text-sm px-3 py-1 rounded-md mt-1">RUN20OFF</div>
@@ -106,7 +108,7 @@ const toolCards = [
     ),
   },
   {
-    title: 'Embed audio player',
+    title: 'ฝังเครื่องเล่นเสียง',
     bg: 'bg-[#6b7280]',
     preview: (
       <div className="flex items-center justify-center h-full">
@@ -123,9 +125,66 @@ const toolCards = [
   },
 ];
 
+interface Subscriber {
+  id: string;
+  email: string;
+  date: string;
+  source: string;
+}
+
 export default function AudienceContactsPage() {
   const [activeTab, setActiveTab] = useState<'contacts' | 'integrations'>('contacts');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [pageId, setPageId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user?.id || !isPocketBaseEnabled) { setLoading(false); return; }
+    (async () => {
+      try {
+        const pages = await pb.collection('pages').getList(1, 1, {
+          filter: `user = "${user.id}"`,
+        });
+        if (pages.items.length > 0) {
+          const p = pages.items[0];
+          setPageId(p.id);
+          const subs = await pb.collection('subscribers').getFullList({
+            filter: `page = "${p.id}"`,
+            sort: '-created',
+          });
+          setSubscribers(subs.map((s: any) => ({
+            id: s.id,
+            email: s.email,
+            date: s.created,
+            source: s.source || 'form',
+          })));
+        }
+      } catch { /* ignore */ }
+      setLoading(false);
+    })();
+  }, [user?.id]);
+
+  const handleDelete = async (sub: Subscriber) => {
+    try {
+      await pb.collection('subscribers').delete(sub.id);
+      setSubscribers(prev => prev.filter(s => s.id !== sub.id));
+    } catch { /* ignore */ }
+  };
+
+  const handleExportCSV = () => {
+    if (subscribers.length === 0) return;
+    const header = 'Email,Source,Date\n';
+    const rows = subscribers.map(s => `${s.email},${s.source},${s.date}`).join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `subscribers-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const scrollLeft = () => {
     scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
@@ -135,13 +194,19 @@ export default function AudienceContactsPage() {
     scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' });
   };
 
+  const thisWeekCount = subscribers.filter(s => {
+    const d = new Date(s.date);
+    const now = new Date();
+    return (now.getTime() - d.getTime()) < 7 * 24 * 60 * 60 * 1000;
+  }).length;
+
   return (
     <div className="min-h-screen bg-[#f9f9f9] text-gray-900 font-sans pt-16">
       {/* Top Header */}
       <div className="border-b border-gray-200 bg-white sticky top-16 z-10">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-6">
-            <h1 className="text-lg font-bold text-gray-900">Audience</h1>
+            <h1 className="text-lg font-bold text-gray-900">ผู้ติดตาม</h1>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setActiveTab('contacts')}
@@ -151,7 +216,7 @@ export default function AudienceContactsPage() {
                     : 'text-gray-600 hover:bg-[#f5f3ff]'
                 }`}
               >
-                Contacts
+                รายชื่อ ({subscribers.length})
               </button>
               <button
                 onClick={() => setActiveTab('integrations')}
@@ -161,14 +226,19 @@ export default function AudienceContactsPage() {
                     : 'text-gray-600 hover:bg-[#f5f3ff]'
                 }`}
               >
-                Integrations
+                การเชื่อมต่อ
               </button>
             </div>
           </div>
-          <button className="flex items-center gap-1.5 border border-gray-300 rounded-full px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-            <Plus className="w-4 h-4" />
-            Add growth tools
-          </button>
+          {subscribers.length > 0 && (
+            <button
+              onClick={handleExportCSV}
+              className="flex items-center gap-1.5 border border-gray-300 rounded-full px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              ส่งออก CSV
+            </button>
+          )}
         </div>
       </div>
 
@@ -176,50 +246,80 @@ export default function AudienceContactsPage() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {activeTab === 'contacts' && (
           <>
-            {/* Subscribe CTA Card */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-12 mb-10 flex flex-col items-center text-center">
-              {/* Illustration */}
-              <div className="mb-6 relative">
-                <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-3 w-[160px]">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white text-[10px] font-bold">
-                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="4"/></svg>
-                    </div>
-                    <div className="h-2 bg-gray-200 rounded-full w-14" />
-                  </div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center">
-                      <span className="text-[10px]">🧑</span>
-                    </div>
-                    <div className="h-2 bg-gray-200 rounded-full w-10" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-                      <span className="text-[10px]">🧑</span>
-                    </div>
-                    <div className="h-2 bg-gray-200 rounded-full w-12" />
-                  </div>
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4 mb-8">
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+                <p className="text-3xl font-bold text-gray-900">{subscribers.length}</p>
+                <p className="text-xs text-gray-400 mt-1">ผู้ติดตามทั้งหมด</p>
+              </div>
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+                <p className="text-3xl font-bold text-gray-900">{thisWeekCount}</p>
+                <p className="text-xs text-gray-400 mt-1">สัปดาห์นี้</p>
+              </div>
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+                <p className="text-3xl font-bold text-gray-900">
+                  {subscribers.filter(s => s.source === 'form').length}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">จากฟอร์มสาธารณะ</p>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
+                <p className="text-gray-400">กำลังโหลด...</p>
+              </div>
+            ) : subscribers.length > 0 ? (
+              /* Subscriber Table */
+              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-10">
+                <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                  <h3 className="font-semibold text-gray-900">ผู้ติดตาม</h3>
+                  <span className="text-xs text-gray-400">{subscribers.length} ทั้งหมด</span>
                 </div>
-                {/* Bell icon */}
-                <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-[#c8e64a] flex items-center justify-center shadow-sm">
-                  <Bell className="w-4 h-4 text-gray-800" />
+                <div className="divide-y divide-gray-50">
+                  {subscribers.map((sub) => (
+                    <div key={sub.id} className="flex items-center justify-between px-6 py-3 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xs font-bold">
+                          {sub.email.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-800">{sub.email}</p>
+                          <p className="text-[10px] text-gray-400">
+                            {sub.source === 'manual' ? 'เพิ่มด้วยตนเอง' : 'จากฟอร์มสมัครสมาชิก'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs text-gray-400">{new Date(sub.date).toLocaleDateString()}</span>
+                        <button
+                          onClick={() => handleDelete(sub)}
+                          className="text-gray-300 hover:text-red-400 transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
-                Let visitors subscribe to your Linktree for updates
-              </h2>
-              <p className="text-gray-500 text-sm mb-6">
-                Let's start growing your contact list.
-              </p>
-              <button className="bg-[#6d28d9] text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-[#5b21b6] transition-colors">
-                Turn on Subscribe
-              </button>
-            </div>
+            ) : (
+              /* Empty State */
+              <div className="bg-white rounded-2xl border border-gray-200 p-12 mb-10 flex flex-col items-center text-center">
+                <div className="mb-6 w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center">
+                  <Users className="w-8 h-8 text-gray-300" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 mb-2">
+                  ยังไม่มีผู้ติดตาม
+                </h2>
+                <p className="text-gray-500 text-sm mb-6">
+                  เปิดใช้งานฟอร์มสมัครสมาชิกบนหน้าสาธารณะเพื่อเริ่มเก็บอีเมล
+                </p>
+              </div>
+            )}
 
             {/* Tools to grow your audience */}
             <div className="relative">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Tools to grow your audience</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">เครื่องมือเพื่อขยายผู้ติดตาม</h3>
 
               <div className="relative group">
                 {/* Left Arrow */}
@@ -272,9 +372,9 @@ export default function AudienceContactsPage() {
         {activeTab === 'integrations' && (
           <div className="bg-white rounded-2xl border border-gray-200 p-12 flex flex-col items-center text-center">
             <MessageSquare className="w-12 h-12 text-gray-300 mb-4" />
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Integrations</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">การเชื่อมต่อ</h2>
             <p className="text-gray-500 text-sm">
-              Connect your favorite tools to grow and manage your audience.
+              เชื่อมต่อเครื่องมือที่ชื่นชอบเพื่อขยายและจัดการผู้ติดตามของคุณ
             </p>
           </div>
         )}

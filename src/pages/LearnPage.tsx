@@ -8,16 +8,16 @@ import {
 
 // ── Sidebar Menu ──
 const sidebarItems = [
-  { icon: LayoutGrid, label: 'Resources' },
-  { icon: HelpCircle, label: 'How to use OpenBio' },
+  { icon: LayoutGrid, label: 'แหล่งข้อมูล' },
+  { icon: HelpCircle, label: 'วิธีใช้ OpenBio' },
 ];
 
 // ── Resource Links ──
 const resourceLinks = [
-  { title: 'Read our blog', desc: 'All the latest tips, tricks and growth strategies', icon: BookOpen },
-  { title: 'Success Stories', desc: 'Real people, real results on OpenBio', icon: Trophy },
-  { title: 'Creator Toolkit', desc: 'Free tools and guides to level up your content', icon: Lightbulb },
-  { title: 'Community Forum', desc: 'Connect with other creators and share ideas', icon: Users },
+  { title: 'อ่านบล็อกของเรา', desc: 'เคล็ดลับ กลยุทธ์ และวิธีเติบโตล่าสุด', icon: BookOpen },
+  { title: 'เรื่องราวความสำเร็จ', desc: 'คนจริง ผลลัพธ์จริงบน OpenBio', icon: Trophy },
+  { title: 'ชุดเครื่องมือครีเอเตอร์', desc: 'เครื่องมือและคู่มือฟรีเพื่อยกระดับคอนเทนต์', icon: Lightbulb },
+  { title: 'ฟอรัมชุมชน', desc: 'เชื่อมต่อกับครีเอเตอร์คนอื่นและแชร์ไอเดีย', icon: Users },
 ];
 
 // ── Courses ──
@@ -27,14 +27,14 @@ const courses = [
     price: '$75.00',
     image: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=400&q=80',
     color: '#2d5016',
-    tag: 'Popular',
+    tag: 'ยอดนิยม',
   },
   {
     title: 'Social Media Marketing 101',
     price: '$49.00',
     image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&q=80',
     color: '#1a365d',
-    tag: 'Bestseller',
+    tag: 'ขายดี',
   },
   {
     title: 'Photography for Beginners',
@@ -47,7 +47,7 @@ const courses = [
     price: '$89.00',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80',
     color: '#9c4221',
-    tag: 'New',
+    tag: 'ใหม่',
   },
 ];
 
@@ -58,7 +58,7 @@ const blogPosts = [
     excerpt: 'Proven strategies to build a loyal following across all platforms.',
     image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&q=80',
     category: 'Growth',
-    readTime: '5 min read',
+    readTime: '5 นาที',
     icon: TrendingUp,
   },
   {
@@ -66,7 +66,7 @@ const blogPosts = [
     excerpt: 'Turn your passion into profit with these actionable tips.',
     image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80',
     category: 'Monetization',
-    readTime: '8 min read',
+    readTime: '8 นาที',
     icon: DollarSign,
   },
   {
@@ -74,7 +74,7 @@ const blogPosts = [
     excerpt: 'Make your OpenBio page look professional and on-brand.',
     image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&q=80',
     category: 'Design',
-    readTime: '4 min read',
+    readTime: '4 นาที',
     icon: Palette,
   },
   {
@@ -82,7 +82,7 @@ const blogPosts = [
     excerpt: 'Use data to make smarter decisions about your content strategy.',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80',
     category: 'Analytics',
-    readTime: '6 min read',
+    readTime: '6 นาที',
     icon: BarChart3,
   },
   {
@@ -90,7 +90,7 @@ const blogPosts = [
     excerpt: 'Trends, tools, and opportunities for modern creators.',
     image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&q=80',
     category: 'Trends',
-    readTime: '7 min read',
+    readTime: '7 นาที',
     icon: Megaphone,
   },
   {
@@ -98,19 +98,19 @@ const blogPosts = [
     excerpt: 'A real success story of consistency, creativity, and community.',
     image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80',
     category: 'Success Story',
-    readTime: '5 min read',
+    readTime: '5 นาที',
     icon: Trophy,
   },
 ];
 
 // ── How-To Guides ──
 const guides = [
-  { title: 'Getting Started with OpenBio', desc: 'Set up your profile in under 5 minutes.', icon: Play, time: '3 min' },
-  { title: 'Adding & Managing Links', desc: 'Organize your links for maximum engagement.', icon: LayoutGrid, time: '4 min' },
-  { title: 'Customizing Your Theme', desc: 'Match your OpenBio to your personal brand.', icon: Palette, time: '5 min' },
-  { title: 'Installing Link Apps', desc: 'Supercharge your page with marketplace integrations.', icon: LayoutGrid, time: '3 min' },
-  { title: 'Reading Your Analytics', desc: 'Understand clicks, views, and audience insights.', icon: BarChart3, time: '6 min' },
-  { title: 'Monetization Setup', desc: 'Start accepting payments and tips.', icon: DollarSign, time: '4 min' },
+  { title: 'Getting Started with OpenBio', desc: 'Set up your profile in under 5 minutes.', icon: Play, time: '3 นาที' },
+  { title: 'Adding & Managing Links', desc: 'Organize your links for maximum engagement.', icon: LayoutGrid, time: '4 นาที' },
+  { title: 'Customizing Your Theme', desc: 'Match your OpenBio to your personal brand.', icon: Palette, time: '5 นาที' },
+  { title: 'Installing Link Apps', desc: 'Supercharge your page with marketplace integrations.', icon: LayoutGrid, time: '3 นาที' },
+  { title: 'Reading Your Analytics', desc: 'Understand clicks, views, and audience insights.', icon: BarChart3, time: '6 นาที' },
+  { title: 'Monetization Setup', desc: 'Start accepting payments and tips.', icon: DollarSign, time: '4 นาที' },
 ];
 
 type Tab = 'resources' | 'how-to';
@@ -136,10 +136,10 @@ export default function LearnPage() {
           className="text-center mb-14"
         >
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-            Learn with <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500">OpenBio</span>
+            เรียนรู้กับ <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500">OpenBio</span>
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            Resources, guides, and courses to help you create, grow, and earn from your online presence.
+            แหล่งข้อมูล คู่มือ และคอร์สเพื่อช่วยคุณสร้าง เติบโต และสร้างรายได้จากการออนไลน์
           </p>
         </motion.div>
 
@@ -157,10 +157,10 @@ export default function LearnPage() {
               {sidebarItems.map((item) => (
                 <button
                   key={item.label}
-                  onClick={() => setActiveTab(item.label === 'Resources' ? 'resources' : 'how-to')}
+                  onClick={() => setActiveTab(item.label === 'แหล่งข้อมูล' ? 'resources' : 'how-to')}
                   className={`w-full flex items-center justify-between px-5 py-4 text-left transition-colors cursor-pointer ${
-                    (activeTab === 'resources' && item.label === 'Resources') ||
-                    (activeTab === 'how-to' && item.label !== 'Resources')
+                    (activeTab === 'resources' && item.label === 'แหล่งข้อมูล') ||
+                    (activeTab === 'how-to' && item.label !== 'แหล่งข้อมูล')
                       ? 'bg-gray-50 text-black'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-black'
                   }`}
@@ -182,7 +182,7 @@ export default function LearnPage() {
               className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
             >
               <div className="p-4">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Learn with OpenBio</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">เรียนรู้กับ OpenBio</h3>
                 <div className="rounded-xl overflow-hidden relative group cursor-pointer">
                   <img
                     src={courses[0].image}
@@ -194,13 +194,13 @@ export default function LearnPage() {
                     <p className="text-white text-xs font-bold">{courses[0].title}</p>
                     <p className="text-white/70 text-[10px] mt-0.5">{courses[0].price}</p>
                     <button className="mt-2 px-4 py-1.5 bg-white text-gray-900 text-[10px] font-semibold rounded-full hover:bg-gray-100 transition-colors">
-                      Enroll
+                      ลงทะเบียน
                     </button>
                   </div>
                 </div>
               </div>
               <div className="px-4 pb-4">
-                <h4 className="text-sm font-bold text-gray-900">Create & sell your own online Course</h4>
+                <h4 className="text-sm font-bold text-gray-900">สร้างและขายคอร์สออนไลน์ของคุณ</h4>
                 <p className="text-xs text-gray-500 mt-1 leading-relaxed">
                   If you've got something to share, you've got something to sell. Easily create and share an online course that...
                 </p>
@@ -248,7 +248,7 @@ export default function LearnPage() {
                     <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                       type="text"
-                      placeholder="Search articles..."
+                      placeholder="ค้นหาบทความ..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-400 transition-all"
@@ -258,7 +258,7 @@ export default function LearnPage() {
 
                 {/* Blog Posts */}
                 <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <BookOpen size={18} /> Latest from the blog
+                  <BookOpen size={18} /> ล่าสุดจากบล็อก
                 </h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-14">
                   {filteredPosts.map((post, i) => (
@@ -286,7 +286,7 @@ export default function LearnPage() {
                             <Clock size={10} /> {post.readTime}
                           </span>
                           <span className="text-xs font-semibold text-gray-400 group-hover:text-gray-900 flex items-center gap-1 transition-colors">
-                            Read <ArrowRight size={12} />
+                            อ่าน <ArrowRight size={12} />
                           </span>
                         </div>
                       </div>
@@ -296,14 +296,14 @@ export default function LearnPage() {
 
                 {filteredPosts.length === 0 && (
                   <div className="text-center py-12">
-                    <p className="text-gray-400">No articles found</p>
-                    <button onClick={() => setSearchQuery('')} className="mt-2 text-sm text-green-600 font-medium cursor-pointer">Clear search</button>
+                    <p className="text-gray-400">ไม่พบบทความ</p>
+                    <button onClick={() => setSearchQuery('')} className="mt-2 text-sm text-green-600 font-medium cursor-pointer">ล้างการค้นหา</button>
                   </div>
                 )}
 
                 {/* Courses Section */}
                 <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Star size={18} className="text-yellow-500" /> Courses
+                  <Star size={18} className="text-yellow-500" /> คอร์สเรียน
                 </h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
                   {courses.map((course, i) => (
@@ -319,8 +319,8 @@ export default function LearnPage() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                         {course.tag && (
                           <span className={`absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full backdrop-blur-sm ${
-                            course.tag === 'Popular' ? 'bg-yellow-400/90 text-yellow-900' :
-                            course.tag === 'Bestseller' ? 'bg-purple-500/90 text-white' :
+                            course.tag === 'ยอดนิยม' ? 'bg-yellow-400/90 text-yellow-900' :
+                            course.tag === 'ขายดี' ? 'bg-purple-500/90 text-white' :
                             'bg-emerald-500/90 text-white'
                           }`}>
                             {course.tag}
@@ -333,7 +333,7 @@ export default function LearnPage() {
                       <div className="p-4">
                         <h3 className="text-sm font-bold text-gray-900">{course.title}</h3>
                         <button className="mt-3 w-full py-2 bg-gray-900 text-white text-xs font-semibold rounded-full hover:bg-black transition-colors">
-                          Enroll Now
+                          ลงทะเบียน
                         </button>
                       </div>
                     </motion.div>
@@ -349,8 +349,8 @@ export default function LearnPage() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-lg font-bold text-gray-900 mb-2">How to use OpenBio</h2>
-                <p className="text-sm text-gray-500 mb-8">Step-by-step guides to get the most out of your OpenBio.</p>
+                <h2 className="text-lg font-bold text-gray-900 mb-2">วิธีใช้ OpenBio</h2>
+                <p className="text-sm text-gray-500 mb-8">คู่มือทีละขั้นตอนเพื่อใช้ OpenBio ให้เกิดประโยชน์สูงสุด</p>
 
                 <div className="space-y-4">
                   {guides.map((guide, i) => (
@@ -396,8 +396,8 @@ export default function LearnPage() {
                     <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/30 transition-colors mb-4">
                       <Play size={28} className="text-white ml-1" />
                     </div>
-                    <h3 className="text-white font-bold text-lg">Watch: Getting Started with OpenBio</h3>
-                    <p className="text-white/70 text-sm mt-1">A complete walkthrough in under 10 minutes</p>
+                    <h3 className="text-white font-bold text-lg">รับชม: เริ่มต้นใช้งาน OpenBio</h3>
+                    <p className="text-white/70 text-sm mt-1">สาธิตการใช้งานเต็มรูปแบบในไม่ถึง 10 นาที</p>
                   </div>
                 </motion.div>
               </motion.div>

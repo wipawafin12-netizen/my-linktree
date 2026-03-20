@@ -177,8 +177,8 @@ function ChartBar({
             className="absolute -top-16 bg-gray-900 text-white text-[11px] rounded-lg px-3 py-2 shadow-lg z-10 whitespace-nowrap pointer-events-none"
           >
             <p className="font-medium">{day.shortDate}</p>
-            <p className="text-blue-300">{day.views} views</p>
-            <p className="text-purple-300">{day.clicks} clicks</p>
+            <p className="text-blue-300">{day.views} เข้าชม</p>
+            <p className="text-purple-300">{day.clicks} คลิก</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -323,7 +323,7 @@ export default function DashboardPage() {
                 {(username || 'U')[0].toUpperCase()}
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">แดชบอร์ด</h1>
                 <p className="text-gray-400 text-sm">
                   สวัสดี, <span className="text-gray-600 font-medium">{username || 'User'}</span> — นี่คือภาพรวมของคุณ
                 </p>
@@ -337,21 +337,21 @@ export default function DashboardPage() {
               className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-violet-700 bg-violet-50 border border-violet-100 rounded-xl hover:bg-violet-100 transition-colors"
             >
               {copied ? <Check size={15} /> : <Copy size={15} />}
-              {copied ? 'Copied!' : 'Copy Link'}
+              {copied ? 'คัดลอกแล้ว!' : 'คัดลอกลิงก์'}
             </button>
             <button
               onClick={() => window.open(`/${pageSlug}`, '_blank')}
               className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-sm shadow-violet-200"
             >
               <ExternalLink size={15} />
-              View Page
+              ดูหน้าเพจ
             </button>
             <button
               onClick={() => navigate('/create')}
               className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
             >
               <ArrowLeft size={15} />
-              Editor
+              แก้ไข
             </button>
           </div>
         </motion.div>
@@ -393,10 +393,10 @@ export default function DashboardPage() {
         {hasData && (
           <>
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-              <StatCard label="Total Views" value={totalViews} icon={Eye} color="text-blue-600" bg="bg-blue-50" gradient="bg-gradient-to-br from-blue-50/50 to-transparent" delay={0} />
-              <StatCard label="Total Clicks" value={totalClicks} icon={MousePointerClick} color="text-violet-600" bg="bg-violet-50" gradient="bg-gradient-to-br from-violet-50/50 to-transparent" delay={0.06} />
-              <StatCard label="Views Today" value={viewsToday} icon={TrendingUp} color="text-emerald-600" bg="bg-emerald-50" gradient="bg-gradient-to-br from-emerald-50/50 to-transparent" trend={viewsTrend} delay={0.12} />
-              <StatCard label="Clicks Today" value={clicksToday} icon={Zap} color="text-amber-600" bg="bg-amber-50" gradient="bg-gradient-to-br from-amber-50/50 to-transparent" trend={clicksTrend} delay={0.18} />
+              <StatCard label="ยอดเข้าชมทั้งหมด" value={totalViews} icon={Eye} color="text-blue-600" bg="bg-blue-50" gradient="bg-gradient-to-br from-blue-50/50 to-transparent" delay={0} />
+              <StatCard label="ยอดคลิกทั้งหมด" value={totalClicks} icon={MousePointerClick} color="text-violet-600" bg="bg-violet-50" gradient="bg-gradient-to-br from-violet-50/50 to-transparent" delay={0.06} />
+              <StatCard label="เข้าชมวันนี้" value={viewsToday} icon={TrendingUp} color="text-emerald-600" bg="bg-emerald-50" gradient="bg-gradient-to-br from-emerald-50/50 to-transparent" trend={viewsTrend} delay={0.12} />
+              <StatCard label="คลิกวันนี้" value={clicksToday} icon={Zap} color="text-amber-600" bg="bg-amber-50" gradient="bg-gradient-to-br from-amber-50/50 to-transparent" trend={clicksTrend} delay={0.18} />
               <StatCard label="CTR" value={ctr} icon={Percent} color="text-pink-600" bg="bg-pink-50" gradient="bg-gradient-to-br from-pink-50/50 to-transparent" delay={0.24} />
             </div>
 
@@ -409,12 +409,12 @@ export default function DashboardPage() {
             >
               <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-100 shadow-sm text-sm">
                 <Link2 size={15} className="text-violet-500" />
-                <span className="text-gray-500">Active Links</span>
+                <span className="text-gray-500">ลิงก์ที่ใช้งาน</span>
                 <span className="font-bold text-gray-900">{totalUniqueLinks}</span>
               </div>
               <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-100 shadow-sm text-sm">
                 <Activity size={15} className="text-blue-500" />
-                <span className="text-gray-500">Avg. Views/Day</span>
+                <span className="text-gray-500">เข้าชมเฉลี่ย/วัน</span>
                 <span className="font-bold text-gray-900">
                   {analytics.viewHistory.length > 0
                     ? Math.round(analytics.viewHistory.length / 7)
@@ -423,7 +423,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-100 shadow-sm text-sm">
                 <Users size={15} className="text-emerald-500" />
-                <span className="text-gray-500">Avg. Clicks/Day</span>
+                <span className="text-gray-500">คลิกเฉลี่ย/วัน</span>
                 <span className="font-bold text-gray-900">
                   {analytics.linkClicks.length > 0
                     ? Math.round(analytics.linkClicks.length / 7)
@@ -436,18 +436,18 @@ export default function DashboardPage() {
                 <button
                   onClick={handleGenerateDemo}
                   className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-500 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
-                  title="Load demo data"
+                  title="โหลดข้อมูลตัวอย่าง"
                 >
                   <RefreshCw size={13} />
-                  Demo
+                  ตัวอย่าง
                 </button>
                 <button
                   onClick={handleClearData}
                   className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-red-500 bg-red-50 border border-red-100 rounded-lg hover:bg-red-100 transition-colors"
-                  title="Clear all analytics"
+                  title="ล้างข้อมูลทั้งหมด"
                 >
                   <Trash2 size={13} />
-                  Clear
+                  ล้าง
                 </button>
               </div>
             </motion.div>
@@ -464,7 +464,7 @@ export default function DashboardPage() {
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  {tab === 'overview' ? 'Overview' : 'Link Performance'}
+                  {tab === 'overview' ? 'ภาพรวม' : 'ประสิทธิภาพลิงก์'}
                 </button>
               ))}
             </div>
@@ -482,7 +482,7 @@ export default function DashboardPage() {
                   <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-6">
                     <div className="flex items-center justify-between mb-6">
                       <div>
-                        <h2 className="text-base font-semibold text-gray-900">Last 7 Days</h2>
+                        <h2 className="text-base font-semibold text-gray-900">7 วันล่าสุด</h2>
                         <p className="text-xs text-gray-400 mt-0.5">ภาพรวม Views และ Clicks</p>
                       </div>
                       <div className="flex items-center gap-4 text-xs">
@@ -506,13 +506,13 @@ export default function DashboardPage() {
                     {/* Summary row */}
                     <div className="flex items-center gap-6 mt-5 pt-4 border-t border-gray-50">
                       <div className="text-xs text-gray-400">
-                        7-Day Total:{' '}
+                        รวม 7 วัน:{' '}
                         <span className="font-semibold text-blue-600">
-                          {last7Days.reduce((s, d) => s + d.views, 0)} views
+                          {last7Days.reduce((s, d) => s + d.views, 0)} เข้าชม
                         </span>
                         {' / '}
                         <span className="font-semibold text-violet-600">
-                          {last7Days.reduce((s, d) => s + d.clicks, 0)} clicks
+                          {last7Days.reduce((s, d) => s + d.clicks, 0)} คลิก
                         </span>
                       </div>
                     </div>
@@ -522,8 +522,8 @@ export default function DashboardPage() {
                   <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
                     <div className="flex items-center gap-2 mb-5">
                       <Clock size={18} className="text-gray-400" />
-                      <h2 className="text-base font-semibold text-gray-900">Recent Activity</h2>
-                      <span className="text-xs text-gray-400 ml-auto">{recentClicks.length} latest</span>
+                      <h2 className="text-base font-semibold text-gray-900">กิจกรรมล่าสุด</h2>
+                      <span className="text-xs text-gray-400 ml-auto">{recentClicks.length} รายการล่าสุด</span>
                     </div>
 
                     {recentClicks.length === 0 ? (
@@ -578,8 +578,8 @@ export default function DashboardPage() {
                   <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
                     <div className="flex items-center gap-2 mb-6">
                       <Link2 size={18} className="text-violet-500" />
-                      <h2 className="text-base font-semibold text-gray-900">Link Performance</h2>
-                      <span className="text-xs text-gray-400 ml-auto">{sortedLinks.length} links tracked</span>
+                      <h2 className="text-base font-semibold text-gray-900">ประสิทธิภาพลิงก์</h2>
+                      <span className="text-xs text-gray-400 ml-auto">{sortedLinks.length} ลิงก์ที่ติดตาม</span>
                     </div>
 
                     {sortedLinks.length === 0 ? (
@@ -593,9 +593,9 @@ export default function DashboardPage() {
                         {/* Table header */}
                         <div className="grid grid-cols-12 gap-4 text-xs text-gray-400 font-medium px-1 pb-2 border-b border-gray-50">
                           <div className="col-span-1">#</div>
-                          <div className="col-span-5">Link</div>
-                          <div className="col-span-3">Performance</div>
-                          <div className="col-span-2 text-right">Clicks</div>
+                          <div className="col-span-5">ลิงก์</div>
+                          <div className="col-span-3">ประสิทธิภาพ</div>
+                          <div className="col-span-2 text-right">คลิก</div>
                           <div className="col-span-1 text-right">%</div>
                         </div>
 
@@ -658,7 +658,7 @@ export default function DashboardPage() {
               transition={{ delay: 0.6 }}
               className="flex flex-wrap items-center gap-3 mt-8"
             >
-              <span className="text-xs text-gray-400 mr-1">Quick actions:</span>
+              <span className="text-xs text-gray-400 mr-1">ทางลัด:</span>
               <button
                 onClick={() => navigate('/qr-code')}
                 className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
@@ -669,19 +669,19 @@ export default function DashboardPage() {
                 onClick={() => navigate('/link-shortener')}
                 className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <Link2 size={13} /> Shorten Link
+                <Link2 size={13} /> ย่อลิงก์
               </button>
               <button
                 onClick={() => navigate('/admin/audience/contacts')}
                 className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <Users size={13} /> Audience
+                <Users size={13} /> ผู้ติดตาม
               </button>
               <button
                 onClick={() => navigate('/templates')}
                 className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <Sparkles size={13} /> Templates
+                <Sparkles size={13} /> เทมเพลต
               </button>
             </motion.div>
           </>

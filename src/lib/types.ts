@@ -18,6 +18,8 @@ export interface PageRecord {
   buttonAnimation: boolean;
   activeSocials: string[];
   socialUrls: Record<string, string>;
+  showSubscribe: boolean;
+  emailFormTitle: string;
   created: string;
   updated: string;
 }
@@ -45,6 +47,14 @@ export interface AnalyticsRecord {
   linkId?: string;
   linkTitle?: string;
   linkUrl?: string;
+  created: string;
+}
+
+export interface SubscriberRecord {
+  id: string;
+  page: string;
+  email: string;
+  source: string;
   created: string;
 }
 

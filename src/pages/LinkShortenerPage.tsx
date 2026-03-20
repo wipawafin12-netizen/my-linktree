@@ -69,7 +69,7 @@ export default function LinkShortenerPage() {
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-rose-400 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-200">
             <Scissors size={28} className="text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Link Shortener</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">ตัวย่อลิงก์</h1>
           <p className="text-gray-500">สร้างลิงก์สั้นที่แชร์ง่าย ติดตามได้</p>
         </div>
 
@@ -94,7 +94,7 @@ export default function LinkShortenerPage() {
             >
               {loading ? (
                 <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> กำลังย่อ...</>
-              ) : 'Shorten'}
+              ) : 'ย่อลิงก์'}
             </button>
           </form>
         </div>

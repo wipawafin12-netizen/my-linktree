@@ -28,8 +28,8 @@ export default function Newsletter() {
       <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 mb-3">
         <Mail size={20} />
       </div>
-      <h3 className="text-lg font-semibold text-white mb-1">Join my newsletter</h3>
-      <p className="text-sm text-gray-400 mb-4">Get the latest updates and resources directly to your inbox.</p>
+      <h3 className="text-lg font-semibold text-white mb-1">สมัครรับข่าวสาร</h3>
+      <p className="text-sm text-gray-400 mb-4">รับข่าวสารและข้อมูลล่าสุดส่งตรงถึงอีเมลของคุณ</p>
 
       {status === 'success' ? (
         <motion.div
@@ -37,7 +37,7 @@ export default function Newsletter() {
           animate={{ scale: 1, opacity: 1 }}
           className="py-2 px-4 bg-green-500/20 text-green-300 rounded-lg text-sm font-medium"
         >
-          Thanks for subscribing! 🎉
+          ขอบคุณที่สมัครสมาชิก! 🎉
         </motion.div>
       ) : (
         <form onSubmit={handleSubmit} className="flex gap-2">
@@ -54,7 +54,7 @@ export default function Newsletter() {
             disabled={status === 'loading'}
             className="bg-white text-black font-medium px-4 py-2.5 rounded-lg text-sm hover:bg-gray-200 transition-colors disabled:opacity-70"
           >
-            {status === 'loading' ? '...' : 'Join'}
+            {status === 'loading' ? '...' : 'สมัคร'}
           </button>
         </form>
       )}

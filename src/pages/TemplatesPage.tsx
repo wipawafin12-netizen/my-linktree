@@ -9,34 +9,34 @@ import { useNavigate } from 'react-router-dom';
 
 // ─── Data ────────────────────────────────────────────────────────
 const categories = [
-  'All', 'Fashion', 'Health and Fitness', 'Influencer and Creator', 'Marketing',
-  'Music', 'Small Business', 'Social Media', 'Sports', 'Telegram', 'Whatsapp',
-  'Food & Drink', 'Technology', 'Art & Design', 'Education',
+  'All', 'แฟชั่น', 'สุขภาพและฟิตเนส', 'อินฟลูเอนเซอร์และครีเอเตอร์', 'การตลาด',
+  'เพลง', 'ธุรกิจขนาดเล็ก', 'โซเชียลมีเดีย', 'กีฬา', 'Telegram', 'Whatsapp',
+  'อาหารและเครื่องดื่ม', 'เทคโนโลยี', 'ศิลปะและการออกแบบ', 'การศึกษา',
 ];
 
 const categoryIcons: Record<string, string> = {
   'All': '✦',
-  'Fashion': '👗',
-  'Health and Fitness': '💪',
-  'Influencer and Creator': '⭐',
-  'Marketing': '📈',
-  'Music': '🎵',
-  'Small Business': '🏪',
-  'Social Media': '📱',
-  'Sports': '⚡',
+  'แฟชั่น': '👗',
+  'สุขภาพและฟิตเนส': '💪',
+  'อินฟลูเอนเซอร์และครีเอเตอร์': '⭐',
+  'การตลาด': '📈',
+  'เพลง': '🎵',
+  'ธุรกิจขนาดเล็ก': '🏪',
+  'โซเชียลมีเดีย': '📱',
+  'กีฬา': '⚡',
   'Telegram': '✈️',
   'Whatsapp': '💬',
-  'Food & Drink': '🍽️',
-  'Technology': '💻',
-  'Art & Design': '🎨',
-  'Education': '📚',
+  'อาหารและเครื่องดื่ม': '🍽️',
+  'เทคโนโลยี': '💻',
+  'ศิลปะและการออกแบบ': '🎨',
+  'การศึกษา': '📚',
 };
 
 const templates = [
   {
     name: 'Hydra Juice',
     bio: 'Your daily dose of vitamin C',
-    category: 'Food & Drink',
+    category: 'อาหารและเครื่องดื่ม',
     bgImage: 'https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=400&q=80',
     overlay: 'from-[#3d4a32]/90 to-[#3d4a32]/70',
     avatarBg: '#3d5a1e',
@@ -51,7 +51,7 @@ const templates = [
   {
     name: 'Katy Delma',
     bio: 'An innovative solar design practice that brings solar energy into daily life.',
-    category: 'Influencer and Creator',
+    category: 'อินฟลูเอนเซอร์และครีเอเตอร์',
     bgImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80',
     overlay: 'from-[#1a6b6b]/85 to-[#2a8a8a]/60',
     avatarBg: '#2a8a8a',
@@ -64,7 +64,7 @@ const templates = [
   {
     name: 'Matthew Hugh',
     bio: 'Aspiring skater with a taste for cooking.',
-    category: 'Sports',
+    category: 'กีฬา',
     bgImage: 'https://images.unsplash.com/photo-1564296786785-89c8a7b12bfc?w=400&q=80',
     overlay: 'from-[#3a2a1a]/90 to-[#5a4a3a]/70',
     avatarBg: '#8a6a4a',
@@ -77,7 +77,7 @@ const templates = [
   {
     name: 'Luna Studio',
     bio: 'Creative photography & visual storytelling.',
-    category: 'Art & Design',
+    category: 'ศิลปะและการออกแบบ',
     bgImage: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&q=80',
     overlay: 'from-[#0f3460]/90 to-[#1a1a2e]/80',
     avatarBg: '#e94560',
@@ -92,7 +92,7 @@ const templates = [
   {
     name: 'Bella Rose',
     bio: 'Beauty blogger & makeup artist based in LA.',
-    category: 'Fashion',
+    category: 'แฟชั่น',
     bgImage: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&q=80',
     overlay: 'from-[#f48fb1]/80 to-[#fce4ec]/60',
     avatarBg: '#e91e63',
@@ -106,7 +106,7 @@ const templates = [
   {
     name: 'FitCore',
     bio: 'Personal trainer & nutrition coach.',
-    category: 'Health and Fitness',
+    category: 'สุขภาพและฟิตเนส',
     bgImage: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80',
     overlay: 'from-black/90 to-black/75',
     avatarBg: '#ff6b00',
@@ -120,7 +120,7 @@ const templates = [
   {
     name: 'Sakura Cafe',
     bio: 'Artisan coffee & Japanese pastries in NYC.',
-    category: 'Food & Drink',
+    category: 'อาหารและเครื่องดื่ม',
     bgImage: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80',
     overlay: 'from-[#ffe0e6]/85 to-[#fff5f5]/70',
     avatarBg: '#d4a0a0',
@@ -135,7 +135,7 @@ const templates = [
   {
     name: 'DJ Nexus',
     bio: 'Electronic music producer & live performer.',
-    category: 'Music',
+    category: 'เพลง',
     bgImage: 'https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?w=400&q=80',
     overlay: 'from-[#1a0a3e]/92 to-[#0d0221]/80',
     avatarBg: '#7b2ff7',
@@ -150,7 +150,7 @@ const templates = [
   {
     name: 'GreenLeaf',
     bio: 'Sustainable living tips & eco-friendly products.',
-    category: 'Small Business',
+    category: 'ธุรกิจขนาดเล็ก',
     bgImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&q=80',
     overlay: 'from-[#c8e6c9]/85 to-[#e8f5e9]/70',
     avatarBg: '#2e7d32',
@@ -164,7 +164,7 @@ const templates = [
   {
     name: 'Alex Chen',
     bio: 'Full-stack developer & open source contributor.',
-    category: 'Technology',
+    category: 'เทคโนโลยี',
     bgImage: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&q=80',
     overlay: 'from-[#0f172a]/93 to-[#1e293b]/85',
     avatarBg: '#38bdf8',
@@ -179,7 +179,7 @@ const templates = [
   {
     name: 'Nomad Tales',
     bio: 'Traveling the world one city at a time.',
-    category: 'Influencer and Creator',
+    category: 'อินฟลูเอนเซอร์และครีเอเตอร์',
     bgImage: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&q=80',
     overlay: 'from-[#c44b2b]/80 to-[#ff9a56]/60',
     avatarBg: '#fff3e0',
@@ -193,7 +193,7 @@ const templates = [
   {
     name: 'Mia Waves',
     bio: 'Surf instructor & ocean conservation advocate.',
-    category: 'Sports',
+    category: 'กีฬา',
     bgImage: 'https://images.unsplash.com/photo-1502680390548-bdbac40f7154?w=400&q=80',
     overlay: 'from-[#006994]/80 to-[#48c9b0]/55',
     avatarBg: '#fff',
@@ -208,7 +208,7 @@ const templates = [
   {
     name: 'Velvet Records',
     bio: 'Independent record label. New sounds, bold artists.',
-    category: 'Music',
+    category: 'เพลง',
     bgImage: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&q=80',
     overlay: 'from-[#4a0000]/92 to-[#800000]/78',
     avatarBg: '#ff1744',
@@ -222,7 +222,7 @@ const templates = [
   {
     name: 'StyleHaus',
     bio: 'Curated fashion picks & outfit inspiration.',
-    category: 'Fashion',
+    category: 'แฟชั่น',
     bgImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&q=80',
     overlay: 'from-[#e8ddd4]/88 to-[#f5f0eb]/75',
     avatarBg: '#8d6e63',
@@ -237,7 +237,7 @@ const templates = [
   {
     name: 'Mindful Maya',
     bio: 'Yoga teacher & meditation guide. Breathe, move, grow.',
-    category: 'Health and Fitness',
+    category: 'สุขภาพและฟิตเนส',
     bgImage: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&q=80',
     overlay: 'from-[#e6d5b8]/85 to-[#fdf6e3]/70',
     avatarBg: '#a1887f',
@@ -251,7 +251,7 @@ const templates = [
   {
     name: 'ByteBot',
     bio: 'AI tools & automation for your workflow.',
-    category: 'Technology',
+    category: 'เทคโนโลยี',
     bgImage: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&q=80',
     overlay: 'from-[#0a192f]/93 to-[#1d3557]/82',
     avatarBg: '#64ffda',
@@ -266,7 +266,7 @@ const templates = [
   {
     name: 'Neon Nights',
     bio: 'Event promoter & nightlife curator in Miami.',
-    category: 'Social Media',
+    category: 'โซเชียลมีเดีย',
     bgImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&q=80',
     overlay: 'from-[#24243e]/88 to-[#0f0c29]/75',
     avatarBg: '#ff00ff',
@@ -280,7 +280,7 @@ const templates = [
   {
     name: 'Chef Marco',
     bio: 'Italian chef sharing family recipes & kitchen secrets.',
-    category: 'Food & Drink',
+    category: 'อาหารและเครื่องดื่ม',
     bgImage: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&q=80',
     overlay: 'from-[#4a1c1c]/88 to-[#6b2d2d]/72',
     avatarBg: '#ffb74d',
@@ -294,7 +294,7 @@ const templates = [
   {
     name: 'EduSpark',
     bio: 'Online tutoring & study resources for students.',
-    category: 'Education',
+    category: 'การศึกษา',
     bgImage: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&q=80',
     overlay: 'from-[#1a237e]/90 to-[#3949ab]/78',
     avatarBg: '#ffd740',
@@ -308,7 +308,7 @@ const templates = [
   {
     name: 'Pixel Art Co.',
     bio: 'Digital art studio & NFT collection.',
-    category: 'Art & Design',
+    category: 'ศิลปะและการออกแบบ',
     bgImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80',
     overlay: 'from-[#212121]/90 to-[#424242]/78',
     avatarBg: '#76ff03',
@@ -350,7 +350,7 @@ const templates = [
   {
     name: 'AdPro',
     bio: 'Digital marketing agency & growth strategies.',
-    category: 'Marketing',
+    category: 'การตลาด',
     bgImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80',
     overlay: 'from-[#ff6f00]/85 to-[#ffa000]/68',
     avatarBg: '#fff',
@@ -464,13 +464,13 @@ function TemplateCard({
           onClick={(e) => { e.stopPropagation(); onPreview(); }}
           className="w-full py-2.5 rounded-xl bg-white/20 backdrop-blur-md text-white text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:bg-white/30 flex items-center justify-center gap-1.5 border border-white/20"
         >
-          <Eye size={13} /> Preview
+          <Eye size={13} /> ตัวอย่าง
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onUse(); }}
           className="w-full py-2.5 rounded-xl bg-white text-gray-900 text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 delay-100 shadow-lg hover:shadow-xl hover:bg-gray-50 flex items-center justify-center gap-1.5"
         >
-          <Rocket size={13} /> Use Template
+          <Rocket size={13} /> ใช้เทมเพลตนี้
         </button>
       </div>
     </motion.div>
@@ -572,7 +572,7 @@ function PreviewModal({
               className="flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-200"
             >
               <Rocket size={15} />
-              Use Template
+              ใช้เทมเพลตนี้
             </button>
           </div>
         </div>
@@ -678,13 +678,13 @@ function FeaturedCarousel({
                   onClick={(e) => { e.stopPropagation(); onPreview(t); }}
                   className="w-full py-2.5 rounded-xl bg-white/20 backdrop-blur-md text-white text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:bg-white/30 flex items-center justify-center gap-1.5 border border-white/20"
                 >
-                  <Eye size={13} /> Preview
+                  <Eye size={13} /> ตัวอย่าง
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); onUse(t); }}
                   className="w-full py-2.5 rounded-xl bg-white text-gray-900 text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 delay-100 shadow-lg hover:bg-gray-50 flex items-center justify-center gap-1.5"
                 >
-                  <Rocket size={13} /> Use Template
+                  <Rocket size={13} /> ใช้เทมเพลตนี้
                 </button>
               </div>
             </div>
@@ -750,18 +750,18 @@ export default function TemplatesPage() {
               className="inline-flex items-center gap-2 px-4 py-1.5 bg-violet-50 border border-violet-100 rounded-full text-violet-600 text-xs font-medium mb-6"
             >
               <Layers size={13} />
-              {templates.length}+ Templates
+              {templates.length}+ เทมเพลต
             </motion.div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-5 leading-tight">
-              Find your perfect
+              ค้นหา
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600">
-                template
+                เทมเพลตที่ใช่
               </span>
             </h1>
             <p className="text-base sm:text-lg text-gray-500 max-w-xl mx-auto leading-relaxed">
-              Browse beautifully crafted templates and customize any one
-              to match your brand in seconds.
+              เลือกจากเทมเพลตที่ออกแบบมาอย่างสวยงาม
+              และปรับแต่งให้เข้ากับแบรนด์ของคุณได้ในไม่กี่วินาที
             </p>
           </div>
         </motion.div>
@@ -777,7 +777,7 @@ export default function TemplatesPage() {
             <Search size={19} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-violet-500 transition-colors" />
             <input
               type="text"
-              placeholder="Search by name, category, or keyword..."
+              placeholder="ค้นหาตามชื่อ หมวดหมู่ หรือคำสำคัญ..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-13 pr-12 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all shadow-sm hover:shadow-md"
@@ -806,7 +806,7 @@ export default function TemplatesPage() {
             className="sm:hidden mb-3 flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 w-full justify-center"
           >
             <Filter size={15} />
-            {activeCategory === 'All' ? 'Filter by Category' : activeCategory}
+            {activeCategory === 'All' ? 'กรองตามหมวดหมู่' : activeCategory}
             {activeCategory !== 'All' && (
               <span className="w-5 h-5 rounded-full bg-violet-100 text-violet-600 text-[10px] font-bold flex items-center justify-center">
                 1
@@ -877,11 +877,11 @@ export default function TemplatesPage() {
                   <Star size={15} className="text-white fill-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">Featured Templates</h2>
-                  <p className="text-xs text-gray-400">Hand-picked popular & trending templates</p>
+                  <h2 className="text-lg font-bold text-gray-900">เทมเพลตแนะนำ</h2>
+                  <p className="text-xs text-gray-400">คัดเลือกเทมเพลตยอดนิยมและมาแรง</p>
                 </div>
               </div>
-              <div className="text-xs text-gray-400">{featuredTemplates.length} templates</div>
+              <div className="text-xs text-gray-400">{featuredTemplates.length} เทมเพลต</div>
             </div>
 
             <FeaturedCarousel
@@ -896,7 +896,7 @@ export default function TemplatesPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <h2 className="text-lg font-bold text-gray-900">
-              {activeCategory === 'All' ? 'All Templates' : activeCategory}
+              {activeCategory === 'All' ? 'เทมเพลตทั้งหมด' : activeCategory}
             </h2>
             <span className="px-2.5 py-1 bg-gray-100 text-gray-500 text-xs font-medium rounded-full">
               {filtered.length}
@@ -907,7 +907,7 @@ export default function TemplatesPage() {
               onClick={() => { setActiveCategory('All'); setSearchQuery(''); }}
               className="flex items-center gap-1.5 text-sm font-medium text-violet-600 hover:text-violet-700 cursor-pointer"
             >
-              <X size={14} /> Clear
+              <X size={14} /> ล้าง
             </button>
           )}
         </div>
@@ -944,15 +944,15 @@ export default function TemplatesPage() {
             <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-sm">
               <Search size={28} className="text-gray-300" />
             </div>
-            <p className="text-gray-900 text-xl font-bold">No templates found</p>
+            <p className="text-gray-900 text-xl font-bold">ไม่พบเทมเพลต</p>
             <p className="text-gray-400 text-sm mt-2 max-w-sm mx-auto">
-              We couldn't find any templates matching your search. Try different keywords or browse all templates.
+              ไม่พบเทมเพลตที่ตรงกับการค้นหาของคุณ ลองใช้คำค้นหาอื่นหรือดูเทมเพลตทั้งหมด
             </p>
             <button
               onClick={() => { setActiveCategory('All'); setSearchQuery(''); }}
               className="mt-6 px-8 py-3 text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-200 cursor-pointer"
             >
-              View all templates
+              ดูเทมเพลตทั้งหมด
             </button>
           </motion.div>
         )}
@@ -982,24 +982,24 @@ export default function TemplatesPage() {
                 <Rocket size={28} className="text-white" />
               </div>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">
-                Can't find what you need?
+                หาไม่เจอสิ่งที่ต้องการ?
               </h2>
               <p className="text-gray-400 mb-8 leading-relaxed">
-                Start from scratch and build your own unique page with our powerful drag-and-drop editor.
+                เริ่มต้นจากศูนย์และสร้างหน้าเพจเฉพาะตัวของคุณด้วยตัวแก้ไขที่ทรงพลัง
               </p>
               <div className="flex items-center justify-center gap-3 flex-wrap">
                 <button
                   onClick={() => navigate('/create')}
                   className="group flex items-center gap-2 px-8 py-3.5 bg-white text-gray-900 text-sm font-bold rounded-xl hover:bg-gray-100 transition-all shadow-lg cursor-pointer"
                 >
-                  Create from scratch
+                  สร้างจากศูนย์
                   <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
                 </button>
                 <button
                   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   className="px-8 py-3.5 bg-white/10 backdrop-blur-sm text-white text-sm font-medium rounded-xl hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
                 >
-                  Back to top
+                  กลับขึ้นด้านบน
                 </button>
               </div>
             </div>

@@ -110,6 +110,12 @@ export default function PreviewPage() {
     productImages?: string[];
   } | null>(null);
 
+  // Subscribe form state
+  const [showSubscribe, setShowSubscribe] = useState(false);
+  const [emailFormTitle, setEmailFormTitle] = useState('สมัครรับข่าวสาร');
+  const [subscribeEmail, setSubscribeEmail] = useState('');
+  const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'loading' | 'success' | 'duplicate' | 'error'>('idle');
+
   // Helper: load profile from localStorage
   const loadLocal = (name: string) => {
     try {
@@ -202,6 +208,10 @@ export default function PreviewPage() {
             productImages: localData?.productImages || [],
           });
 
+          // Load subscribe settings
+          setShowSubscribe(!!p.showSubscribe);
+          setEmailFormTitle(p.emailFormTitle || 'สมัครรับข่าวสาร');
+
           pb.collection('analytics').create({
             page: p.id, type: 'view',
           }, { requestKey: null }).catch(() => {});
@@ -266,7 +276,7 @@ export default function PreviewPage() {
   if (!data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-400">No preview data found. Go to <a href="/create" className="text-violet-500 underline">Create</a> first.</p>
+        <p className="text-gray-400">ไม่พบข้อมูลตัวอย่าง ไปที่ <a href="/create" className="text-violet-500 underline">สร้าง</a> ก่อน</p>
       </div>
     );
   }
@@ -321,6 +331,23 @@ export default function PreviewPage() {
       });
       localStorage.setItem('openbio_analytics', JSON.stringify(analytics));
     } catch { /* ignore */ }
+  };
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!subscribeEmail || !pbPageId) return;
+    setSubscribeStatus('loading');
+    try {
+      await pb.collection('subscribers').create({
+        page: pbPageId,
+        email: subscribeEmail,
+        source: 'form',
+      }, { requestKey: null });
+      setSubscribeStatus('success');
+      setSubscribeEmail('');
+    } catch {
+      setSubscribeStatus('duplicate');
+    }
   };
 
   const patternStyle = selectedPattern && selectedPattern !== 'none' ? bgPatterns[selectedPattern] : undefined;
@@ -456,7 +483,7 @@ export default function PreviewPage() {
         {enabledLinks.length === 0 && (
           <div className={`text-center py-10 ${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-20`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
             <ExternalLink size={24} className="mx-auto mb-2" />
-            <p className="text-sm">No links yet</p>
+            <p className="text-sm">ยังไม่มีลิงก์</p>
           </div>
         )}
         {enabledLinks.map((link) => (
@@ -492,6 +519,59 @@ export default function PreviewPage() {
           </a>
         ))}
       </div>
+
+      {/* Subscribe Form */}
+      {showSubscribe && pbPageId && (
+        <div className="px-5 pb-4 w-full max-w-md relative z-[1]">
+          <div
+            className={`${!isCustom ? `${theme.card} ${theme.cardBorder}` : ''} rounded-2xl p-6 text-center`}
+            style={isCustom ? customCardStyle : undefined}
+          >
+            <Mail size={24} className={`mx-auto mb-2 ${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-60`}
+              style={resolvedTextColor ? { color: resolvedTextColor } : undefined}
+            />
+            <h3
+              className={`font-semibold mb-1 ${!resolvedTextColor && !isCustom ? theme.text : ''}`}
+              style={resolvedTextColor ? { color: resolvedTextColor } : undefined}
+            >
+              {emailFormTitle}
+            </h3>
+            {subscribeStatus === 'success' ? (
+              <p
+                className={`text-sm ${!resolvedTextColor && !isCustom ? theme.subtext : ''}`}
+                style={resolvedTextColor ? { color: resolvedTextColor, opacity: 0.7 } : undefined}
+              >
+                ขอบคุณที่ติดตาม!
+              </p>
+            ) : (
+              <form onSubmit={handleSubscribe} className="flex gap-2 mt-3">
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={subscribeEmail}
+                  onChange={(e) => { setSubscribeEmail(e.target.value); setSubscribeStatus('idle'); }}
+                  required
+                  className="flex-1 px-3 py-2.5 text-sm rounded-lg border border-gray-200/30 bg-white/20 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/30 placeholder:opacity-50"
+                  style={resolvedTextColor ? { color: resolvedTextColor } : undefined}
+                />
+                <button
+                  type="submit"
+                  disabled={subscribeStatus === 'loading'}
+                  className="px-4 py-2.5 text-sm font-semibold rounded-lg bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors"
+                  style={resolvedTextColor ? { color: resolvedTextColor } : undefined}
+                >
+                  {subscribeStatus === 'loading' ? '...' : 'สมัคร'}
+                </button>
+              </form>
+            )}
+            {subscribeStatus === 'duplicate' && (
+              <p className="text-xs mt-2 opacity-70" style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
+                คุณสมัครสมาชิกไปแล้ว!
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="mt-auto pb-6 relative z-[1]">

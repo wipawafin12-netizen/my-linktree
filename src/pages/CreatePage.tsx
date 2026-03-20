@@ -21,12 +21,12 @@ import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
 
 
 const sidebarMain = [
-  { icon: Link2, label: 'My OpenBio', id: 'links' },
-  { icon: Users, label: 'Audience', id: 'audience' },
+  { icon: Link2, label: 'OpenBio ของฉัน', id: 'links' },
+  { icon: Users, label: 'ผู้ติดตาม', id: 'audience' },
 ];
 
 const sidebarTools = [
-  { icon: Scissors, label: 'Link shortener', id: 'shortener' },
+  { icon: Scissors, label: 'ย่อลิงก์', id: 'shortener' },
 ];
 
 const themes = [
@@ -324,47 +324,47 @@ const socialPlatforms = [
 
 // ── Add modal categories ──
 const addCategories = [
-  { id: 'suggested', icon: Sparkles, label: 'Suggested' },
-  { id: 'projects', icon: Grid3x3, label: 'Projects & SDK' },
-  { id: 'commerce', icon: ShoppingBag, label: 'Commerce' },
-  { id: 'social', icon: Heart, label: 'Social' },
-  { id: 'media', icon: Play, label: 'Media' },
-  { id: 'contact', icon: Phone, label: 'Contact' },
-  { id: 'events', icon: Calendar, label: 'Events' },
-  { id: 'text', icon: FileText, label: 'Text' },
+  { id: 'suggested', icon: Sparkles, label: 'แนะนำ' },
+  { id: 'projects', icon: Grid3x3, label: 'โปรเจกต์ & SDK' },
+  { id: 'commerce', icon: ShoppingBag, label: 'พาณิชย์' },
+  { id: 'social', icon: Heart, label: 'โซเชียล' },
+  { id: 'media', icon: Play, label: 'สื่อ' },
+  { id: 'contact', icon: Phone, label: 'ติดต่อ' },
+  { id: 'events', icon: Calendar, label: 'กิจกรรม' },
+  { id: 'text', icon: FileText, label: 'ข้อความ' },
 ];
 
 const addQuickCards = [
-  { icon: Grid3x3, label: 'Collection', color: '#7c3aed' },
-  { icon: Link2, label: 'Link', color: '#7c3aed' },
-  { icon: Tag, label: 'Product', color: '#7c3aed' },
-  { icon: ClipboardList, label: 'Form', color: '#7c3aed' },
+  { icon: Grid3x3, label: 'คอลเลกชัน', color: '#7c3aed' },
+  { icon: Link2, label: 'ลิงก์', color: '#7c3aed' },
+  { icon: Tag, label: 'สินค้า', color: '#7c3aed' },
+  { icon: ClipboardList, label: 'แบบฟอร์ม', color: '#7c3aed' },
 ];
 
 const addSuggestedItems = [
-  { icon: Download, label: 'Catalog / Drawing', desc: 'Securely share PDF catalogs or CAD drawings', category: 'projects', gradient: 'from-[#2563eb] to-[#3b82f6]' },
-  { icon: ClipboardList, label: 'RFQ (Quotation)', desc: 'Professional Request for Quotation form', category: 'projects', gradient: 'from-[#059669] to-[#10b981]' },
-  { icon: Grid3x3, label: 'Project Reference', desc: 'Showcase your completed projects portfolio', category: 'projects', gradient: 'from-[#4f46e5] to-[#6366f1]' },
-  { icon: Tag, label: 'Material Datasheet', desc: 'Detailed technical specifications for spec-in', category: 'projects', gradient: 'from-[#db2777] to-[#ec4899]' },
-  { icon: Phone, label: 'Direct Site Visit', desc: 'Schedule a consultant visit to your site', category: 'projects', gradient: 'from-[#d97706] to-[#f59e0b]' },
-  { icon: Instagram, label: 'Instagram', desc: 'Display your posts and reels', category: 'social', gradient: 'from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]' },
-  { icon: Music2, label: 'TikTok', desc: 'Share your TikToks on your OpenBio', category: 'social', gradient: 'from-[#69C9D0] to-[#EE1D52]' },
-  { icon: Youtube, label: 'YouTube', desc: 'Share YouTube videos on your OpenBio', category: 'media', gradient: 'from-[#FF0000] to-[#CC0000]' },
-  { icon: Music2, label: 'Spotify', desc: 'Share your latest or favorite music', category: 'media', gradient: 'from-[#1DB954] to-[#1ed760]' },
-  { icon: Download, label: 'File downloads', desc: 'Upload files to sell on your OpenBio', category: 'commerce', gradient: 'from-[#f97316] to-[#fb923c]' },
-  { icon: Mail, label: 'Email signup', desc: 'Collect emails from your audience', category: 'contact', gradient: 'from-[#6366f1] to-[#818cf8]' },
-  { icon: DollarSign, label: 'Tip jar', desc: 'Accept tips from your supporters', category: 'commerce', gradient: 'from-[#eab308] to-[#facc15]' },
-  { icon: ShoppingBag, label: 'Shop', desc: 'Sell products directly from OpenBio', category: 'commerce', gradient: 'from-[#ec4899] to-[#f472b6]' },
-  { icon: Facebook, label: 'Facebook', desc: 'Link your Facebook profile or page', category: 'social', gradient: 'from-[#1877F2] to-[#4299e1]' },
-  { icon: Twitter, label: 'Twitter', desc: 'Share your tweets and profile', category: 'social', gradient: 'from-[#1DA1F2] to-[#0d8bd9]' },
-  { icon: Phone, label: 'Phone number', desc: 'Let visitors call you directly', category: 'contact', gradient: 'from-[#10b981] to-[#34d399]' },
-  { icon: Mail, label: 'Contact form', desc: 'Receive messages from your visitors', category: 'contact', gradient: 'from-[#8b5cf6] to-[#a78bfa]' },
-  { icon: Calendar, label: 'Event', desc: 'Promote upcoming events', category: 'events', gradient: 'from-[#f59e0b] to-[#fbbf24]' },
-  { icon: Calendar, label: 'Booking', desc: 'Let visitors book appointments', category: 'events', gradient: 'from-[#6366f1] to-[#818cf8]' },
-  { icon: Play, label: 'Video', desc: 'Embed YouTube or Vimeo videos', category: 'media', gradient: 'from-[#ef4444] to-[#f87171]' },
-  { icon: Music2, label: 'Podcast', desc: 'Share your podcast episodes', category: 'media', gradient: 'from-[#8b5cf6] to-[#c084fc]' },
-  { icon: FileText, label: 'Text block', desc: 'Add a text section to your page', category: 'text', gradient: 'from-[#6b7280] to-[#9ca3af]' },
-  { icon: FileText, label: 'Heading', desc: 'Add a heading to organize links', category: 'text', gradient: 'from-[#374151] to-[#6b7280]' },
+  { icon: Download, label: 'แคตตาล็อก / แบบ', desc: 'แชร์แคตตาล็อก PDF หรือแบบ CAD อย่างปลอดภัย', category: 'projects', gradient: 'from-[#2563eb] to-[#3b82f6]' },
+  { icon: ClipboardList, label: 'ขอใบเสนอราคา (RFQ)', desc: 'แบบฟอร์มขอใบเสนอราคาแบบมืออาชีพ', category: 'projects', gradient: 'from-[#059669] to-[#10b981]' },
+  { icon: Grid3x3, label: 'ผลงานอ้างอิง', desc: 'แสดงผลงานโปรเจกต์ที่เสร็จสมบูรณ์', category: 'projects', gradient: 'from-[#4f46e5] to-[#6366f1]' },
+  { icon: Tag, label: 'ข้อมูลวัสดุ', desc: 'ข้อมูลจำเพาะทางเทคนิคโดยละเอียด', category: 'projects', gradient: 'from-[#db2777] to-[#ec4899]' },
+  { icon: Phone, label: 'นัดเยี่ยมชมไซต์', desc: 'นัดหมายที่ปรึกษาเข้าเยี่ยมชมไซต์', category: 'projects', gradient: 'from-[#d97706] to-[#f59e0b]' },
+  { icon: Instagram, label: 'Instagram', desc: 'แชร์ Instagram, TikTok, YouTube และอื่น ๆ', category: 'social', gradient: 'from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]' },
+  { icon: Music2, label: 'TikTok', desc: 'แชร์ TikTok ของคุณบน OpenBio', category: 'social', gradient: 'from-[#69C9D0] to-[#EE1D52]' },
+  { icon: Youtube, label: 'YouTube', desc: 'แชร์วิดีโอ YouTube บน OpenBio', category: 'media', gradient: 'from-[#FF0000] to-[#CC0000]' },
+  { icon: Music2, label: 'Spotify', desc: 'แชร์เพลงล่าสุดหรือเพลงโปรด', category: 'media', gradient: 'from-[#1DB954] to-[#1ed760]' },
+  { icon: Download, label: 'ดาวน์โหลดไฟล์', desc: 'อัปโหลดไฟล์เพื่อขายบน OpenBio', category: 'commerce', gradient: 'from-[#f97316] to-[#fb923c]' },
+  { icon: Mail, label: 'สมัครอีเมล', desc: 'รวบรวมอีเมลจากผู้ติดตามของคุณ', category: 'contact', gradient: 'from-[#6366f1] to-[#818cf8]' },
+  { icon: DollarSign, label: 'กระปุกทิป', desc: 'รับทิปจากผู้สนับสนุนของคุณ', category: 'commerce', gradient: 'from-[#eab308] to-[#facc15]' },
+  { icon: ShoppingBag, label: 'ร้านค้า', desc: 'ขายสินค้าโดยตรงจาก OpenBio', category: 'commerce', gradient: 'from-[#ec4899] to-[#f472b6]' },
+  { icon: Facebook, label: 'Facebook', desc: 'เชื่อมต่อโปรไฟล์หรือเพจ Facebook ของคุณ', category: 'social', gradient: 'from-[#1877F2] to-[#4299e1]' },
+  { icon: Twitter, label: 'Twitter', desc: 'แชร์ทวีตและโปรไฟล์', category: 'social', gradient: 'from-[#1DA1F2] to-[#0d8bd9]' },
+  { icon: Phone, label: 'เบอร์โทรศัพท์', desc: 'ให้ผู้เข้าชมโทรหาคุณได้โดยตรง', category: 'contact', gradient: 'from-[#10b981] to-[#34d399]' },
+  { icon: Mail, label: 'แบบฟอร์มติดต่อ', desc: 'รับข้อความจากผู้เข้าชมของคุณ', category: 'contact', gradient: 'from-[#8b5cf6] to-[#a78bfa]' },
+  { icon: Calendar, label: 'กิจกรรม', desc: 'โปรโมตกิจกรรมที่กำลังจะมาถึง', category: 'events', gradient: 'from-[#f59e0b] to-[#fbbf24]' },
+  { icon: Calendar, label: 'จองนัดหมาย', desc: 'ให้ผู้เข้าชมจองนัดหมายได้', category: 'events', gradient: 'from-[#6366f1] to-[#818cf8]' },
+  { icon: Play, label: 'วิดีโอ', desc: 'ฝังวิดีโอ YouTube หรือ Vimeo', category: 'media', gradient: 'from-[#ef4444] to-[#f87171]' },
+  { icon: Music2, label: 'Podcast', desc: 'แชร์ตอนพอดแคสต์ของคุณ', category: 'media', gradient: 'from-[#8b5cf6] to-[#c084fc]' },
+  { icon: FileText, label: 'บล็อกข้อความ', desc: 'เพิ่มส่วนข้อความในหน้าเพจ', category: 'text', gradient: 'from-[#6b7280] to-[#9ca3af]' },
+  { icon: FileText, label: 'หัวข้อ', desc: 'เพิ่มหัวข้อเพื่อจัดระเบียบลิงก์', category: 'text', gradient: 'from-[#374151] to-[#6b7280]' },
 ];
 
 type LinkItem = { id: string; title: string; url: string; enabled: boolean; thumbnail?: string; clicks?: number; color?: string };
@@ -434,9 +434,10 @@ export default function CreatePage() {
   };
 
   // Audience section
-  const [subscribers, setSubscribers] = useState<{ email: string; date: string }[]>([]);
+  const [subscribers, setSubscribers] = useState<{ email: string; date: string; id?: string }[]>([]);
   const [newSubscriberEmail, setNewSubscriberEmail] = useState('');
-  const [emailFormTitle, setEmailFormTitle] = useState('Join my newsletter');
+  const [emailFormTitle, setEmailFormTitle] = useState('สมัครรับจดหมายข่าว');
+  const [showSubscribe, setShowSubscribe] = useState(false);
 
   // Tools section
   const [scheduledPosts, setScheduledPosts] = useState<{ id: string; text: string; platform: string; date: string; time: string }[]>([]);
@@ -444,7 +445,7 @@ export default function CreatePage() {
   const [newPostPlatform, setNewPostPlatform] = useState('instagram');
   const [newPostDate, setNewPostDate] = useState('');
   const [newPostTime, setNewPostTime] = useState('');
-  const [autoReplyMessage, setAutoReplyMessage] = useState('Thanks for reaching out! Check out my OpenBio for all my links.');
+  const [autoReplyMessage, setAutoReplyMessage] = useState('ขอบคุณที่ติดต่อมา! ดูลิงก์ทั้งหมดของฉันได้ที่ OpenBio');
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [autoReplyKeywords, setAutoReplyKeywords] = useState('link, links, website, url');
   const [shortenerInput, setShortenerInput] = useState('');
@@ -569,6 +570,25 @@ export default function CreatePage() {
                 color: l.color || '',
               })));
             }
+
+            // Load subscribe settings from page
+            setShowSubscribe(!!p.showSubscribe);
+            if (p.emailFormTitle) setEmailFormTitle(p.emailFormTitle);
+
+            // Load subscribers
+            try {
+              const subscribersResult = await pb.collection('subscribers').getFullList({
+                filter: `page = "${p.id}"`,
+                sort: '-created',
+              });
+              if (!cancelled) {
+                setSubscribers(subscribersResult.map((s: any) => ({
+                  email: s.email,
+                  date: s.created,
+                  id: s.id,
+                })));
+              }
+            } catch { /* subscribers collection might not exist yet */ }
           }
         } else {
           // No page in PocketBase yet — try creating one
@@ -644,7 +664,7 @@ export default function CreatePage() {
 
           const data: any = {
             page: pageId,
-            title: link.title || 'Untitled',
+            title: link.title || 'ไม่มีชื่อ',
             url: link.url || 'https://example.com',
             enabled: link.enabled,
             color: link.color || '',
@@ -765,7 +785,7 @@ export default function CreatePage() {
   const isCustom = selectedTheme === 'custom';
   const light = isLightColor(customBgColor);
   const customTheme = {
-    id: 'custom', label: 'Custom', preview: customBgColor,
+    id: 'custom', label: 'กำหนดเอง', preview: customBgColor,
     bg: '', card: '', cardBorder: '', text: '', subtext: '',
     bgStyle: { background: `linear-gradient(to bottom, ${customBgColor}, ${customBgSecondary})` } as React.CSSProperties,
     cardStyle: {
@@ -875,14 +895,14 @@ export default function CreatePage() {
 
     // Validate file size (2MB limit)
     if (file.size > 2 * 1024 * 1024) {
-      showToast('Image must be less than 2MB');
+      showToast('รูปภาพต้องมีขนาดไม่เกิน 2MB');
       setImageTargetLinkId(null);
       return;
     }
 
     // Validate file type
     if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
-      showToast('Only JPEG, PNG, GIF, and WebP images are supported');
+      showToast('รองรับเฉพาะรูปภาพ JPEG, PNG, GIF และ WebP');
       setImageTargetLinkId(null);
       return;
     }
@@ -930,7 +950,7 @@ export default function CreatePage() {
               : l
           ));
 
-          showToast('Thumbnail uploaded!');
+          showToast('อัปโหลดรูปขนาดย่อแล้ว!');
         } else {
           // Link doesn't exist in PocketBase yet - keep preview URL
           setLinks(prev => prev.map(l =>
@@ -954,7 +974,7 @@ export default function CreatePage() {
               }
             : l
         ));
-        showToast('Upload failed, will retry on save');
+        showToast('อัปโหลดล้มเหลว จะลองใหม่เมื่อบันทึก');
       }
     } else {
       // PocketBase disabled - keep preview URL and file
@@ -987,7 +1007,7 @@ export default function CreatePage() {
           // When all files are loaded, update state
           if (loadedCount === files.length) {
             setProductImages((prev) => [...prev, ...newImages]);
-            showToast(`Added ${newImages.length} product image${newImages.length > 1 ? 's' : ''}!`);
+            showToast(`เพิ่มรูปสินค้า ${newImages.length} รูปแล้ว!`);
           }
         };
         reader.readAsDataURL(file);
@@ -999,16 +1019,28 @@ export default function CreatePage() {
 
   const removeProductImage = (index: number) => {
     setProductImages((prev) => prev.filter((_, i) => i !== index));
-    showToast('Product image removed');
+    showToast('ลบรูปสินค้าแล้ว');
   };
 
   const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
   const previewUrl = `${siteUrl}/${displayName || 'preview'}`;
 
-  const handleCopyUrl = () => {
-    navigator.clipboard.writeText(previewUrl);
+  const handleCopyUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(previewUrl);
+    } catch {
+      // Fallback for non-HTTPS contexts
+      const textarea = document.createElement('textarea');
+      textarea.value = previewUrl;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
     setCopied(true);
-    showToast('Link copied to clipboard!');
+    showToast('คัดลอกลิงก์แล้ว!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -1017,7 +1049,7 @@ export default function CreatePage() {
   };
 
   const handleStartFresh = () => {
-    if (!window.confirm('Are you sure you want to start fresh? This will clear all your current profile data.')) {
+    if (!window.confirm('คุณแน่ใจหรือว่าต้องการเริ่มใหม่? ข้อมูลโปรไฟล์ทั้งหมดของคุณจะถูกล้าง')) {
       return;
     }
 
@@ -1043,26 +1075,26 @@ export default function CreatePage() {
     // Clear localStorage
     localStorage.removeItem('openbio_preview');
 
-    showToast('Started fresh! Your profile has been cleared.');
+    showToast('เริ่มใหม่แล้ว! โปรไฟล์ของคุณถูกล้างแล้ว');
   };
 
 
   const handleFinishSetup = () => {
     if (!displayName) {
-      showToast('Add your name to complete setup');
+      showToast('เพิ่มชื่อของคุณเพื่อตั้งค่าให้เสร็จ');
       return;
     }
     if (links.length === 0) {
       setAddModalOpen(true);
-      showToast('Add at least one link');
+      showToast('เพิ่มลิงก์อย่างน้อยหนึ่งลิงก์');
       return;
     }
     if (activeSocials.length === 0) {
       setMainTab('settings');
-      showToast('Add social icons to complete setup');
+      showToast('เพิ่มไอคอนโซเชียลเพื่อตั้งค่าให้เสร็จ');
       return;
     }
-    showToast('Setup complete! Your OpenBio is ready');
+    showToast('ตั้งค่าเสร็จสิ้น! OpenBio ของคุณพร้อมแล้ว');
   };
 
   // Show all links (enabled and disabled) - disabled links will have visual indicator
@@ -1116,13 +1148,15 @@ export default function CreatePage() {
         customTextColor, customBgColor, customBgSecondary,
         selectedPattern, selectedPatternAnim, patternGlow,
         buttonAnimation, activeSocials, socialUrls,
+        showSubscribe, emailFormTitle,
       });
       debouncedSaveLinks(pbPageId, links);
     }
   }, [displayName, bio, compressedAvatar, selectedTheme, selectedButton, selectedFont,
       customTextColor, customBgColor, customBgSecondary,
       links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
-      pbPageId, pbLoaded, debouncedSavePage, debouncedSaveLinks, buttonAnimation, bgImage, productImages]);
+      pbPageId, pbLoaded, debouncedSavePage, debouncedSaveLinks, buttonAnimation, bgImage, productImages,
+      showSubscribe, emailFormTitle]);
 
   // Cleanup object URLs to prevent memory leaks
   useEffect(() => {
@@ -1142,10 +1176,10 @@ export default function CreatePage() {
     setProfileSaving(true);
     try {
       await pb.collection('pages').update(pbPageId, { displayName, bio });
-      showToast('Profile saved!');
+      showToast('บันทึกโปรไฟล์แล้ว!');
     } catch (err) {
       // Profile save failed silently
-      showToast('Failed to save profile');
+      showToast('บันทึกโปรไฟล์ล้มเหลว');
     } finally {
       setProfileSaving(false);
     }
@@ -1193,13 +1227,13 @@ export default function CreatePage() {
                     <p className="text-xs text-gray-400">linkc.ee/{displayName || 'username'}</p>
                   </div>
                   <button onClick={() => { handleCopyUrl(); setSidebarUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-[#f5f3ff]">
-                    <Copy size={14} /> Copy my link
+                    <Copy size={14} /> คัดลอกลิงก์ของฉัน
                   </button>
                   <button onClick={() => { setActiveSection('links'); setSidebarUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-[#f5f3ff]">
-                    <Settings size={14} /> Account settings
+                    <Settings size={14} /> ตั้งค่าบัญชี
                   </button>
                   <button onClick={() => { logout(); navigate('/'); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-50">
-                    <X size={14} /> Log out
+                    <X size={14} /> ออกจากระบบ
                   </button>
                 </div>
               </>
@@ -1236,13 +1270,13 @@ export default function CreatePage() {
                       onClick={() => { setEarnSubTab('overview'); scrollToSubSection('earn', 'revenue-overview'); }}
                       className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors ${earnSubTab === 'overview' ? 'bg-[#ede9fe] text-[#6d28d9]' : 'text-gray-500 hover:text-[#6d28d9] hover:bg-[#f5f3ff]'}`}
                     >
-                      Overview
+                      ภาพรวม
                     </button>
                     <button
                       onClick={() => { setEarnSubTab('earnings'); scrollToSubSection('earn', 'revenue-overview'); }}
                       className={`w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center justify-between ${earnSubTab === 'earnings' ? 'bg-[#ede9fe] text-[#6d28d9]' : 'text-gray-500 hover:text-[#6d28d9] hover:bg-[#f5f3ff]'}`}
                     >
-                      <span>Earnings</span>
+                      <span>รายได้</span>
                       <span>US$0.00</span>
                     </button>
                   </div>
@@ -1253,7 +1287,7 @@ export default function CreatePage() {
 
           {/* Tools section */}
           <div className="px-3 mt-6">
-            <p className="px-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Tools</p>
+            <p className="px-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">เครื่องมือ</p>
             <div className="space-y-0.5">
               {sidebarTools.map((item) => (
                 <button
@@ -1286,9 +1320,9 @@ export default function CreatePage() {
                 </span>
               </div>
               <div>
-                <p className="text-xs font-semibold text-gray-700">Your setup checklist</p>
+                <p className="text-xs font-semibold text-gray-700">รายการตั้งค่าของคุณ</p>
                 <p className="text-[11px] text-gray-400">
-                  {(links.length > 0 ? 1 : 0) + (displayName ? 1 : 0) + (activeSocials.length > 0 ? 1 : 0)} of 3 complete
+                  เสร็จแล้ว {(links.length > 0 ? 1 : 0) + (displayName ? 1 : 0) + (activeSocials.length > 0 ? 1 : 0)} จาก 3
                 </p>
               </div>
             </div>
@@ -1296,7 +1330,7 @@ export default function CreatePage() {
               onClick={handleFinishSetup}
               className="w-full py-2.5 bg-gradient-to-r from-[#7c3aed] to-[#a78bfa] text-white text-xs font-semibold rounded-xl hover:from-[#6d28d9] hover:to-[#8b5cf6] transition-all duration-200 hover:shadow-md hover:shadow-[#7c3aed]/25 hover:-translate-y-0.5 active:translate-y-0"
             >
-              Finish setup
+              ตั้งค่าเสร็จสิ้น
             </button>
           </div>
         </aside>
@@ -1321,7 +1355,7 @@ export default function CreatePage() {
                 <div className="flex items-center gap-2.5">
                   <div className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#7c3aed] to-[#a78bfa]" />
                   <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                    {activeSection === 'links' ? 'Links' : [...sidebarMain, ...sidebarTools].find(s => s.id === activeSection)?.label || 'Links'}
+                    {activeSection === 'links' ? 'ลิงก์' : [...sidebarMain, ...sidebarTools].find(s => s.id === activeSection)?.label || 'ลิงก์'}
                   </h1>
                 </div>
               </div>
@@ -1329,23 +1363,23 @@ export default function CreatePage() {
                 <button
                   onClick={handleStartFresh}
                   className="px-3.5 py-1.5 text-xs font-medium text-red-500 bg-red-50 hover:bg-red-100 rounded-full border border-red-200/80 transition-all hover:text-red-600 hover:border-red-300"
-                  title="Clear all data and start fresh"
+                  title="ล้างข้อมูลทั้งหมดและเริ่มใหม่"
                 >
-                  New Profile
+                  โปรไฟล์ใหม่
                 </button>
                 <button
                   onClick={handleCopyUrl}
                   className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-full border border-gray-200/80 transition-all hover:text-[#6d28d9] hover:border-[#a78bfa]/30"
                 >
                   <Share2 size={13} />
-                  <span className="hidden sm:inline">Share</span>
+                  <span className="hidden sm:inline">แชร์</span>
                 </button>
                 <button
                   onClick={handleOpenPreview}
                   className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-[#7c3aed] to-[#a78bfa] rounded-full shadow-sm shadow-[#7c3aed]/20 hover:shadow-md hover:shadow-[#7c3aed]/30 transition-all hover:-translate-y-px"
                 >
                   <Eye size={13} />
-                  <span className="hidden sm:inline">Preview</span>
+                  <span className="hidden sm:inline">ดูตัวอย่าง</span>
                 </button>
               </div>
             </div>
@@ -1371,27 +1405,27 @@ export default function CreatePage() {
                       {earnSubTab === 'overview' && (
                         <div>
                           {/* Page Title */}
-                          <h1 className="text-2xl font-bold text-gray-900 mb-6">Earn</h1>
+                          <h1 className="text-2xl font-bold text-gray-900 mb-6">สร้างรายได้</h1>
 
                           {/* Overview Tab */}
                           <div className="mb-8">
                             <div className="border-b border-gray-200">
                               <button className="px-1 pb-3 text-sm font-medium text-gray-500 border-b-2 border-gray-400">
-                                Overview
+                                ภาพรวม
                               </button>
                             </div>
                           </div>
 
                           {/* Info Notice */}
                           <div className="bg-[#fef9e7] rounded-2xl p-5 mb-8">
-                            <p className="text-sm font-semibold text-[#856404] mb-1">Selling is not enabled in your country</p>
+                            <p className="text-sm font-semibold text-[#856404] mb-1">การขายยังไม่เปิดให้บริการในประเทศของคุณ</p>
                             <p className="text-sm text-[#856404]/80">
-                              Currently you can only offer free digital products at this time. <button className="underline font-semibold text-[#856404]">Learn more</button>
+                              ขณะนี้คุณสามารถเสนอผลิตภัณฑ์ดิจิทัลฟรีได้เท่านั้น <button className="underline font-semibold text-[#856404]">เรียนรู้เพิ่มเติม</button>
                             </p>
                           </div>
 
                           {/* Free digital products */}
-                          <h2 className="text-lg font-bold text-gray-900 mb-5 px-2">Free digital products</h2>
+                          <h2 className="text-lg font-bold text-gray-900 mb-5 px-2">ผลิตภัณฑ์ดิจิทัลฟรี</h2>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                             {/* Courses */}
                             <button className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
@@ -1399,8 +1433,8 @@ export default function CreatePage() {
                                 <GraduationCap size={22} className="text-[#7c3aed]" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-gray-900">Courses</p>
-                                <p className="text-sm text-gray-500">Share your expertise with an online course.</p>
+                                <p className="text-sm font-bold text-gray-900">คอร์สเรียน</p>
+                                <p className="text-sm text-gray-500">แชร์ความเชี่ยวชาญของคุณด้วยคอร์สออนไลน์</p>
                               </div>
                               <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
                             </button>
@@ -1411,8 +1445,8 @@ export default function CreatePage() {
                                 <Download size={22} className="text-[#ef4444]" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-gray-900">Digital products</p>
-                                <p className="text-sm text-gray-500">Share downloadable content.</p>
+                                <p className="text-sm font-bold text-gray-900">ผลิตภัณฑ์ดิจิทัล</p>
+                                <p className="text-sm text-gray-500">แชร์คอนเทนต์ที่ดาวน์โหลดได้</p>
                               </div>
                               <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
                             </button>
@@ -1423,8 +1457,8 @@ export default function CreatePage() {
                                 <Calendar size={22} className="text-[#7c3aed]" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-gray-900">Bookings</p>
-                                <p className="text-sm text-gray-500">Get booked for sessions, calls, or coaching.</p>
+                                <p className="text-sm font-bold text-gray-900">การจอง</p>
+                                <p className="text-sm text-gray-500">รับจองเซสชัน สายโทร หรือการโค้ช</p>
                               </div>
                               <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
                             </button>
@@ -1436,8 +1470,8 @@ export default function CreatePage() {
                               <Sparkles size={18} />
                             </div>
                             <div>
-                              <p className="text-sm font-bold text-gray-900">Got ideas?</p>
-                              <p className="text-sm text-gray-500">We're listening! <button className="underline font-semibold text-gray-900">Share feedback</button></p>
+                              <p className="text-sm font-bold text-gray-900">มีไอเดียไหม?</p>
+                              <p className="text-sm text-gray-500">เรารับฟังอยู่! <button className="underline font-semibold text-gray-900">แชร์ความคิดเห็น</button></p>
                             </div>
                           </div>
                         </div>
@@ -1447,19 +1481,19 @@ export default function CreatePage() {
                       {earnSubTab === 'earnings' && (
                         <div>
                           {/* Page Title */}
-                          <h1 className="text-2xl font-bold text-gray-900 mb-6">Earnings</h1>
+                          <h1 className="text-2xl font-bold text-gray-900 mb-6">รายได้</h1>
 
                           {/* Balance Card */}
                           <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm mb-8">
                             <div className="flex items-center gap-1.5 mb-1 text-gray-500">
-                              <span className="text-sm font-medium">Balance</span>
+                              <span className="text-sm font-medium">ยอดคงเหลือ</span>
                               <Info size={14} className="text-gray-300" />
                             </div>
                             <h2 className="text-4xl font-black text-gray-900">$0.00</h2>
                           </div>
 
                           {/* Start earning */}
-                          <h2 className="text-xl font-bold text-gray-900 mb-6 px-1">Start earning on OpenBio</h2>
+                          <h2 className="text-xl font-bold text-gray-900 mb-6 px-1">เริ่มสร้างรายได้บน OpenBio</h2>
                           <div className="space-y-6 mb-12">
                             {/* Offer your time */}
                             <button className="w-full flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all group text-left">
@@ -1467,8 +1501,8 @@ export default function CreatePage() {
                                 <Calendar size={20} className="text-[#7c3aed]" />
                               </div>
                               <div className="flex-1">
-                                <p className="text-sm font-bold text-gray-900">Offer your time</p>
-                                <p className="text-sm text-gray-500">Get booked for sessions, calls, or coaching</p>
+                                <p className="text-sm font-bold text-gray-900">เสนอเวลาของคุณ</p>
+                                <p className="text-sm text-gray-500">รับจองเซสชัน สายโทร หรือการโค้ช</p>
                               </div>
                               <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
                             </button>
@@ -1479,8 +1513,8 @@ export default function CreatePage() {
                                 <ShoppingBag size={20} className="text-[#7c3aed]" />
                               </div>
                               <div className="flex-1">
-                                <p className="text-sm font-bold text-gray-900">Sell digital products</p>
-                                <p className="text-sm text-gray-500">Share guides, music, templates, and more</p>
+                                <p className="text-sm font-bold text-gray-900">ขายผลิตภัณฑ์ดิจิทัล</p>
+                                <p className="text-sm text-gray-500">แชร์คู่มือ เพลง เทมเพลต และอื่น ๆ</p>
                               </div>
                               <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
                             </button>
@@ -1491,8 +1525,8 @@ export default function CreatePage() {
                                 <GraduationCap size={20} className="text-[#7c3aed]" />
                               </div>
                               <div className="flex-1">
-                                <p className="text-sm font-bold text-gray-900">Teach a course</p>
-                                <p className="text-sm text-gray-500">Turn your expertise into an online course</p>
+                                <p className="text-sm font-bold text-gray-900">สอนคอร์สเรียน</p>
+                                <p className="text-sm text-gray-500">เปลี่ยนความเชี่ยวชาญของคุณเป็นคอร์สออนไลน์</p>
                               </div>
                               <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
                             </button>
@@ -1504,8 +1538,8 @@ export default function CreatePage() {
                               <Sparkles size={18} />
                             </div>
                             <div>
-                              <p className="text-sm font-bold text-gray-900">Got ideas?</p>
-                              <p className="text-sm text-gray-500">We're listening! <button className="underline font-semibold text-gray-900">Share feedback</button></p>
+                              <p className="text-sm font-bold text-gray-900">มีไอเดียไหม?</p>
+                              <p className="text-sm text-gray-500">เรารับฟังอยู่! <button className="underline font-semibold text-gray-900">แชร์ความคิดเห็น</button></p>
                             </div>
                           </div>
                         </div>
@@ -1521,15 +1555,15 @@ export default function CreatePage() {
                       <div id="subscribers" className="grid grid-cols-3 gap-4 scroll-mt-24">
                         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-center">
                           <p className="text-3xl font-bold text-gray-900">{subscribers.length}</p>
-                          <p className="text-xs text-gray-400 mt-1">Subscribers</p>
+                          <p className="text-xs text-gray-400 mt-1">ผู้ติดตาม</p>
                         </div>
                         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-center">
                           <p className="text-3xl font-bold text-gray-900">{subscribers.filter(s => { const d = new Date(s.date); const now = new Date(); return (now.getTime() - d.getTime()) < 7 * 24 * 60 * 60 * 1000; }).length}</p>
-                          <p className="text-xs text-gray-400 mt-1">This week</p>
+                          <p className="text-xs text-gray-400 mt-1">สัปดาห์นี้</p>
                         </div>
                         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-center">
                           <p className="text-3xl font-bold text-gray-900">0%</p>
-                          <p className="text-xs text-gray-400 mt-1">Open rate</p>
+                          <p className="text-xs text-gray-400 mt-1">อัตราเปิดอ่าน</p>
                         </div>
                       </div>
 
@@ -1540,13 +1574,13 @@ export default function CreatePage() {
                             <Mail size={20} className="text-blue-500" />
                           </div>
                           <div>
-                            <h3 className="text-sm font-semibold text-gray-900">Email signup form</h3>
-                            <p className="text-[11px] text-gray-400">Collect emails from your visitors</p>
+                            <h3 className="text-sm font-semibold text-gray-900">แบบฟอร์มสมัครอีเมล</h3>
+                            <p className="text-[11px] text-gray-400">รวบรวมอีเมลจากผู้เข้าชมของคุณ</p>
                           </div>
                         </div>
                         <div className="space-y-3">
                           <div>
-                            <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Form title</label>
+                            <label className="block text-[11px] font-medium text-gray-500 mb-1.5">ชื่อแบบฟอร์ม</label>
                             <input
                               type="text"
                               value={emailFormTitle}
@@ -1555,10 +1589,18 @@ export default function CreatePage() {
                             />
                           </div>
                           <button
-                            onClick={() => { addLink(emailFormTitle); setActiveSection('links'); showToast('Email form added!'); }}
-                            className="w-full py-2.5 bg-blue-500 text-white text-sm font-semibold rounded-full hover:bg-blue-600 transition-colors"
+                            onClick={() => {
+                              const newVal = !showSubscribe;
+                              setShowSubscribe(newVal);
+                              showToast(newVal ? 'เปิดใช้งานแบบฟอร์มสมัครแล้ว!' : 'ปิดใช้งานแบบฟอร์มสมัครแล้ว');
+                            }}
+                            className={`w-full py-2.5 text-sm font-semibold rounded-full transition-colors ${
+                              showSubscribe
+                                ? 'bg-red-50 text-red-500 hover:bg-red-100 border border-red-200'
+                                : 'bg-blue-500 text-white hover:bg-blue-600'
+                            }`}
                           >
-                            Add to OpenBio
+                            {showSubscribe ? 'ปิดใช้งานบนหน้าสาธารณะ' : 'เปิดใช้งานบนหน้าสาธารณะ'}
                           </button>
                         </div>
                       </div>
@@ -1566,28 +1608,42 @@ export default function CreatePage() {
                       {/* Test Subscriber / Campaigns */}
                       <div id="campaigns" className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm scroll-mt-24">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-sm font-semibold text-gray-900">Lead management (B2B CRM)</h3>
-                          <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full border border-blue-100 uppercase tracking-tight">Project Focused</span>
+                          <h3 className="text-sm font-semibold text-gray-900">จัดการลูกค้าเป้าหมาย (B2B CRM)</h3>
+                          <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full border border-blue-100 uppercase tracking-tight">เน้นโปรเจกต์</span>
                         </div>
                         <div className="flex gap-2 mb-4">
                           <input
                             type="email"
                             value={newSubscriberEmail}
                             onChange={(e) => setNewSubscriberEmail(e.target.value)}
-                            placeholder="Enter business email..."
+                            placeholder="กรอกอีเมลธุรกิจ..."
                             className="flex-1 px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
                           />
                           <button
-                            onClick={() => {
-                              if (newSubscriberEmail) {
+                            onClick={async () => {
+                              if (!newSubscriberEmail) return;
+                              if (pbPageId) {
+                                try {
+                                  const record = await pb.collection('subscribers').create({
+                                    page: pbPageId,
+                                    email: newSubscriberEmail,
+                                    source: 'manual',
+                                  });
+                                  setSubscribers([{ email: newSubscriberEmail, date: record.created, id: record.id }, ...subscribers]);
+                                  setNewSubscriberEmail('');
+                                  showToast('เพิ่มลูกค้าเป้าหมายแล้ว!');
+                                } catch {
+                                  showToast('เพิ่มไม่สำเร็จ (อาจมีอยู่แล้ว)');
+                                }
+                              } else {
                                 setSubscribers([...subscribers, { email: newSubscriberEmail, date: new Date().toISOString() }]);
                                 setNewSubscriberEmail('');
-                                showToast('Lead added to Project List!');
+                                showToast('เพิ่มลูกค้าเป้าหมายแล้ว (เฉพาะในเครื่อง)');
                               }
                             }}
                             className="px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                           >
-                            Add Lead
+                            เพิ่มลูกค้าเป้าหมาย
                           </button>
                         </div>
                         {subscribers.length > 0 ? (
@@ -1600,12 +1656,15 @@ export default function CreatePage() {
                                   </div>
                                   <div>
                                     <span className="text-sm font-medium text-gray-700 block">{s.email}</span>
-                                    <span className="text-[10px] text-gray-400">Project: High-Rise Condo (Sample)</span>
+                                    <span className="text-[10px] text-gray-400">{s.id ? 'ผ่านแบบฟอร์มสมัคร' : 'เพิ่มด้วยตนเอง'}</span>
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <span className="text-[11px] text-gray-400">{new Date(s.date).toLocaleDateString()}</span>
-                                  <button onClick={() => setSubscribers(subscribers.filter((_, idx) => idx !== i))} className="text-gray-300 hover:text-red-400 transition-colors"><Trash2 size={14} /></button>
+                                  <button onClick={async () => {
+                                    if (s.id) { try { await pb.collection('subscribers').delete(s.id); } catch { /* ignore */ } }
+                                    setSubscribers(subscribers.filter((_, idx) => idx !== i));
+                                  }} className="text-gray-300 hover:text-red-400 transition-colors"><Trash2 size={14} /></button>
                                 </div>
                               </div>
                             ))}
@@ -1615,12 +1674,27 @@ export default function CreatePage() {
                             <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
                               <Users size={20} className="text-gray-300" />
                             </div>
-                            <p className="text-sm text-gray-400 font-medium">No active leads</p>
-                            <p className="text-[11px] text-gray-300 max-w-[200px] mx-auto">Start collecting leads from your project quotation forms</p>
+                            <p className="text-sm text-gray-400 font-medium">ยังไม่มีลูกค้าเป้าหมาย</p>
+                            <p className="text-[11px] text-gray-300 max-w-[200px] mx-auto">เริ่มรวบรวมลูกค้าเป้าหมายจากแบบฟอร์มขอใบเสนอราคา</p>
                           </div>
                         )}
-                        <button className="w-full mt-4 py-3 bg-gray-50 text-gray-500 text-xs font-semibold rounded-xl border border-gray-100 hover:bg-gray-100 hover:text-gray-700 transition-all flex items-center justify-center gap-2">
-                          <Download size={14} /> Export CSV for CRM (Salesforce/Hubspot)
+                        <button
+                          onClick={() => {
+                            if (subscribers.length === 0) { showToast('ไม่มีผู้ติดตามให้ส่งออก'); return; }
+                            const header = 'Email,Date\n';
+                            const rows = subscribers.map(s => `${s.email},${s.date}`).join('\n');
+                            const blob = new Blob([header + rows], { type: 'text/csv' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `subscribers-${new Date().toISOString().split('T')[0]}.csv`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                            showToast('ส่งออก CSV แล้ว!');
+                          }}
+                          className="w-full mt-4 py-3 bg-gray-50 text-gray-500 text-xs font-semibold rounded-xl border border-gray-100 hover:bg-gray-100 hover:text-gray-700 transition-all flex items-center justify-center gap-2"
+                        >
+                          <Download size={14} /> ส่งออก CSV สำหรับ CRM (Salesforce/Hubspot)
                         </button>
                       </div>
                     </div>
@@ -1656,11 +1730,11 @@ export default function CreatePage() {
                       <div className="grid grid-cols-4 gap-3">
                         <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
                           <p className="text-2xl font-bold text-gray-900">{totalClicks}</p>
-                          <p className="text-[11px] text-gray-400 mt-1">Total clicks</p>
+                          <p className="text-[11px] text-gray-400 mt-1">คลิกทั้งหมด</p>
                         </div>
                         <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
                           <p className="text-2xl font-bold text-gray-900">{totalViews}</p>
-                          <p className="text-[11px] text-gray-400 mt-1">Views</p>
+                          <p className="text-[11px] text-gray-400 mt-1">การเข้าชม</p>
                         </div>
                         <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
                           <p className="text-2xl font-bold text-gray-900">{ctr}%</p>
@@ -1668,16 +1742,16 @@ export default function CreatePage() {
                         </div>
                         <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
                           <p className="text-2xl font-bold text-gray-900">{links.filter(l => l.enabled).length}</p>
-                          <p className="text-[11px] text-gray-400 mt-1">Active links</p>
+                          <p className="text-[11px] text-gray-400 mt-1">ลิงก์ที่ใช้งาน</p>
                         </div>
                       </div>
 
                       {/* Mini Chart - Real data */}
                       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-1">Last 7 days</h3>
+                        <h3 className="text-sm font-semibold text-gray-900 mb-1">7 วันล่าสุด</h3>
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="flex items-center gap-1.5 text-[10px] text-gray-400"><div className="w-2.5 h-2.5 rounded-sm bg-blue-500" /> Views</div>
-                          <div className="flex items-center gap-1.5 text-[10px] text-gray-400"><div className="w-2.5 h-2.5 rounded-sm bg-purple-500" /> Clicks</div>
+                          <div className="flex items-center gap-1.5 text-[10px] text-gray-400"><div className="w-2.5 h-2.5 rounded-sm bg-blue-500" /> การเข้าชม</div>
+                          <div className="flex items-center gap-1.5 text-[10px] text-gray-400"><div className="w-2.5 h-2.5 rounded-sm bg-purple-500" /> คลิก</div>
                         </div>
                         <div className="flex items-end gap-1.5 h-32">
                           {last7.map((day, i) => (
@@ -1692,16 +1766,16 @@ export default function CreatePage() {
 
                       {/* Top Links - Real data */}
                       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-4">Top performing links</h3>
+                        <h3 className="text-sm font-semibold text-gray-900 mb-4">ลิงก์ที่มีประสิทธิภาพสูงสุด</h3>
                         {sortedLinks2.length === 0 ? (
-                          <p className="text-sm text-gray-400 text-center py-4">No clicks yet. Share your link to start tracking!</p>
+                          <p className="text-sm text-gray-400 text-center py-4">ยังไม่มีคลิก แชร์ลิงก์ของคุณเพื่อเริ่มติดตาม!</p>
                         ) : (
                           <div className="space-y-2">
                             {sortedLinks2.map(([id, data], i) => (
                               <div key={id} className="flex items-center gap-3 px-3 py-2.5 bg-gray-50 rounded-lg">
                                 <span className="text-xs font-bold text-gray-400 w-5">#{i + 1}</span>
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-gray-900 truncate">{data.title || 'Untitled'}</p>
+                                  <p className="text-sm font-medium text-gray-900 truncate">{data.title || 'ไม่มีชื่อ'}</p>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                   <BarChart3 size={12} className="text-purple-400" />
@@ -1719,7 +1793,7 @@ export default function CreatePage() {
                         className="w-full py-3 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
                       >
                         <BarChart3 size={16} />
-                        View full Dashboard
+                        ดูแดชบอร์ดทั้งหมด
                       </button>
                     </>
                     );
@@ -1734,15 +1808,15 @@ export default function CreatePage() {
                             <Calendar size={20} className="text-indigo-500" />
                           </div>
                           <div>
-                            <h3 className="text-sm font-semibold text-gray-900">Schedule a post</h3>
-                            <p className="text-[11px] text-gray-400">Plan and schedule your social media content</p>
+                            <h3 className="text-sm font-semibold text-gray-900">ตั้งเวลาโพสต์</h3>
+                            <p className="text-[11px] text-gray-400">วางแผนและตั้งเวลาคอนเทนต์โซเชียลมีเดียของคุณ</p>
                           </div>
                         </div>
                         <div className="space-y-3">
                           <textarea
                             value={newPostText}
                             onChange={(e) => setNewPostText(e.target.value)}
-                            placeholder="What do you want to share?"
+                            placeholder="คุณอยากแชร์อะไร?"
                             rows={3}
                             className="w-full px-3 py-2.5 text-sm text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 resize-none"
                           />
@@ -1765,18 +1839,18 @@ export default function CreatePage() {
                               if (newPostText && newPostDate) {
                                 setScheduledPosts([...scheduledPosts, { id: Date.now().toString(), text: newPostText, platform: newPostPlatform, date: newPostDate, time: newPostTime || '12:00' }]);
                                 setNewPostText(''); setNewPostDate(''); setNewPostTime('');
-                                showToast('Post scheduled!');
-                              } else { showToast('Add text and date'); }
+                                showToast('ตั้งเวลาโพสต์แล้ว!');
+                              } else { showToast('เพิ่มข้อความและวันที่'); }
                             }}
                             className="w-full py-2.5 bg-indigo-500 text-white text-sm font-semibold rounded-full hover:bg-indigo-600 transition-colors"
                           >
-                            Schedule post
+                            ตั้งเวลาโพสต์
                           </button>
                         </div>
                       </div>
                       {scheduledPosts.length > 0 && (
                         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                          <h3 className="text-sm font-semibold text-gray-900 mb-3">Scheduled posts</h3>
+                          <h3 className="text-sm font-semibold text-gray-900 mb-3">โพสต์ที่ตั้งเวลาแล้ว</h3>
                           <div className="space-y-2">
                             {scheduledPosts.map((post) => (
                               <div key={post.id} className="flex items-start gap-3 px-3 py-3 bg-gray-50 rounded-lg">
@@ -1788,7 +1862,7 @@ export default function CreatePage() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm text-gray-700 line-clamp-2">{post.text}</p>
-                                  <p className="text-[11px] text-gray-400 mt-1">{post.date} at {post.time}</p>
+                                  <p className="text-[11px] text-gray-400 mt-1">{post.date} เวลา {post.time}</p>
                                 </div>
                                 <button onClick={() => setScheduledPosts(scheduledPosts.filter(p => p.id !== post.id))} className="text-gray-300 hover:text-red-400 mt-0.5"><Trash2 size={14} /></button>
                               </div>
@@ -1808,12 +1882,12 @@ export default function CreatePage() {
                             <MessageSquare size={20} className="text-pink-500" />
                           </div>
                           <div>
-                            <h3 className="text-sm font-semibold text-gray-900">Instagram auto-reply</h3>
-                            <p className="text-[11px] text-gray-400">Auto-respond to DMs with your OpenBio</p>
+                            <h3 className="text-sm font-semibold text-gray-900">ตอบกลับอัตโนมัติ Instagram</h3>
+                            <p className="text-[11px] text-gray-400">ตอบกลับ DM อัตโนมัติด้วย OpenBio ของคุณ</p>
                           </div>
                         </div>
                         <button
-                          onClick={() => { setAutoReplyEnabled(!autoReplyEnabled); showToast(autoReplyEnabled ? 'Auto-reply disabled' : 'Auto-reply enabled!'); }}
+                          onClick={() => { setAutoReplyEnabled(!autoReplyEnabled); showToast(autoReplyEnabled ? 'ปิดใช้งานตอบกลับอัตโนมัติ' : 'เปิดใช้งานตอบกลับอัตโนมัติแล้ว!'); }}
                           className={`relative w-10 h-6 rounded-full transition-colors ${autoReplyEnabled ? 'bg-green-500' : 'bg-gray-200'}`}
                         >
                           <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${autoReplyEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
@@ -1821,7 +1895,7 @@ export default function CreatePage() {
                       </div>
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Auto-reply message</label>
+                          <label className="block text-[11px] font-medium text-gray-500 mb-1.5">ข้อความตอบกลับอัตโนมัติ</label>
                           <textarea
                             value={autoReplyMessage}
                             onChange={(e) => setAutoReplyMessage(e.target.value)}
@@ -1830,7 +1904,7 @@ export default function CreatePage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Trigger keywords (comma-separated)</label>
+                          <label className="block text-[11px] font-medium text-gray-500 mb-1.5">คำที่ทริกเกอร์ (คั่นด้วยจุลภาค)</label>
                           <input
                             type="text"
                             value={autoReplyKeywords}
@@ -1839,18 +1913,18 @@ export default function CreatePage() {
                           />
                         </div>
                         <div className="bg-pink-50 rounded-xl p-4">
-                          <p className="text-[11px] font-medium text-pink-700 mb-2">Preview</p>
+                          <p className="text-[11px] font-medium text-pink-700 mb-2">ตัวอย่าง</p>
                           <div className="bg-white rounded-lg p-3 shadow-sm">
-                            <p className="text-xs text-gray-400 mb-1">When someone sends: "{autoReplyKeywords.split(',')[0]?.trim()}"</p>
+                            <p className="text-xs text-gray-400 mb-1">เมื่อมีคนส่ง: "{autoReplyKeywords.split(',')[0]?.trim()}"</p>
                             <p className="text-sm text-gray-800">{autoReplyMessage}</p>
                             <p className="text-xs text-blue-500 mt-1">linkc.ee/{displayName || 'username'}</p>
                           </div>
                         </div>
                         <button
-                          onClick={() => showToast('Settings saved!')}
+                          onClick={() => showToast('บันทึกการตั้งค่าแล้ว!')}
                           className="w-full py-2.5 bg-pink-500 text-white text-sm font-semibold rounded-full hover:bg-pink-600 transition-colors"
                         >
-                          Save settings
+                          บันทึกการตั้งค่า
                         </button>
                       </div>
                     </div>
@@ -1865,8 +1939,8 @@ export default function CreatePage() {
                             <Scissors size={20} className="text-orange-500" />
                           </div>
                           <div>
-                            <h3 className="text-sm font-semibold text-gray-900">Link shortener</h3>
-                            <p className="text-[11px] text-gray-400">Create short branded links</p>
+                            <h3 className="text-sm font-semibold text-gray-900">ย่อลิงก์</h3>
+                            <p className="text-[11px] text-gray-400">สร้างลิงก์สั้นแบบมีแบรนด์</p>
                           </div>
                         </div>
                         <form onSubmit={(e) => { e.preventDefault(); handleShortenUrl(); }} className="flex gap-2">
@@ -1888,7 +1962,7 @@ export default function CreatePage() {
                           >
                             {shortenerLoading ? (
                               <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> กำลังย่อ...</>
-                            ) : 'Shorten'}
+                            ) : 'ย่อลิงก์'}
                           </button>
                         </form>
                       </div>
@@ -1995,27 +2069,27 @@ export default function CreatePage() {
                           <Lightbulb size={20} className="text-yellow-500" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-semibold text-gray-900">Post ideas</h3>
-                          <p className="text-[11px] text-gray-400">Content ideas to boost engagement</p>
+                          <h3 className="text-sm font-semibold text-gray-900">ไอเดียโพสต์</h3>
+                          <p className="text-[11px] text-gray-400">ไอเดียคอนเทนต์เพื่อเพิ่มการมีส่วนร่วม</p>
                         </div>
                       </div>
                       <div className="space-y-2">
                         {[
-                          { emoji: '🎯', title: 'Share your goals for this month', desc: 'Build connection with your audience by sharing personal milestones' },
-                          { emoji: '📸', title: 'Behind the scenes of your workspace', desc: 'People love seeing the real you and your creative process' },
-                          { emoji: '💡', title: 'Top 3 tips in your niche', desc: 'Position yourself as an expert with quick value-packed tips' },
-                          { emoji: '🎁', title: 'Run a giveaway for your followers', desc: 'Boost engagement and attract new followers with free value' },
-                          { emoji: '📊', title: 'Share a milestone or achievement', desc: 'Celebrate wins publicly to build social proof and community' },
-                          { emoji: '❓', title: 'Ask your audience a question', desc: 'Drive comments and learn about your audience preferences' },
-                          { emoji: '🔗', title: 'Promote your newest OpenBio link', desc: 'Drive traffic to your latest content or product' },
-                          { emoji: '📹', title: 'Create a quick tutorial or how-to', desc: 'Educational content gets saved and shared the most' },
+                          { emoji: '🎯', title: 'แชร์เป้าหมายของคุณสำหรับเดือนนี้', desc: 'สร้างความสัมพันธ์กับผู้ติดตามโดยการแชร์ก้าวสำคัญส่วนตัว' },
+                          { emoji: '📸', title: 'เบื้องหลังพื้นที่ทำงานของคุณ', desc: 'ผู้คนชอบเห็นตัวตนที่แท้จริงและกระบวนการสร้างสรรค์ของคุณ' },
+                          { emoji: '💡', title: 'เคล็ดลับ 3 อันดับแรกในสายงานของคุณ', desc: 'วางตำแหน่งตัวเองเป็นผู้เชี่ยวชาญด้วยเคล็ดลับที่มีคุณค่า' },
+                          { emoji: '🎁', title: 'จัดแจกของรางวัลให้ผู้ติดตาม', desc: 'เพิ่มการมีส่วนร่วมและดึงดูดผู้ติดตามใหม่ด้วยคุณค่าฟรี' },
+                          { emoji: '📊', title: 'แชร์เหตุการณ์สำคัญหรือความสำเร็จ', desc: 'เฉลิมฉลองความสำเร็จเพื่อสร้าง Social proof และชุมชน' },
+                          { emoji: '❓', title: 'ถามคำถามกับผู้ติดตามของคุณ', desc: 'กระตุ้นความคิดเห็นและเรียนรู้เกี่ยวกับความชอบของผู้ติดตาม' },
+                          { emoji: '🔗', title: 'โปรโมตลิงก์ OpenBio ใหม่ล่าสุด', desc: 'เพิ่มการเข้าชมไปยังคอนเทนต์หรือสินค้าล่าสุดของคุณ' },
+                          { emoji: '📹', title: 'สร้างสอนแบบสั้น ๆ หรือ How-to', desc: 'คอนเทนต์ให้ความรู้ถูกบันทึกและแชร์มากที่สุด' },
                         ].map((idea, i) => (
                           <button
                             key={i}
                             onClick={() => {
                               setNewPostText(idea.title);
                               setActiveSection('planner');
-                              showToast('Idea added to planner!');
+                              showToast('เพิ่มไอเดียไปยังตัวจัดตารางแล้ว!');
                             }}
                             className="w-full flex items-start gap-3 px-4 py-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors text-left group"
                           >
@@ -2046,13 +2120,13 @@ export default function CreatePage() {
                   className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/60 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.06)] mb-6 overflow-hidden"
                 >
                   <div className="px-6 py-4 border-b border-gray-100/80">
-                    <h2 className="text-lg font-bold text-gray-800">Profile</h2>
-                    <p className="text-xs text-gray-400 mt-0.5">Manage your public profile info</p>
+                    <h2 className="text-lg font-bold text-gray-800">โปรไฟล์</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">จัดการข้อมูลโปรไฟล์สาธารณะของคุณ</p>
                   </div>
 
                   {/* Avatar row */}
                   <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 hover:bg-gray-50/40 transition-colors">
-                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">Picture</span>
+                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">รูปภาพ</span>
                     <div className="flex items-center gap-3 flex-1">
                       <div className="relative group">
                         <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100 ring-2 ring-white shadow-sm">
@@ -2075,19 +2149,19 @@ export default function CreatePage() {
                         onClick={() => avatarInputRef.current?.click()}
                         className="text-xs font-medium text-pink-500 hover:text-pink-600 transition-colors"
                       >
-                        Upload new picture
+                        อัปโหลดรูปใหม่
                       </button>
                     </div>
                   </div>
 
                   {/* Name row */}
                   <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 hover:bg-gray-50/40 transition-colors">
-                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">Name</span>
+                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">ชื่อ</span>
                     <input
                       type="text"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder="Your name"
+                      placeholder="ชื่อของคุณ"
                       className="flex-1 text-sm font-medium text-gray-800 placeholder-gray-300 bg-transparent focus:outline-none"
                     />
                     <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
@@ -2095,12 +2169,12 @@ export default function CreatePage() {
 
                   {/* Bio row */}
                   <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 hover:bg-gray-50/40 transition-colors">
-                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">Bio</span>
+                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">ประวัติ</span>
                     <input
                       type="text"
                       value={bio}
                       onChange={(e) => setBio(e.target.value)}
-                      placeholder="Write something about you..."
+                      placeholder="เขียนอะไรบางอย่างเกี่ยวกับตัวคุณ..."
                       className="flex-1 text-sm text-gray-600 placeholder-gray-300 bg-transparent focus:outline-none"
                     />
                     <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
@@ -2109,7 +2183,7 @@ export default function CreatePage() {
                   {/* Product Images row */}
                   <div className="px-6 py-4 border-b border-gray-50">
                     <div className="flex items-start gap-4">
-                      <span className="text-sm text-gray-500 w-28 flex-shrink-0 mt-1">Products</span>
+                      <span className="text-sm text-gray-500 w-28 flex-shrink-0 mt-1">สินค้า</span>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-3">
                           <button
@@ -2117,10 +2191,10 @@ export default function CreatePage() {
                             className="px-3 py-1.5 text-xs font-medium text-pink-500 bg-pink-50 rounded-lg hover:bg-pink-100 transition-colors flex items-center gap-1.5"
                           >
                             <Plus size={12} />
-                            Add product photos
+                            เพิ่มรูปสินค้า
                           </button>
                           {productImages.length > 0 && (
-                            <span className="text-xs text-gray-400">{productImages.length} photo{productImages.length > 1 ? 's' : ''}</span>
+                            <span className="text-xs text-gray-400">{productImages.length} รูป</span>
                           )}
                         </div>
 
@@ -2150,14 +2224,14 @@ export default function CreatePage() {
                       disabled={profileSaving}
                       className="px-4 py-1.5 text-xs font-medium text-white bg-[#7c3aed] rounded-lg hover:bg-[#6d28d9] transition-colors disabled:opacity-50"
                     >
-                      {profileSaving ? 'Saving...' : 'Save Profile'}
+                      {profileSaving ? 'กำลังบันทึก...' : 'บันทึกโปรไฟล์'}
                     </button>
                   </div>
 
                   {/* Social row */}
                   <div className="px-6 py-4">
                     <div className="flex items-center gap-4 mb-3">
-                      <span className="text-sm text-gray-500 w-28 flex-shrink-0">Socials</span>
+                      <span className="text-sm text-gray-500 w-28 flex-shrink-0">โซเชียล</span>
                       <div className="flex items-center gap-2 flex-1 flex-wrap">
                         {socialPlatforms.slice(0, 5).map((p) => {
                           const isActive = activeSocials.includes(p.id);
@@ -2223,7 +2297,7 @@ export default function CreatePage() {
                           exit={{ opacity: 0, height: 0 }}
                           className="ml-32 pt-2 pb-1 overflow-hidden"
                         >
-                          <p className="text-[10px] font-medium text-gray-400 mb-2 uppercase tracking-wider">All platforms</p>
+                          <p className="text-[10px] font-medium text-gray-400 mb-2 uppercase tracking-wider">แพลตฟอร์มทั้งหมด</p>
                           <div className="flex flex-wrap gap-1.5">
                             {socialPlatforms.map((p) => {
                               const isActive = activeSocials.includes(p.id);
@@ -2257,19 +2331,19 @@ export default function CreatePage() {
                 >
                   <div className="px-4 py-2.5 border-b border-gray-100/80 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <h2 className="text-sm font-bold text-gray-800">My Links</h2>
-                      <span className="text-[10px] text-gray-400">{visibleLinks.length} added</span>
+                      <h2 className="text-sm font-bold text-gray-800">ลิงก์ของฉัน</h2>
+                      <span className="text-[10px] text-gray-400">เพิ่มแล้ว {visibleLinks.length} รายการ</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => {
                           const id = Date.now().toString();
-                          setLinks([...links, { id, title: 'Collection', url: '', enabled: true, clicks: 0 }]);
-                          showToast('Collection added');
+                          setLinks([...links, { id, title: 'คอลเลกชัน', url: '', enabled: true, clicks: 0 }]);
+                          showToast('เพิ่มคอลเลกชันแล้ว');
                         }}
                         className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium text-gray-500 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
                       >
-                        <FolderOpen size={10} /> Collection
+                        <FolderOpen size={10} /> คอลเลกชัน
                       </button>
                     </div>
                   </div>
@@ -2282,7 +2356,7 @@ export default function CreatePage() {
                     <div className="w-6 h-6 rounded-md bg-pink-50 flex items-center justify-center group-hover:bg-pink-100 transition-colors">
                       <Plus size={13} className="text-pink-500" />
                     </div>
-                    <span className="text-xs font-semibold">Add new link</span>
+                    <span className="text-xs font-semibold">เพิ่มลิงก์ใหม่</span>
                   </button>
 
                   {/* Link list */}
@@ -2291,8 +2365,8 @@ export default function CreatePage() {
                       <div className="w-10 h-10 mx-auto mb-2.5 rounded-xl bg-gray-50 flex items-center justify-center">
                         <Link2 size={16} className="text-gray-300" />
                       </div>
-                      <h3 className="text-xs font-bold text-gray-700 mb-0.5">No links yet</h3>
-                      <p className="text-[11px] text-gray-400 max-w-[200px] mx-auto">Add your first link to start building your OpenBio page</p>
+                      <h3 className="text-xs font-bold text-gray-700 mb-0.5">ยังไม่มีลิงก์</h3>
+                      <p className="text-[11px] text-gray-400 max-w-[200px] mx-auto">เพิ่มลิงก์แรกเพื่อเริ่มสร้างหน้า OpenBio ของคุณ</p>
                     </div>
                   ) : (
                     <div>
@@ -2326,11 +2400,11 @@ export default function CreatePage() {
                                     type="text"
                                     value={link.title}
                                     onChange={(e) => updateLink(link.id, 'title', e.target.value)}
-                                    placeholder="Title"
+                                    placeholder="ชื่อลิงก์"
                                     className="flex-1 text-sm font-medium text-gray-800 placeholder-gray-300 bg-transparent focus:outline-none"
                                   />
                                   {!link.enabled && (
-                                    <span className="px-2 py-0.5 text-[10px] font-medium text-gray-400 bg-gray-100 rounded-full">Hidden</span>
+                                    <span className="px-2 py-0.5 text-[10px] font-medium text-gray-400 bg-gray-100 rounded-full">ซ่อนอยู่</span>
                                   )}
                                 </div>
                                 <input
@@ -2348,21 +2422,15 @@ export default function CreatePage() {
                                 >
                                   <Pencil size={13} />
                                 </button>
-                                <button
-                                  onClick={() => { setImageTargetLinkId(link.id); linkImageInputRef.current?.click(); }}
-                                  className="p-1.5 rounded-lg text-gray-300 hover:text-pink-500 transition-colors"
-                                >
-                                  <Image size={13} />
-                                </button>
                                 <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 border border-gray-100">
                                   <BarChart3 size={12} className="text-gray-400" />
                                   <span className="text-xs font-medium text-gray-600">{link.clicks || 0}</span>
-                                  <span className="text-[10px] text-gray-400">clicks</span>
+                                  <span className="text-[10px] text-gray-400">คลิก</span>
                                 </div>
                                 <button
                                   onClick={() => toggleLink(link.id)}
                                   className={`relative w-11 h-6 rounded-full transition-all duration-300 ease-in-out ${link.enabled ? 'bg-gradient-to-r from-pink-400 to-pink-500 shadow-md shadow-pink-200' : 'bg-gray-200'}`}
-                                  title={link.enabled ? 'Hide link from preview' : 'Show link in preview'}
+                                  title={link.enabled ? 'ซ่อนลิงก์จากการแสดงตัวอย่าง' : 'แสดงลิงก์ในการแสดงตัวอย่าง'}
                                 >
                                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-300 ease-out ${link.enabled ? 'translate-x-5' : 'translate-x-1'}`} />
                                 </button>
@@ -2385,7 +2453,7 @@ export default function CreatePage() {
                                 >
                                   <div className="ml-9 pl-4 border-l-2 border-pink-100 space-y-3 pt-1">
                                     <div>
-                                      <label className="block text-[11px] text-gray-400 mb-1">Title</label>
+                                      <label className="block text-[11px] text-gray-400 mb-1">ชื่อลิงก์</label>
                                       <input
                                         type="text"
                                         value={link.title}
@@ -2403,7 +2471,7 @@ export default function CreatePage() {
                                       />
                                     </div>
                                     <div>
-                                      <label className="block text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-1.5">Button Color</label>
+                                      <label className="block text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-1.5">สีปุ่ม</label>
                                       <div className="grid grid-cols-10 gap-1.5 w-fit">
                                         {linkColors.map((c) => (
                                           <button
@@ -2442,7 +2510,7 @@ export default function CreatePage() {
                           }`}
                       >
                         <span className="flex items-center gap-1.5">
-                          {tab === 'add' ? <><Plus size={12} /> Add links</> : <><Settings size={12} /> Appearance</>}
+                          {tab === 'add' ? <><Plus size={12} /> เพิ่มลิงก์</> : <><Settings size={12} /> รูปลักษณ์</>}
                         </span>
                       </button>
                     ))}
@@ -2458,7 +2526,7 @@ export default function CreatePage() {
                       className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/60 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.06)] overflow-hidden relative"
                     >
                       <div className="px-5 py-3 flex items-center justify-between">
-                        <h2 className="text-sm font-bold text-gray-800">Themes</h2>
+                        <h2 className="text-sm font-bold text-gray-800">ธีม</h2>
                       </div>
 
                       {/* Dropdown trigger */}
@@ -2478,7 +2546,7 @@ export default function CreatePage() {
                           </div>
                           <div className="flex-1 text-left">
                             <span className="text-sm font-medium text-gray-700">
-                              {isCustom ? 'Custom' : (themes.find(t => t.id === selectedTheme)?.label || 'Minimal')}
+                              {isCustom ? 'กำหนดเอง' : (themes.find(t => t.id === selectedTheme)?.label || 'Minimal')}
                             </span>
                           </div>
                           <ChevronDown size={16} className={`text-gray-400 transition-transform ${themeDropdownOpen ? 'rotate-180' : ''}`} />
@@ -2515,7 +2583,7 @@ export default function CreatePage() {
                                   <div className="w-6 h-0.5 rounded-full bg-white/25 mx-auto" />
                                 </div>
                               </div>
-                              <span className={`block text-[9px] mt-1 text-center truncate ${isCustom ? 'font-semibold text-gray-700' : 'text-gray-400'}`}>Custom</span>
+                              <span className={`block text-[9px] mt-1 text-center truncate ${isCustom ? 'font-semibold text-gray-700' : 'text-gray-400'}`}>กำหนดเอง</span>
                             </button>
                           </div>
                         </div>
@@ -2533,12 +2601,12 @@ export default function CreatePage() {
                             <div className="px-5 pb-4 pt-1">
                               <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2">
-                                  <label className="text-[11px] font-medium text-gray-500">Primary</label>
+                                  <label className="text-[11px] font-medium text-gray-500">สีหลัก</label>
                                   <input type="color" value={customBgColor} onChange={(e) => setCustomBgColor(e.target.value)} className="w-7 h-7 rounded-lg cursor-pointer border border-gray-200 p-0.5" />
                                   <span className="text-[10px] text-gray-400 font-mono">{customBgColor}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <label className="text-[11px] font-medium text-gray-500">Secondary</label>
+                                  <label className="text-[11px] font-medium text-gray-500">สีรอง</label>
                                   <input type="color" value={customBgSecondary} onChange={(e) => setCustomBgSecondary(e.target.value)} className="w-7 h-7 rounded-lg cursor-pointer border border-gray-200 p-0.5" />
                                   <span className="text-[10px] text-gray-400 font-mono">{customBgSecondary}</span>
                                 </div>
@@ -2564,7 +2632,7 @@ export default function CreatePage() {
                               <div className="w-6 h-6 rounded-md bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center flex-shrink-0">
                                 <Grid3x3 size={12} className="text-rose-500" />
                               </div>
-                              Pattern
+                              ลายพื้นหลัง
                             </h2>
                             <div className="flex items-center gap-1">
                               <button
@@ -2579,7 +2647,7 @@ export default function CreatePage() {
                               <button
                                 onClick={() => setPatternAnimDropdownOpen(!patternAnimDropdownOpen)}
                                 className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-medium transition-all ${selectedPatternAnim !== 'none' ? 'bg-violet-100 text-violet-600' : 'bg-gray-100 text-gray-400'}`}
-                                title={selectedPatternAnim !== 'none' ? `Animation: ${patternAnimations.find(a => a.id === selectedPatternAnim)?.label}` : 'Animation ปิดอยู่'}
+                                title={selectedPatternAnim !== 'none' ? `แอนิเมชัน: ${patternAnimations.find(a => a.id === selectedPatternAnim)?.label}` : 'แอนิเมชันปิดอยู่'}
                               >
                                 <Sparkles size={10} />
                                 Anim
@@ -2624,12 +2692,12 @@ export default function CreatePage() {
                               <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center flex-shrink-0">
                                 <Type size={12} className="text-blue-500" />
                               </div>
-                              Button Style
+                              รูปแบบปุ่ม
                             </h2>
                             <button
                               onClick={() => setButtonAnimation(!buttonAnimation)}
                               className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-medium transition-all ${buttonAnimation ? 'bg-violet-100 text-violet-600' : 'bg-gray-100 text-gray-400'}`}
-                              title={buttonAnimation ? 'Animation เปิดอยู่' : 'Animation ปิดอยู่'}
+                              title={buttonAnimation ? 'แอนิเมชันเปิดอยู่' : 'แอนิเมชันปิดอยู่'}
                             >
                               <Sparkles size={10} />
                               Anim
@@ -2704,7 +2772,7 @@ export default function CreatePage() {
                             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center flex-shrink-0">
                               <Type size={12} className="text-amber-600" />
                             </div>
-                            Font
+                            ฟอนต์
                           </h2>
                           <div className="flex gap-1 mb-2 overflow-x-auto pb-1">
                             {['all', 'Sans-serif', 'Serif', 'Mono', 'Handwriting'].map((cat) => (
@@ -2713,7 +2781,7 @@ export default function CreatePage() {
                                 onClick={() => setFontCategory(cat)}
                                 className={`px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap transition-all ${fontCategory === cat ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
                               >
-                                {cat === 'all' ? 'All' : cat}
+                                {cat === 'all' ? 'ทั้งหมด' : cat}
                               </button>
                             ))}
                           </div>
@@ -2742,7 +2810,7 @@ export default function CreatePage() {
                               <div className="w-6 h-6 rounded-md bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center flex-shrink-0">
                                 <Palette size={12} className="text-green-600" />
                               </div>
-                              Text Color
+                              สีตัวอักษร
                             </h2>
                             <div className="flex items-center gap-1.5">
                               <input
@@ -2760,8 +2828,8 @@ export default function CreatePage() {
                             </div>
                           </div>
                           <div className="rounded-xl bg-gray-50 p-2.5 mb-3 text-center">
-                            <span className="text-base font-semibold" style={{ color: customTextColor || '#1f2937' }}>Preview Text</span>
-                            <p className="text-[10px] mt-0.5" style={{ color: customTextColor || '#6b7280', opacity: 0.6 }}>Subtitle looks like this</p>
+                            <span className="text-base font-semibold" style={{ color: customTextColor || '#1f2937' }}>ตัวอย่างข้อความ</span>
+                            <p className="text-[10px] mt-0.5" style={{ color: customTextColor || '#6b7280', opacity: 0.6 }}>คำบรรยายจะแสดงแบบนี้</p>
                           </div>
                           {textColorGroups.map((group) => (
                             <div key={group.label} className="mb-2.5 last:mb-0">
@@ -2791,15 +2859,15 @@ export default function CreatePage() {
                 ) : (
                   /* Add links tab - suggestion cards */
                   <div className="space-y-3 pb-10">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1">Quick add</p>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1">เพิ่มด่วน</p>
                     <div className="grid grid-cols-3 gap-2.5">
                       {[
-                        { icon: ExternalLink, label: 'Link', desc: 'Add a URL', gradient: 'from-violet-600 to-indigo-500' },
-                        { icon: Image, label: 'Header', desc: 'Text header', gradient: 'from-gray-500 to-gray-600' },
-                        { icon: Music2, label: 'Music', desc: 'Embed song', gradient: 'from-[#1DB954] to-[#1ed760]' },
-                        { icon: Youtube, label: 'Video', desc: 'Embed video', gradient: 'from-[#FF0000] to-[#CC0000]' },
-                        { icon: DollarSign, label: 'Store', desc: 'Sell products', gradient: 'from-[#8b5cf6] to-[#a78bfa]' },
-                        { icon: Calendar, label: 'Event', desc: 'Promote events', gradient: 'from-[#f59e0b] to-[#fbbf24]' },
+                        { icon: ExternalLink, label: 'Link', desc: 'เพิ่ม URL', gradient: 'from-violet-600 to-indigo-500' },
+                        { icon: Image, label: 'Header', desc: 'หัวข้อข้อความ', gradient: 'from-gray-500 to-gray-600' },
+                        { icon: Music2, label: 'Music', desc: 'ฝังเพลง', gradient: 'from-[#1DB954] to-[#1ed760]' },
+                        { icon: Youtube, label: 'Video', desc: 'ฝังวิดีโอ', gradient: 'from-[#FF0000] to-[#CC0000]' },
+                        { icon: DollarSign, label: 'Store', desc: 'ขายสินค้า', gradient: 'from-[#8b5cf6] to-[#a78bfa]' },
+                        { icon: Calendar, label: 'Event', desc: 'โปรโมตกิจกรรม', gradient: 'from-[#f59e0b] to-[#fbbf24]' },
                       ].map((item) => (
                         <motion.button
                           key={item.label}
@@ -2823,7 +2891,7 @@ export default function CreatePage() {
                       onClick={() => setAddModalOpen(true)}
                       className="w-full py-3 text-xs font-medium text-pink-500 hover:text-pink-600 bg-pink-50/50 hover:bg-pink-50 rounded-xl border border-pink-100/50 transition-all flex items-center justify-center gap-2"
                     >
-                      <Sparkles size={13} /> Browse all integrations
+                      <Sparkles size={13} /> ดูการเชื่อมต่อทั้งหมด
                       <ChevronRight size={13} />
                     </button>
                   </div>
@@ -2982,7 +3050,7 @@ export default function CreatePage() {
                         {links.filter((l) => l.title && l.enabled).length === 0 && (
                           <div className={`text-center py-6 ${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-15`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
                             <ExternalLink size={20} className="mx-auto mb-1.5" />
-                            <p className="text-[10px]">Add links above</p>
+                            <p className="text-[10px]">เพิ่มลิงก์ด้านบน</p>
                           </div>
                         )}
                         {links
@@ -3040,7 +3108,7 @@ export default function CreatePage() {
             >
               {/* Modal Header */}
               <div className="flex items-center justify-between px-6 pt-5 pb-4">
-                <h2 className="text-lg font-bold text-gray-900">Add</h2>
+                <h2 className="text-lg font-bold text-gray-900">เพิ่ม</h2>
                 <button
                   onClick={() => { setAddModalOpen(false); setAddModalSearch(''); }}
                   className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
@@ -3057,7 +3125,7 @@ export default function CreatePage() {
                     type="text"
                     value={addModalSearch}
                     onChange={(e) => setAddModalSearch(e.target.value)}
-                    placeholder="Paste or search a link"
+                    placeholder="วางหรือค้นหาลิงก์"
                     className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
                     autoFocus
                   />
@@ -3087,7 +3155,7 @@ export default function CreatePage() {
                       className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${showAllCategories ? 'bg-gray-100 text-gray-900 font-medium' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
                     >
                       <Grid3x3 size={16} />
-                      View all
+                      ดูทั้งหมด
                     </button>
                   </div>
                 </div>
@@ -3116,7 +3184,7 @@ export default function CreatePage() {
                         setLinks([...links, { id: Date.now().toString(), title: addModalSearch.replace(/^https?:\/\//, '').split('/')[0], url, enabled: true, clicks: 0 }]);
                         setAddModalOpen(false);
                         setAddModalSearch('');
-                        showToast('Link added!');
+                        showToast('เพิ่มลิงก์แล้ว!');
                       }}
                       className="w-full flex items-center gap-3 px-4 py-3 mb-4 bg-purple-50 rounded-xl hover:bg-purple-100 border border-purple-100 transition-colors text-left"
                     >
@@ -3124,7 +3192,7 @@ export default function CreatePage() {
                         <Link2 size={18} className="text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-[#6d28d9]">Add as link</p>
+                        <p className="text-sm font-medium text-[#6d28d9]">เพิ่มเป็นลิงก์</p>
                         <p className="text-[11px] text-[#7c3aed] truncate">{addModalSearch}</p>
                       </div>
                       <Plus size={18} className="text-purple-400" />
@@ -3133,7 +3201,7 @@ export default function CreatePage() {
 
                   {/* Suggested Label */}
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                    {showAllCategories ? 'All items' : addModalCategory === 'suggested' ? 'Suggested' : addCategories.find(c => c.id === addModalCategory)?.label}
+                    {showAllCategories ? 'รายการทั้งหมด' : addModalCategory === 'suggested' ? 'แนะนำ' : addCategories.find(c => c.id === addModalCategory)?.label}
                   </p>
 
                   {/* Suggested Items */}
@@ -3169,7 +3237,7 @@ export default function CreatePage() {
                     }).length === 0 && (
                         <div className="text-center py-6">
                           <Search size={24} className="text-gray-300 mx-auto mb-2" />
-                          <p className="text-sm text-gray-400">No items found</p>
+                          <p className="text-sm text-gray-400">ไม่พบรายการ</p>
                         </div>
                       )}
                   </div>
