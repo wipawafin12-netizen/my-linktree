@@ -4,7 +4,7 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 ENV VITE_PB_URL=https://web-linkcenter.chhindustry.com
-ENV VITE_SITE_URL=https://linktree.chhindustry.com
+ENV VITE_SITE_URL=https://linkcenter.chhindustry.com
 RUN npm run build
 
 FROM nginx:alpine

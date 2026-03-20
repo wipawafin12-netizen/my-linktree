@@ -2180,42 +2180,6 @@ export default function CreatePage() {
                     <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
                   </div>
 
-                  {/* Product Images row */}
-                  <div className="px-6 py-4 border-b border-gray-50">
-                    <div className="flex items-start gap-4">
-                      <span className="text-sm text-gray-500 w-28 flex-shrink-0 mt-1">สินค้า</span>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-3">
-                          <button
-                            onClick={() => productImagesInputRef.current?.click()}
-                            className="px-3 py-1.5 text-xs font-medium text-pink-500 bg-pink-50 rounded-lg hover:bg-pink-100 transition-colors flex items-center gap-1.5"
-                          >
-                            <Plus size={12} />
-                            เพิ่มรูปสินค้า
-                          </button>
-                          {productImages.length > 0 && (
-                            <span className="text-xs text-gray-400">{productImages.length} รูป</span>
-                          )}
-                        </div>
-
-                        {productImages.length > 0 && (
-                          <div className="grid grid-cols-3 gap-2">
-                            {productImages.map((img, idx) => (
-                              <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100">
-                                <img src={img} alt={`Product ${idx + 1}`} className="w-full h-full object-cover" />
-                                <button
-                                  onClick={() => removeProductImage(idx)}
-                                  className="absolute top-1 right-1 w-5 h-5 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  <X size={12} className="text-white" />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Save Profile button */}
                   <div className="px-6 py-3 border-b border-gray-50">
