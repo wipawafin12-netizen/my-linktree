@@ -467,7 +467,7 @@ export default function PreviewPage() {
       <div className="pt-14 pb-4 flex flex-col items-center px-6 w-full max-w-md relative z-[1]">
         <div className="w-20 h-20 rounded-full bg-gray-300/20 flex items-center justify-center mb-3 overflow-hidden">
           {avatar ? (
-            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
           ) : (
             <User size={28} className={`${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-25`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined} />
           )}

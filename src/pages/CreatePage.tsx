@@ -1277,27 +1277,30 @@ export default function CreatePage() {
       setCompressedAvatar(avatar);
       return;
     }
-    // base64 avatar — compress with center-crop (like object-cover)
+    // base64 avatar — compress with crop baked in
     const img = document.createElement('img');
     img.onload = () => {
       try {
         const canvas = document.createElement('canvas');
-        const size = 300;
-        canvas.width = size;
-        canvas.height = size;
+        const outSize = 300;
+        canvas.width = outSize;
+        canvas.height = outSize;
         const ctx = canvas.getContext('2d');
         if (ctx) {
-          // Center-crop to square (preserves aspect ratio)
           const min = Math.min(img.width, img.height);
-          const sx = (img.width - min) / 2;
-          const sy = (img.height - min) / 2;
-          ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+          const visSx = (img.width - min) / 2;
+          const visSy = (img.height - min) / 2;
+          const cropW = min / avatarScale;
+          const cropH = min / avatarScale;
+          const cropX = visSx + (min - cropW) / 2 - (avatarX / 100) * min / avatarScale;
+          const cropY = visSy + (min - cropH) / 2 - (avatarY / 100) * min / avatarScale;
+          ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, outSize, outSize);
           setCompressedAvatar(canvas.toDataURL('image/jpeg', 0.7));
         }
       } catch { setCompressedAvatar(''); }
     };
     img.src = avatar;
-  }, [avatar]);
+  }, [avatar, avatarScale, avatarX, avatarY]);
 
   // Save preview data to localStorage + debounced save to PocketBase
   useEffect(() => {
