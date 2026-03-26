@@ -13,7 +13,7 @@ import {
   Store, Rss, AtSign, Send, Radio, Tv, Newspaper,
   BookOpen, Coffee, Gift, Megaphone, Mic, Clapperboard, PenTool,
   Brush, Wallet, Bitcoin, Code2, Terminal, Rocket, Flame,
-  Shirt, Crown, Anchor, Zap, Star, Music, Video, Sun,
+  Shirt, Crown, Anchor, Zap, Star, Music, Video, Sun, RotateCcw,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -438,6 +438,8 @@ export default function CreatePage() {
   const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
   const [showSocialPicker, setShowSocialPicker] = useState(false);
   const [toast, setToast] = useState('');
+  const [showAvatarCrop, setShowAvatarCrop] = useState(false);
+  const [prevAvatarCrop, setPrevAvatarCrop] = useState({ scale: 1, x: 0, y: 0, avatar: '' });
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const avatarCropRef = useRef<HTMLDivElement>(null);
   const avatarDragRef = useRef({ dragging: false, startX: 0, startY: 0, startAvatarX: 0, startAvatarY: 0 });
@@ -1012,13 +1014,18 @@ export default function CreatePage() {
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Save previous state for cancel
+      setPrevAvatarCrop({ scale: avatarScale, x: avatarX, y: avatarY, avatar });
       // Reset crop when uploading new image
       setAvatarScale(1);
       setAvatarX(0);
       setAvatarY(0);
-      // Instant local preview
+      // Instant local preview + open crop modal
       const reader = new FileReader();
-      reader.onload = (ev) => setAvatar(ev.target?.result as string);
+      reader.onload = (ev) => {
+        setAvatar(ev.target?.result as string);
+        setShowAvatarCrop(true);
+      };
       reader.readAsDataURL(file);
       // Upload to PocketBase in background
       if (pbPageId) {
@@ -2294,58 +2301,41 @@ export default function CreatePage() {
                     <p className="text-xs text-gray-400 mt-0.5">จัดการข้อมูลโปรไฟล์สาธารณะของคุณ</p>
                   </div>
 
-                  {/* Avatar section */}
-                  <div className="px-6 py-4 border-b border-gray-50">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm text-gray-500">รูปภาพ</span>
-                      <button
-                        onClick={() => avatarInputRef.current?.click()}
-                        className="text-xs font-medium text-pink-500 hover:text-pink-600 transition-colors"
-                      >
-                        {avatar ? 'เปลี่ยนรูป' : 'อัปโหลดรูป'}
-                      </button>
-                    </div>
-                    <div className="flex flex-col items-center gap-2">
-                      <div
-                        ref={avatarCropRef}
-                        className={`w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100 ring-2 ring-white shadow-lg select-none ${avatar ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}`}
-                        onMouseDown={avatar ? handleAvatarDragStart : undefined}
-                        onTouchStart={avatar ? handleAvatarDragStart : undefined}
-                        onClick={!avatar ? () => avatarInputRef.current?.click() : undefined}
-                      >
-                        {avatar ? (
-                          <img src={avatar} alt="Avatar" className="w-full h-full object-cover pointer-events-none" draggable={false}
-                            style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <User size={32} className="text-pink-300" />
-                          </div>
+                  {/* Avatar row */}
+                  <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 hover:bg-gray-50/40 transition-colors">
+                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">รูปภาพ</span>
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="relative group">
+                        <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100 ring-2 ring-white shadow-sm">
+                          {avatar ? (
+                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover"
+                              style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <User size={20} className="text-pink-300" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <button
+                          onClick={() => avatarInputRef.current?.click()}
+                          className="text-xs font-medium text-pink-500 hover:text-pink-600 transition-colors text-left"
+                        >
+                          {avatar ? 'เปลี่ยนรูป' : 'อัปโหลดรูป'}
+                        </button>
+                        {avatar && (
+                          <button
+                            onClick={() => {
+                              setPrevAvatarCrop({ scale: avatarScale, x: avatarX, y: avatarY, avatar });
+                              setShowAvatarCrop(true);
+                            }}
+                            className="text-xs font-medium text-violet-500 hover:text-violet-600 transition-colors text-left"
+                          >
+                            ครอบตัด
+                          </button>
                         )}
                       </div>
-                      {avatar && (
-                        <>
-                          <div className="flex items-center gap-2 w-full max-w-[200px]">
-                            <Search size={12} className="text-gray-300 flex-shrink-0" />
-                            <input
-                              type="range"
-                              min="1"
-                              max="3"
-                              step="0.05"
-                              value={avatarScale}
-                              onChange={(e) => {
-                                const s = parseFloat(e.target.value);
-                                setAvatarScale(s);
-                                const c = clampPan(s, avatarX, avatarY);
-                                setAvatarX(c.x);
-                                setAvatarY(c.y);
-                              }}
-                              className="flex-1 h-1 accent-pink-400 cursor-pointer"
-                            />
-                            <Search size={16} className="text-gray-400 flex-shrink-0" />
-                          </div>
-                          <p className="text-[10px] text-gray-400">ลากเพื่อเลื่อน • ใช้แถบเลื่อนเพื่อซูม</p>
-                        </>
-                      )}
                     </div>
                   </div>
 
@@ -3758,6 +3748,92 @@ export default function CreatePage() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Avatar Crop Modal */}
+      <AnimatePresence>
+        {showAvatarCrop && avatar && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] bg-white flex flex-col"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-center px-4 py-3 border-b border-gray-100">
+              <h2 className="text-base font-bold text-gray-800">ครอบตัด</h2>
+            </div>
+
+            {/* Crop area */}
+            <div className="flex-1 bg-gray-900 flex items-center justify-center relative overflow-hidden">
+              <div
+                ref={avatarCropRef}
+                className="relative select-none cursor-grab active:cursor-grabbing"
+                style={{ width: 'min(80vw, 80vh)', height: 'min(80vw, 80vh)' }}
+                onMouseDown={handleAvatarDragStart}
+                onTouchStart={handleAvatarDragStart}
+              >
+                {/* Image */}
+                <div className="w-full h-full rounded-full overflow-hidden">
+                  <img src={avatar} alt="Crop" className="w-full h-full object-cover pointer-events-none" draggable={false}
+                    style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+                </div>
+              </div>
+              {/* Dark overlay outside circle */}
+              <div className="absolute inset-0 pointer-events-none" style={{
+                background: `radial-gradient(circle at center, transparent min(39vw, 39vh), rgba(0,0,0,0.6) min(40vw, 40vh))`
+              }} />
+              {/* Reset button */}
+              <button
+                onClick={() => { setAvatarScale(1); setAvatarX(0); setAvatarY(0); }}
+                className="absolute bottom-4 right-4 w-10 h-10 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+              >
+                <RotateCcw size={18} />
+              </button>
+            </div>
+
+            {/* Zoom slider */}
+            <div className="bg-gray-900 px-8 pb-2">
+              <div className="flex items-center gap-3 max-w-sm mx-auto">
+                <Search size={14} className="text-gray-400 flex-shrink-0" />
+                <input
+                  type="range" min="1" max="3" step="0.05" value={avatarScale}
+                  onChange={(e) => {
+                    const s = parseFloat(e.target.value);
+                    setAvatarScale(s);
+                    const c = clampPan(s, avatarX, avatarY);
+                    setAvatarX(c.x); setAvatarY(c.y);
+                  }}
+                  className="flex-1 h-1 accent-white cursor-pointer"
+                />
+                <Search size={20} className="text-gray-300 flex-shrink-0" />
+              </div>
+            </div>
+
+            {/* Bottom buttons */}
+            <div className="flex gap-3 px-4 py-4 bg-white border-t border-gray-100">
+              <button
+                onClick={() => {
+                  // Revert to previous
+                  setAvatarScale(prevAvatarCrop.scale);
+                  setAvatarX(prevAvatarCrop.x);
+                  setAvatarY(prevAvatarCrop.y);
+                  if (prevAvatarCrop.avatar) setAvatar(prevAvatarCrop.avatar);
+                  setShowAvatarCrop(false);
+                }}
+                className="flex-1 py-3.5 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm hover:bg-gray-200 transition-colors"
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={() => setShowAvatarCrop(false)}
+                className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold text-sm hover:from-pink-600 hover:to-rose-600 transition-colors shadow-lg shadow-pink-500/25"
+              >
+                บันทึก
+              </button>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
