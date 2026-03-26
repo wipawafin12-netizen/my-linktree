@@ -441,6 +441,7 @@ export default function CreatePage() {
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const avatarCropRef = useRef<HTMLDivElement>(null);
   const avatarDragRef = useRef({ dragging: false, startX: 0, startY: 0, startAvatarX: 0, startAvatarY: 0 });
+  const avatarPinchRef = useRef({ pinching: false, startDist: 0, startScale: 1 });
   const linkImageInputRef = useRef<HTMLInputElement>(null);
   const linkBannerInputRef = useRef<HTMLInputElement>(null);
   const productImagesInputRef = useRef<HTMLInputElement>(null);
@@ -919,8 +920,24 @@ export default function CreatePage() {
   };
 
   // Avatar crop: drag-to-pan + pinch/wheel to zoom
+  const clampPan = (scale: number, x: number, y: number) => {
+    const maxPan = scale <= 1 ? 0 : 50 * (scale - 1) / scale;
+    return {
+      x: Math.max(-maxPan, Math.min(maxPan, x)),
+      y: Math.max(-maxPan, Math.min(maxPan, y)),
+    };
+  };
+
   const handleAvatarDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
+    if ('touches' in e && e.touches.length === 2) {
+      // Pinch start
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      avatarPinchRef.current = { pinching: true, startDist: Math.hypot(dx, dy), startScale: avatarScale };
+      avatarDragRef.current.dragging = false;
+      return;
+    }
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
     avatarDragRef.current = { dragging: true, startX: clientX, startY: clientY, startAvatarX: avatarX, startAvatarY: avatarY };
@@ -928,21 +945,39 @@ export default function CreatePage() {
 
   useEffect(() => {
     const handleMove = (e: MouseEvent | TouchEvent) => {
+      if ('touches' in e && (e as TouchEvent).touches.length === 2 && avatarPinchRef.current.pinching) {
+        // Pinch move
+        e.preventDefault();
+        const t = e as TouchEvent;
+        const dx = t.touches[0].clientX - t.touches[1].clientX;
+        const dy = t.touches[0].clientY - t.touches[1].clientY;
+        const dist = Math.hypot(dx, dy);
+        const ratio = dist / avatarPinchRef.current.startDist;
+        const next = Math.max(1, Math.min(3, avatarPinchRef.current.startScale * ratio));
+        setAvatarScale(next);
+        const clamped = clampPan(next, avatarX, avatarY);
+        setAvatarX(clamped.x);
+        setAvatarY(clamped.y);
+        return;
+      }
       if (!avatarDragRef.current.dragging) return;
       e.preventDefault();
       const clientX = 'touches' in e ? (e as TouchEvent).touches[0].clientX : (e as MouseEvent).clientX;
       const clientY = 'touches' in e ? (e as TouchEvent).touches[0].clientY : (e as MouseEvent).clientY;
       const container = avatarCropRef.current;
-      const size = container ? container.offsetWidth : 192;
+      const size = container ? container.offsetWidth : 128;
       const dx = clientX - avatarDragRef.current.startX;
       const dy = clientY - avatarDragRef.current.startY;
       const pctX = (dx / (size * avatarScale)) * 100;
       const pctY = (dy / (size * avatarScale)) * 100;
-      const maxPan = 50 * (avatarScale - 1) / avatarScale;
-      setAvatarX(Math.max(-maxPan, Math.min(maxPan, avatarDragRef.current.startAvatarX + pctX)));
-      setAvatarY(Math.max(-maxPan, Math.min(maxPan, avatarDragRef.current.startAvatarY + pctY)));
+      const clamped = clampPan(avatarScale, avatarDragRef.current.startAvatarX + pctX, avatarDragRef.current.startAvatarY + pctY);
+      setAvatarX(clamped.x);
+      setAvatarY(clamped.y);
     };
-    const handleEnd = () => { avatarDragRef.current.dragging = false; };
+    const handleEnd = () => {
+      avatarDragRef.current.dragging = false;
+      avatarPinchRef.current.pinching = false;
+    };
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleEnd);
     window.addEventListener('touchmove', handleMove, { passive: false });
@@ -953,9 +988,9 @@ export default function CreatePage() {
       window.removeEventListener('touchmove', handleMove);
       window.removeEventListener('touchend', handleEnd);
     };
-  }, [avatarScale]);
+  }, [avatarScale, avatarX, avatarY]);
 
-  // Wheel zoom on avatar crop area
+  // Wheel zoom on avatar crop area (desktop)
   useEffect(() => {
     const el = avatarCropRef.current;
     if (!el) return;
@@ -964,18 +999,15 @@ export default function CreatePage() {
       const delta = e.deltaY > 0 ? -0.15 : 0.15;
       setAvatarScale(prev => {
         const next = Math.max(1, Math.min(3, prev + delta));
-        if (next <= 1) { setAvatarX(0); setAvatarY(0); }
-        else {
-          const maxPan = 50 * (next - 1) / next;
-          setAvatarX(x => Math.max(-maxPan, Math.min(maxPan, x)));
-          setAvatarY(y => Math.max(-maxPan, Math.min(maxPan, y)));
-        }
+        const clamped = clampPan(next, avatarX, avatarY);
+        setAvatarX(clamped.x);
+        setAvatarY(clamped.y);
         return next;
       });
     };
     el.addEventListener('wheel', handleWheel, { passive: false });
     return () => el.removeEventListener('wheel', handleWheel);
-  }, [avatar]);
+  }, [avatar, avatarX, avatarY]);
 
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -2287,7 +2319,7 @@ export default function CreatePage() {
                         )}
                       </div>
                       {avatar && (
-                        <p className="text-[10px] text-gray-400">ลากเพื่อเลื่อน • เลื่อนล้อเมาส์เพื่อซูม</p>
+                        <p className="text-[10px] text-gray-400">ลากเพื่อเลื่อน • ใช้ 2 นิ้วเพื่อซูม</p>
                       )}
                     </div>
                   </div>
