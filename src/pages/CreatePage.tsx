@@ -1270,18 +1270,22 @@ export default function CreatePage() {
       setCompressedAvatar(avatar);
       return;
     }
-    // base64 avatar — compress to small thumbnail
+    // base64 avatar — compress with center-crop (like object-cover)
     const img = document.createElement('img');
     img.onload = () => {
       try {
         const canvas = document.createElement('canvas');
-        const size = 150;
+        const size = 300;
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
         if (ctx) {
-          ctx.drawImage(img, 0, 0, size, size);
-          setCompressedAvatar(canvas.toDataURL('image/jpeg', 0.6));
+          // Center-crop to square (preserves aspect ratio)
+          const min = Math.min(img.width, img.height);
+          const sx = (img.width - min) / 2;
+          const sy = (img.height - min) / 2;
+          ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+          setCompressedAvatar(canvas.toDataURL('image/jpeg', 0.7));
         }
       } catch { setCompressedAvatar(''); }
     };
@@ -2319,7 +2323,28 @@ export default function CreatePage() {
                         )}
                       </div>
                       {avatar && (
-                        <p className="text-[10px] text-gray-400">ลากเพื่อเลื่อน • ใช้ 2 นิ้วเพื่อซูม</p>
+                        <>
+                          <div className="flex items-center gap-2 w-full max-w-[200px]">
+                            <Search size={12} className="text-gray-300 flex-shrink-0" />
+                            <input
+                              type="range"
+                              min="1"
+                              max="3"
+                              step="0.05"
+                              value={avatarScale}
+                              onChange={(e) => {
+                                const s = parseFloat(e.target.value);
+                                setAvatarScale(s);
+                                const c = clampPan(s, avatarX, avatarY);
+                                setAvatarX(c.x);
+                                setAvatarY(c.y);
+                              }}
+                              className="flex-1 h-1 accent-pink-400 cursor-pointer"
+                            />
+                            <Search size={16} className="text-gray-400 flex-shrink-0" />
+                          </div>
+                          <p className="text-[10px] text-gray-400">ลากเพื่อเลื่อน • ใช้แถบเลื่อนเพื่อซูม</p>
+                        </>
                       )}
                     </div>
                   </div>
