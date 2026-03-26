@@ -69,4 +69,5 @@ export interface LinkItem {
   clicks?: number;
   color?: string;
   order?: number;
+  embedCode?: string;
 }

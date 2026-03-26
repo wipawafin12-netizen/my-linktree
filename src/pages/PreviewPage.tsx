@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import {
   Instagram, Youtube, Twitter, Music2, Facebook, Twitch, Github, Globe,
   AtSign, Mail, Send, Phone, User, ExternalLink, X,
+  Headphones, Music, Podcast, MapPin, Camera, MessageSquare, Gamepad2,
+  Flame, Store, Shirt, Rss, BookOpen, Newspaper, Crown, Coffee, Gift,
+  Video, Tv, Radio, Mic, Clapperboard, PenTool, Brush, Wallet, Bitcoin,
+  Code2, Terminal, Rocket, Megaphone, Anchor, Star, Zap,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
@@ -82,14 +86,45 @@ const bgPatterns: Record<string, React.CSSProperties> = {
   },
 };
 
+// Auto-detect supported URLs and generate embed code
+function urlToEmbedCode(url: string): string | null {
+  try {
+    const u = new URL(url);
+    // YouTube
+    if (u.hostname.includes('youtube.com') || u.hostname === 'youtu.be') {
+      let videoId: string | null = null;
+      if (u.hostname === 'youtu.be') videoId = u.pathname.slice(1).split('/')[0];
+      else videoId = u.searchParams.get('v') || u.pathname.match(/\/(?:embed|shorts)\/([a-zA-Z0-9_-]+)/)?.[1] || null;
+      if (videoId) return `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+    }
+    // Spotify
+    const sp = url.match(/spotify\.com\/(?:intl-[a-z]{2}\/)?(track|album|playlist|episode|show|artist)\/([a-zA-Z0-9]+)/);
+    if (sp) {
+      const h = sp[1] === 'track' ? 152 : 352;
+      return `<iframe src="https://open.spotify.com/embed/${sp[1]}/${sp[2]}?utm_source=generator&theme=0" width="100%" height="${h}" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+    }
+    // TikTok
+    const tt = url.match(/tiktok\.com\/.*\/video\/(\d+)/);
+    if (tt) return `<iframe src="https://www.tiktok.com/embed/v2/${tt[1]}" width="100%" height="580" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  } catch { /* not a valid URL */ }
+  return null;
+}
+
 const socialIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   instagram: Instagram, youtube: Youtube, twitter: Twitter, tiktok: Music2,
   facebook: Facebook, twitch: Twitch, github: Github, website: Globe,
   linkedin: AtSign, email: Mail, telegram: Send, whatsapp: Phone,
+  spotify: Headphones, soundcloud: Music, podcast: Podcast, pinterest: MapPin,
+  snapchat: Camera, reddit: MessageSquare, discord: Gamepad2, steam: Flame,
+  shopify: Store, etsy: Shirt, rss: Rss, blog: BookOpen, newsletter: Newspaper,
+  patreon: Crown, kofi: Coffee, donate: Gift, video: Video, tv: Tv,
+  radio: Radio, mic: Mic, film: Clapperboard, design: PenTool, art: Brush,
+  wallet: Wallet, crypto: Bitcoin, code: Code2, terminal: Terminal,
+  product: Rocket, promo: Megaphone, anchor: Anchor, featured: Star, flash: Zap,
 };
 
 interface LinkItem {
-  id: string; title: string; url: string; enabled: boolean; color?: string; thumbnail?: string;
+  id: string; title: string; url: string; enabled: boolean; color?: string; thumbnail?: string; embedCode?: string; linkImage?: string;
 }
 
 export default function PreviewPage() {
@@ -122,7 +157,8 @@ export default function PreviewPage() {
       const raw = localStorage.getItem('openbio_preview');
       if (raw) {
         const d = JSON.parse(raw);
-        if (d.displayName === name || !d.displayName) return d;
+        // Match by displayName (case-insensitive) or return data if no name filter needed
+        if (!name || !d.displayName || d.displayName.toLowerCase() === name.toLowerCase()) return d;
       }
     } catch { /* ignore */ }
     return null;
@@ -199,6 +235,8 @@ export default function PreviewPage() {
               id: l.id, title: l.title, url: l.url,
               enabled: l.enabled, color: l.color || '',
               thumbnail: l.thumbnail ? getFileUrl(l, l.thumbnail) : '',
+              embedCode: l.embedCode || '',
+              linkImage: l.linkImage || '',
             })),
             activeSocials: p.activeSocials || [],
             socialUrls: p.socialUrls || {},
@@ -287,6 +325,7 @@ export default function PreviewPage() {
     customTextColor = '', customBgColor = '#6366f1', customBgSecondary = '#4f46e5',
     links = [], activeSocials = [], socialUrls = {}, selectedPattern = 'none',
     patternGlow = false, bgImage = '', productImages = [],
+    avatarScale = 1, avatarX = 0, avatarY = 0,
   } = data;
 
   const isCustom = selectedTheme === 'custom';
@@ -306,7 +345,25 @@ export default function PreviewPage() {
   const autoTextColor = isCustom ? (light ? '#1f2937' : '#ffffff') : undefined;
   const resolvedTextColor = customTextColor || autoTextColor;
 
-  const enabledLinks = links.filter(l => l.title && l.enabled);
+  // Helper: resolve actual URL for a link (fallback to socialUrls if link URL is empty/placeholder)
+  const resolveUrl = (link: LinkItem): string => {
+    const url = link.url?.trim();
+    if (url && url !== 'https://example.com') return url;
+    // Try matching link title to a social platform
+    const titleLower = (link.title || '').toLowerCase();
+    for (const [key, socialUrl] of Object.entries(socialUrls)) {
+      if (socialUrl && titleLower.includes(key)) return socialUrl;
+    }
+    return url || '';
+  };
+
+  const enabledLinks = links.filter(l => {
+    if (!l.enabled) return false;
+    if (l.embedCode || l.linkImage) return true;
+    const url = resolveUrl(l);
+    if (l.title || (url && urlToEmbedCode(url))) return true;
+    return false;
+  });
 
   const trackLinkClick = (link: LinkItem) => {
     // Track to PocketBase if viewing a public page
@@ -410,7 +467,7 @@ export default function PreviewPage() {
       <div className="pt-14 pb-4 flex flex-col items-center px-6 w-full max-w-md relative z-[1]">
         <div className="w-20 h-20 rounded-full bg-gray-300/20 flex items-center justify-center mb-3 overflow-hidden">
           {avatar ? (
-            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
           ) : (
             <User size={28} className={`${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-25`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined} />
           )}
@@ -486,11 +543,31 @@ export default function PreviewPage() {
             <p className="text-sm">ยังไม่มีลิงก์</p>
           </div>
         )}
-        {enabledLinks.map((link) => (
+        {enabledLinks.map((link) => {
+          // Resolve the actual URL (fallback to socialUrls if link URL is empty/placeholder)
+          const actualUrl = resolveUrl(link);
+          // Use existing embedCode, or auto-generate from resolved URL
+          const resolvedEmbed = link.embedCode || (actualUrl ? urlToEmbedCode(actualUrl) : null);
+          return resolvedEmbed ? (
+            <div key={link.id} className="w-full rounded-2xl overflow-hidden relative z-[1] [&_iframe]:!w-full [&_iframe]:!max-w-full [&_iframe]:rounded-2xl">
+              <div dangerouslySetInnerHTML={{ __html: resolvedEmbed }} />
+            </div>
+          ) : link.linkImage ? (
+            <a
+              key={link.id}
+              href={actualUrl || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackLinkClick(link)}
+              className="block w-full rounded-2xl overflow-hidden relative z-[1] hover:scale-[1.02] transition-transform"
+            >
+              <img src={link.linkImage} alt={link.title} className="w-full rounded-2xl object-cover" />
+            </a>
+          ) : (
           <a
             key={link.id}
-            href={link.url || '#'}
-            target={link.url ? '_blank' : undefined}
+            href={actualUrl || '#'}
+            target={actualUrl ? '_blank' : undefined}
             rel="noopener noreferrer"
             onClick={() => trackLinkClick(link)}
             className={`${link.thumbnail ? 'flex items-center gap-3' : 'block text-center'} ${!link.color && !isCustom ? `${theme.card} ${theme.cardBorder}` : ''} ${btnCls} px-5 py-3.5 hover:scale-[1.02] transition-transform`}
@@ -505,7 +582,6 @@ export default function PreviewPage() {
                 alt=""
                 className="w-6 h-6 rounded object-cover flex-shrink-0"
                 onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                  // Hide thumbnail if image fails to load
                   e.currentTarget.style.display = 'none';
                 }}
               />
@@ -517,7 +593,8 @@ export default function PreviewPage() {
               {link.title}
             </span>
           </a>
-        ))}
+          );
+        })}
       </div>
 
       {/* Subscribe Form */}

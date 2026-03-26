@@ -41,7 +41,7 @@ const apps = [
   { name: 'Calendly', desc: 'ให้ผู้เยี่ยมชมจองการประชุมได้โดยตรงจากโปรไฟล์ของคุณ', category: 'grow', icon: Globe, color: '#006BFF', installs: '730K' },
   { name: 'Discord', desc: 'เชิญแฟนๆ เข้าเซิร์ฟเวอร์ Discord ของคุณด้วยคลิกเดียว', category: 'grow', icon: MessageCircle, color: '#5865F2', installs: '1.1M' },
 ];
-
+ 
 const featuredApps = apps.filter((a) => a.featured);
 const editorsPickIds = ['Calendly', 'Ko-fi', 'TikTok', 'Analytics Pro'];
 const editorsPicks = apps.filter((a) => editorsPickIds.includes(a.name));

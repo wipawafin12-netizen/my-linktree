@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Embed Generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --border: #e8e8e8;
+      --border-focus: #1a1a1a;
+      --text: #111111;
+      --text-secondary: #71717a;
+      --accent: #111111;
+      --accent-hover: #333333;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.04), 0 1px 4px rgba(0,0,0,.04);
+      --shadow-md: 0 2px 8px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+      --shadow-lg: 0 4px 12px rgba(0,0,0,.08), 0 8px 32px rgba(0,0,0,.06);
+      --transition: .2s cubic-bezier(.4,0,.2,1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    .wrapper {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+    }
+
+    @media (min-width: 640px) {
+      .wrapper { padding: 72px 24px 96px; }
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 8px;
+    }
+
+    @media (min-width: 640px) {
+      .header h1 { font-size: 34px; }
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    @media (min-width: 640px) {
+      .card { padding: 32px; }
+    }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 20px; }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: .01em;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text-secondary);
+      pointer-events: none;
+      display: flex;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 13px 16px 13px 42px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .input-field::placeholder { color: #a1a1aa; }
+
+    .input-field:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(0,0,0,.06);
+    }
+
+    /* ── Platforms ── */
+    .platforms {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .platform-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      cursor: default;
+      user-select: none;
+      transition: all var(--transition);
+    }
+
+    .platform-tag.active {
+      color: var(--text);
+      background: var(--surface);
+      border-color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .platform-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    /* ── Button ── */
+    .btn-generate {
+      width: 100%;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      color: #ffffff;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition);
+      letter-spacing: .01em;
+    }
+
+    .btn-generate:hover {
+      background: var(--accent-hover);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+
+    .btn-generate:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-generate:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ── Output Section ── */
+    .output-section {
+      margin-top: 32px;
+      animation: fadeUp .35s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .section-label span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .btn-copy {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .btn-copy:hover {
+      border-color: var(--border-focus);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-copy.copied {
+      color: #16a34a;
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .code-box {
+      width: 100%;
+      min-height: 100px;
+      padding: 14px 16px;
+      font-size: 13px;
+      font-family: "SF Mono", "Fira Code", "JetBrains Mono", Consolas, monospace;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      resize: vertical;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    .code-box:focus {
+      border-color: var(--border-focus);
+    }
+
+    /* ── Preview ── */
+    .preview-section { margin-top: 28px; }
+
+    .preview-frame {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #000;
+      overflow: hidden;
+    }
+
+    .preview-frame.spotify {
+      aspect-ratio: auto;
+      height: 152px;
+      background: #282828;
+    }
+
+    .preview-frame.spotify-episode {
+      height: 232px;
+    }
+
+    .preview-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .preview-empty {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #c4c4c4;
+      background: var(--bg);
+    }
+
+    .preview-empty svg { opacity: .5; }
+    .preview-empty span { font-size: 13px; }
+
+    /* ── Error ── */
+    .error-msg {
+      margin-top: 16px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #dc2626;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius-sm);
+      animation: fadeUp .25s ease both;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 32px 0;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      margin-top: 48px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- Header -->
+    <div class="header">
+      <h1>Embed Generator</h1>
+      <p>วางลิงก์แล้วรับโค้ด embed ได้ทันที</p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card">
+      <!-- Input -->
+      <div class="form-group">
+        <label class="form-label">ลิงก์ที่ต้องการ</label>
+        <div class="input-wrapper">
+          <span class="input-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </span>
+          <input
+            type="url"
+            id="urlInput"
+            class="input-field"
+            placeholder="วางลิงก์ YouTube / Spotify / TikTok"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <!-- Platform Tags -->
+      <div class="platforms" id="platformTags">
+        <span class="platform-tag" data-platform="youtube">
+          <span class="platform-dot" style="background:#f00"></span> YouTube
+        </span>
+        <span class="platform-tag" data-platform="spotify">
+          <span class="platform-dot" style="background:#1db954"></span> Spotify
+        </span>
+        <span class="platform-tag" data-platform="tiktok">
+          <span class="platform-dot" style="background:#111"></span> TikTok
+        </span>
+      </div>
+
+      <!-- Generate Button -->
+      <button class="btn-generate" id="btnGenerate" disabled>สร้าง Embed Code</button>
+
+      <!-- Error -->
+      <div id="errorMsg" class="error-msg" style="display:none"></div>
+
+      <!-- Output -->
+      <div id="outputSection" style="display:none">
+        <div class="divider"></div>
+
+        <!-- Embed Code -->
+        <div class="output-section">
+          <div class="section-label">
+            <span>Embed Code</span>
+            <button class="btn-copy" id="btnCopy" type="button">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span id="copyLabel">คัดลอก</span>
+            </button>
+          </div>
+          <textarea class="code-box" id="codeOutput" readonly></textarea>
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-section output-section">
+          <div class="section-label">
+            <span>ตัวอย่าง</span>
+          </div>
+          <div id="previewContainer"></div>
+        </div>
+      </div>
+
+      <!-- Empty Preview Placeholder -->
+      <div id="emptyPreview">
+        <div class="divider"></div>
+        <div class="preview-empty">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m8 21 4-4 4 4"/></svg>
+          <span>ตัวอย่างจะแสดงที่นี่</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="footer">รองรับ YouTube &middot; Spotify &middot; TikTok</p>
+  </div>
+
+  <script>
+    const urlInput = document.getElementById('urlInput');
+    const btnGenerate = document.getElementById('btnGenerate');
+    const btnCopy = document.getElementById('btnCopy');
+    const copyLabel = document.getElementById('copyLabel');
+    const codeOutput = document.getElementById('codeOutput');
+    const outputSection = document.getElementById('outputSection');
+    const emptyPreview = document.getElementById('emptyPreview');
+    const previewContainer = document.getElementById('previewContainer');
+    const errorMsg = document.getElementById('errorMsg');
+    const platformTags = document.querySelectorAll('.platform-tag');
+
+    /* ── Platform detection ── */
+    function detectPlatform(url) {
+      if (/(?:youtube\.com|youtu\.be)/i.test(url)) return 'youtube';
+      if (/spotify\.com/i.test(url)) return 'spotify';
+      if (/tiktok\.com/i.test(url)) return 'tiktok';
+      return null;
+    }
+
+    /* ── Extract IDs & build embed ── */
+    function generateEmbed(url) {
+      const platform = detectPlatform(url);
+      if (!platform) return null;
+
+      if (platform === 'youtube') {
+        let videoId = null;
+        try {
+          const u = new URL(url);
+          if (u.hostname === 'youtu.be') {
+            videoId = u.pathname.slice(1).split('/')[0];
+          } else {
+            videoId = u.searchParams.get('v');
+            if (!videoId) {
+              const m = u.pathname.match(/\/(?:embed|shorts)\/([a-zA-Z0-9_-]+)/);
+              if (m) videoId = m[1];
+            }
+          }
+        } catch { return null; }
+        if (!videoId) return null;
+
+        const src = `https://www.youtube.com/embed/${videoId}`;
+        return {
+          platform,
+          code: `<iframe width="560" height="315" src="${src}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`,
+          previewSrc: src,
+          previewType: 'video',
+        };
+      }
+
+      if (platform === 'spotify') {
+        // Matches: track, album, playlist, episode, show, artist
+        const m = url.match(/spotify\.com\/(track|album|playlist|episode|show|artist)\/([a-zA-Z0-9]+)/);
+        if (!m) return null;
+        const [, type, id] = m;
+        const src = `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
+        const isCompact = type === 'track';
+        return {
+          platform,
+          code: `<iframe src="${src}" width="100%" height="${isCompact ? 152 : 352}" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`,
+          previewSrc: src,
+          previewType: 'spotify',
+          spotifyCompact: isCompact,
+        };
+      }
+
+      if (platform === 'tiktok') {
+        const m = url.match(/\/video\/(\d+)/);
+        if (!m) return null;
+        const videoId = m[1];
+        const src = `https://www.tiktok.com/embed/v2/${videoId}`;
+        return {
+          platform,
+          code: `<iframe src="${src}" width="325" height="580" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`,
+          previewSrc: src,
+          previewType: 'tiktok',
+        };
+      }
+
+      return null;
+    }
+
+    /* ── Highlight active platform tag ── */
+    function highlightPlatform(name) {
+      platformTags.forEach(tag => {
+        tag.classList.toggle('active', tag.dataset.platform === name);
+      });
+    }
+
+    /* ── Show error ── */
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+    }
+
+    function hideError() {
+      errorMsg.style.display = 'none';
+    }
+
+    /* ── Enable / disable button on input ── */
+    urlInput.addEventListener('input', () => {
+      const val = urlInput.value.trim();
+      btnGenerate.disabled = !val;
+      const plat = detectPlatform(val);
+      highlightPlatform(plat);
+      hideError();
+    });
+
+    /* ── Generate ── */
+    btnGenerate.addEventListener('click', () => {
+      hideError();
+      const url = urlInput.value.trim();
+      if (!url) return;
+
+      const result = generateEmbed(url);
+      if (!result) {
+        showError('ไม่รองรับลิงก์นี้ — กรุณาใส่ลิงก์ YouTube, Spotify หรือ TikTok');
+        outputSection.style.display = 'none';
+        emptyPreview.style.display = 'block';
+        return;
+      }
+
+      // Show code
+      codeOutput.value = result.code;
+      outputSection.style.display = 'block';
+      emptyPreview.style.display = 'none';
+
+      // Build preview
+      let frameClass = 'preview-frame';
+      if (result.previewType === 'spotify') {
+        frameClass += result.spotifyCompact ? ' spotify' : ' spotify-episode';
+      }
+      if (result.previewType === 'tiktok') {
+        previewContainer.innerHTML =
+          `<div class="preview-frame" style="aspect-ratio:auto;height:580px;max-width:325px;margin:0 auto;background:#000">
+            <iframe src="${result.previewSrc}" style="width:100%;height:100%;border:none" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          </div>`;
+      } else {
+        previewContainer.innerHTML =
+          `<div class="${frameClass}">
+            <iframe src="${result.previewSrc}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+          </div>`;
+      }
+
+      // Reset copy state
+      btnCopy.classList.remove('copied');
+      copyLabel.textContent = 'คัดลอก';
+    });
+
+    /* ── Copy ── */
+    btnCopy.addEventListener('click', () => {
+      const code = codeOutput.value;
+      if (!code) return;
+      navigator.clipboard.writeText(code).then(() => {
+        btnCopy.classList.add('copied');
+        copyLabel.textContent = 'คัดลอกแล้ว!';
+        setTimeout(() => {
+          btnCopy.classList.remove('copied');
+          copyLabel.textContent = 'คัดลอก';
+        }, 2000);
+      });
+    });
+
+    /* ── Enter key shortcut ── */
+    urlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !btnGenerate.disabled) {
+        btnGenerate.click();
+      }
+    });
+  </script>
+</body>
+</html>

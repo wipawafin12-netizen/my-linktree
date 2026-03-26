@@ -28,7 +28,9 @@
       "WebFetch(domain:my-linktree-tan.vercel.app)",
       "WebFetch(domain:linktree.chhindustry.com)",
       "Bash(git remote get-url:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

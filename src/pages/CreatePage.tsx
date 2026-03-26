@@ -27,6 +27,7 @@ const sidebarMain = [
 
 const sidebarTools = [
   { icon: Scissors, label: 'ย่อลิงก์', id: 'shortener' },
+  { icon: Code2, label: 'สร้าง Embed', id: 'embed-gen' },
 ];
 
 const themes = [
@@ -234,6 +235,30 @@ const getPatternAnimStyle = (animId: string): React.CSSProperties => {
   }
 };
 
+// ── URL → Embed converter ──
+function urlToEmbedCode(url: string): string | null {
+  try {
+    const u = new URL(url);
+    // YouTube
+    if (u.hostname.includes('youtube.com') || u.hostname === 'youtu.be') {
+      let videoId: string | null = null;
+      if (u.hostname === 'youtu.be') videoId = u.pathname.slice(1).split('/')[0];
+      else videoId = u.searchParams.get('v') || u.pathname.match(/\/(?:embed|shorts)\/([a-zA-Z0-9_-]+)/)?.[1] || null;
+      if (videoId) return `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    }
+    // Spotify
+    const sp = url.match(/spotify\.com\/(?:intl-[a-z]{2}\/)?(track|album|playlist|episode|show|artist)\/([a-zA-Z0-9]+)/);
+    if (sp) {
+      const h = sp[1] === 'track' ? 152 : 352;
+      return `<iframe src="https://open.spotify.com/embed/${sp[1]}/${sp[2]}?utm_source=generator&theme=0" width="100%" height="${h}" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+    }
+    // TikTok
+    const tt = url.match(/tiktok\.com\/.*\/video\/(\d+)/);
+    if (tt) return `<iframe src="https://www.tiktok.com/embed/v2/${tt[1]}" width="100%" height="580" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  } catch { /* not a valid URL */ }
+  return null;
+}
+
 const buttonStyles = [
   { id: 'rounded', label: 'Rounded', cls: 'rounded-full' },
   { id: 'soft', label: 'Soft', cls: 'rounded-xl' },
@@ -367,7 +392,7 @@ const addSuggestedItems = [
   { icon: FileText, label: 'หัวข้อ', desc: 'เพิ่มหัวข้อเพื่อจัดระเบียบลิงก์', category: 'text', gradient: 'from-[#374151] to-[#6b7280]' },
 ];
 
-type LinkItem = { id: string; title: string; url: string; enabled: boolean; thumbnail?: string; clicks?: number; color?: string };
+type LinkItem = { id: string; title: string; url: string; enabled: boolean; thumbnail?: string; clicks?: number; color?: string; embedCode?: string; linkImage?: string };
 
 export default function CreatePage() {
   const { username, user, logout } = useAuth();
@@ -386,6 +411,9 @@ export default function CreatePage() {
   const [displayName, setDisplayName] = useState(username || '');
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
+  const [avatarScale, setAvatarScale] = useState(1);
+  const [avatarX, setAvatarX] = useState(0);
+  const [avatarY, setAvatarY] = useState(0);
   const [productImages, setProductImages] = useState<string[]>([]);
   const [selectedTheme, setSelectedTheme] = useState('minimal');
   const [selectedButton, setSelectedButton] = useState('rounded');
@@ -411,9 +439,13 @@ export default function CreatePage() {
   const [showSocialPicker, setShowSocialPicker] = useState(false);
   const [toast, setToast] = useState('');
   const avatarInputRef = useRef<HTMLInputElement>(null);
+  const avatarCropRef = useRef<HTMLDivElement>(null);
+  const avatarDragRef = useRef({ dragging: false, startX: 0, startY: 0, startAvatarX: 0, startAvatarY: 0 });
   const linkImageInputRef = useRef<HTMLInputElement>(null);
+  const linkBannerInputRef = useRef<HTMLInputElement>(null);
   const productImagesInputRef = useRef<HTMLInputElement>(null);
   const [imageTargetLinkId, setImageTargetLinkId] = useState<string | null>(null);
+  const [bannerTargetLinkId, setBannerTargetLinkId] = useState<string | null>(null);
 
   // Earn section
   const [tipJarEnabled, setTipJarEnabled] = useState(false);
@@ -466,6 +498,7 @@ export default function CreatePage() {
   const [patternGlow, setPatternGlow] = useState(false);
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
   const [bgImage, setBgImage] = useState('');
+  const [mobilePreviewOpen, setMobilePreviewOpen] = useState(false);
 
   // ── Helper: restore state from localStorage ──
   const loadFromLocalStorage = useCallback(() => {
@@ -476,6 +509,9 @@ export default function CreatePage() {
       if (d.displayName) setDisplayName(d.displayName);
       if (d.bio) setBio(d.bio);
       if (d.avatar) setAvatar(d.avatar);
+      if (d.avatarScale) setAvatarScale(d.avatarScale);
+      if (d.avatarX !== undefined) setAvatarX(d.avatarX);
+      if (d.avatarY !== undefined) setAvatarY(d.avatarY);
       if (d.productImages) setProductImages(d.productImages);
       if (d.selectedTheme) setSelectedTheme(d.selectedTheme);
       if (d.selectedButton) setSelectedButton(d.selectedButton);
@@ -568,6 +604,8 @@ export default function CreatePage() {
                 thumbnail: l.thumbnail ? getFileUrl(l, l.thumbnail) : undefined,
                 clicks: clickCounts[l.id] || 0,
                 color: l.color || '',
+                embedCode: l.embedCode || '',
+                linkImage: l.linkImage || '',
               })));
             }
 
@@ -670,6 +708,8 @@ export default function CreatePage() {
             color: link.color || '',
             order: i,
             clicks: link.clicks || 0,
+            embedCode: link.embedCode || '',
+            linkImage: link.linkImage || '',
           };
 
           // Prepare FormData if there's a thumbnail file to upload
@@ -849,13 +889,24 @@ export default function CreatePage() {
     }
   };
 
+  // Helper: resolve actual URL for a link (fallback to socialUrls if link URL is empty/placeholder)
+  const resolveUrl = (link: LinkItem): string => {
+    const url = link.url?.trim();
+    if (url && url !== 'https://example.com') return url;
+    const titleLower = (link.title || '').toLowerCase();
+    for (const [key, socialUrl] of Object.entries(socialUrls)) {
+      if (socialUrl && titleLower.includes(key)) return socialUrl;
+    }
+    return url || '';
+  };
+
   const addLink = (title = '') => {
     setLinks([...links, { id: Date.now().toString(), title, url: '', enabled: true, clicks: 0 }]);
     setAddModalOpen(false);
     setAddModalSearch('');
   };
   const removeLink = (id: string) => setLinks(links.filter((l) => l.id !== id));
-  const updateLink = (id: string, field: 'title' | 'url' | 'color', value: string) => {
+  const updateLink = (id: string, field: 'title' | 'url' | 'color' | 'embedCode' | 'linkImage', value: string) => {
     setLinks(links.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
   };
   const toggleLink = (id: string) => {
@@ -867,9 +918,51 @@ export default function CreatePage() {
     );
   };
 
+  // Avatar drag-to-pan handlers
+  const handleAvatarDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    if (avatarScale <= 1) return;
+    e.preventDefault();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    avatarDragRef.current = { dragging: true, startX: clientX, startY: clientY, startAvatarX: avatarX, startAvatarY: avatarY };
+  };
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      if (!avatarDragRef.current.dragging) return;
+      e.preventDefault();
+      const clientX = 'touches' in e ? (e as TouchEvent).touches[0].clientX : (e as MouseEvent).clientX;
+      const clientY = 'touches' in e ? (e as TouchEvent).touches[0].clientY : (e as MouseEvent).clientY;
+      const container = avatarCropRef.current;
+      const size = container ? container.offsetWidth : 96;
+      const dx = clientX - avatarDragRef.current.startX;
+      const dy = clientY - avatarDragRef.current.startY;
+      const pctX = (dx / (size * avatarScale)) * 100;
+      const pctY = (dy / (size * avatarScale)) * 100;
+      const maxPan = 50 * (avatarScale - 1) / avatarScale;
+      setAvatarX(Math.max(-maxPan, Math.min(maxPan, avatarDragRef.current.startAvatarX + pctX)));
+      setAvatarY(Math.max(-maxPan, Math.min(maxPan, avatarDragRef.current.startAvatarY + pctY)));
+    };
+    const handleEnd = () => { avatarDragRef.current.dragging = false; };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleEnd);
+    };
+  }, [avatarScale]);
+
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Reset crop when uploading new image
+      setAvatarScale(1);
+      setAvatarX(0);
+      setAvatarY(0);
       // Instant local preview
       const reader = new FileReader();
       reader.onload = (ev) => setAvatar(ev.target?.result as string);
@@ -988,6 +1081,22 @@ export default function CreatePage() {
           : l
       ));
     }
+  };
+
+  const handleLinkBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !bannerTargetLinkId) return;
+    if (file.size > 2 * 1024 * 1024) { showToast('รูปภาพต้องมีขนาดไม่เกิน 2MB'); setBannerTargetLinkId(null); return; }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result) {
+        updateLink(bannerTargetLinkId, 'linkImage', ev.target.result as string);
+        showToast('เพิ่มรูปลิงก์แล้ว!');
+      }
+      setBannerTargetLinkId(null);
+    };
+    reader.readAsDataURL(file);
+    if (linkBannerInputRef.current) linkBannerInputRef.current.value = '';
   };
 
   const handleProductImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1133,7 +1242,7 @@ export default function CreatePage() {
 
     try {
       localStorage.setItem('openbio_preview', JSON.stringify({
-        displayName, bio, avatar: compressedAvatar, selectedTheme, selectedButton, selectedFont,
+        displayName, bio, avatar: compressedAvatar, avatarScale, avatarX, avatarY, selectedTheme, selectedButton, selectedFont,
         customTextColor, customBgColor, customBgSecondary,
         links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
         bgImage, productImages,
@@ -1152,7 +1261,7 @@ export default function CreatePage() {
       });
       debouncedSaveLinks(pbPageId, links);
     }
-  }, [displayName, bio, compressedAvatar, selectedTheme, selectedButton, selectedFont,
+  }, [displayName, bio, compressedAvatar, avatarScale, avatarX, avatarY, selectedTheme, selectedButton, selectedFont,
       customTextColor, customBgColor, customBgSecondary,
       links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
       pbPageId, pbLoaded, debouncedSavePage, debouncedSaveLinks, buttonAnimation, bgImage, productImages,
@@ -1292,7 +1401,10 @@ export default function CreatePage() {
               {sidebarTools.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }}
+                  onClick={() => {
+                    if (item.id === 'embed-gen') { navigate('/embed-generator'); return; }
+                    setActiveSection(item.id); setSidebarOpen(false);
+                  }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 ${activeSection === item.id
                     ? 'bg-gradient-to-r from-[#ede9fe] to-[#f5f3ff]/50 text-[#6d28d9] font-medium shadow-sm border border-[#e0e7ff]/50'
                     : 'text-gray-500 hover:text-[#6d28d9] hover:bg-[#f5f3ff]/50 hover:translate-x-0.5'
@@ -2111,6 +2223,7 @@ export default function CreatePage() {
                 {/* Hidden file inputs */}
                 <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
                 <input ref={linkImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleLinkImageUpload} />
+                <input ref={linkBannerInputRef} type="file" accept="image/*" className="hidden" onChange={handleLinkBannerUpload} />
                 <input ref={productImagesInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleProductImagesUpload} />
 
                 {/* ── Profile Settings Card (row-based like settings page) ── */}
@@ -2124,33 +2237,61 @@ export default function CreatePage() {
                     <p className="text-xs text-gray-400 mt-0.5">จัดการข้อมูลโปรไฟล์สาธารณะของคุณ</p>
                   </div>
 
-                  {/* Avatar row */}
-                  <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 hover:bg-gray-50/40 transition-colors">
-                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">รูปภาพ</span>
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className="relative group">
-                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100 ring-2 ring-white shadow-sm">
-                          {avatar ? (
-                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <User size={18} className="text-pink-300" />
-                            </div>
-                          )}
-                        </div>
-                        <button
-                          onClick={() => avatarInputRef.current?.click()}
-                          className="absolute inset-0 rounded-full bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
-                        >
-                          <Camera size={14} className="text-white" />
-                        </button>
-                      </div>
+                  {/* Avatar section */}
+                  <div className="px-6 py-4 border-b border-gray-50">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm text-gray-500">รูปภาพ</span>
                       <button
                         onClick={() => avatarInputRef.current?.click()}
                         className="text-xs font-medium text-pink-500 hover:text-pink-600 transition-colors"
                       >
                         อัปโหลดรูปใหม่
                       </button>
+                    </div>
+                    <div className="flex flex-col items-center gap-3">
+                      <div
+                        ref={avatarCropRef}
+                        className={`w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100 ring-2 ring-white shadow-sm select-none ${avatar && avatarScale > 1 ? 'cursor-grab active:cursor-grabbing' : ''}`}
+                        onMouseDown={avatar ? handleAvatarDragStart : undefined}
+                        onTouchStart={avatar ? handleAvatarDragStart : undefined}
+                        onClick={!avatar ? () => avatarInputRef.current?.click() : undefined}
+                      >
+                        {avatar ? (
+                          <img src={avatar} alt="Avatar" className="w-full h-full object-cover pointer-events-none" draggable={false}
+                            style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <User size={28} className="text-pink-300" />
+                          </div>
+                        )}
+                      </div>
+                      {avatar && avatarScale > 1 && (
+                        <p className="text-[10px] text-gray-400">ลากเพื่อปรับตำแหน่ง</p>
+                      )}
+                      {avatar && (
+                        <div className="flex items-center gap-2 w-full max-w-[200px]">
+                          <Search size={11} className="text-gray-300 flex-shrink-0" />
+                          <input
+                            type="range"
+                            min="1"
+                            max="3"
+                            step="0.05"
+                            value={avatarScale}
+                            onChange={(e) => {
+                              const newScale = parseFloat(e.target.value);
+                              setAvatarScale(newScale);
+                              if (newScale <= 1) { setAvatarX(0); setAvatarY(0); }
+                              else {
+                                const maxPan = 50 * (newScale - 1) / newScale;
+                                setAvatarX(x => Math.max(-maxPan, Math.min(maxPan, x)));
+                                setAvatarY(y => Math.max(-maxPan, Math.min(maxPan, y)));
+                              }
+                            }}
+                            className="flex-1 h-1 accent-pink-400 cursor-pointer"
+                          />
+                          <span className="text-[10px] text-gray-400 w-8 text-right">{Math.round(avatarScale * 100)}%</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -2240,6 +2381,22 @@ export default function CreatePage() {
                                 placeholder={`${p.label} URL`}
                                 className="flex-1 text-xs text-gray-600 placeholder-gray-300 bg-gray-50/80 border border-gray-100 rounded-lg px-3 py-1.5 focus:outline-none focus:border-pink-300 transition-all"
                               />
+                              {socialUrls[id] && urlToEmbedCode(socialUrls[id]) && (
+                                <button
+                                  onClick={() => {
+                                    const code = urlToEmbedCode(socialUrls[id]);
+                                    if (code) {
+                                      const newLink: LinkItem = { id: Date.now().toString(), title: `${p.label} Embed`, url: socialUrls[id], enabled: true, clicks: 0, embedCode: code };
+                                      setLinks(prev => [...prev, newLink]);
+                                      showToast(`สร้าง ${p.label} Embed สำเร็จ!`);
+                                    }
+                                  }}
+                                  className="flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg border border-violet-100 transition-colors whitespace-nowrap"
+                                  title="สร้าง Embed จากลิงก์นี้"
+                                >
+                                  <Code2 size={10} /> Embed
+                                </button>
+                              )}
                               <button
                                 onClick={() => toggleSocial(id)}
                                 className="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"
@@ -2378,6 +2535,19 @@ export default function CreatePage() {
                                   placeholder="URL"
                                   className="block w-full text-[11px] text-gray-400 placeholder-gray-300 bg-transparent focus:outline-none mt-0.5"
                                 />
+                                {/* Embed badge / action */}
+                                {link.embedCode ? (
+                                  <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 text-[9px] font-bold text-violet-600 bg-violet-50 rounded-full w-fit">
+                                    <Code2 size={8} /> Embed ใช้งานอยู่
+                                  </span>
+                                ) : link.url && urlToEmbedCode(link.url) ? (
+                                  <button
+                                    onClick={() => { const code = urlToEmbedCode(link.url); if (code) updateLink(link.id, 'embedCode', code); }}
+                                    className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 text-[9px] font-bold text-violet-500 bg-violet-50 hover:bg-violet-100 rounded-full w-fit transition-colors"
+                                  >
+                                    <Code2 size={8} /> สร้าง Embed อัตโนมัติ
+                                  </button>
+                                ) : null}
                               </div>
                               <div className="flex items-center gap-1.5 flex-shrink-0">
                                 <button
@@ -2406,6 +2576,26 @@ export default function CreatePage() {
                                 </button>
                               </div>
                             </div>
+                            {/* Embed code preview - always visible when embed exists */}
+                            {link.embedCode && (
+                              <div className="mx-6 mb-3 p-3 bg-violet-50/80 rounded-xl border border-violet-100">
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className="text-[10px] font-bold text-violet-500 uppercase tracking-wider flex items-center gap-1"><Code2 size={10} /> Embed Code</span>
+                                  <button
+                                    onClick={() => updateLink(link.id, 'embedCode', '')}
+                                    className="text-[10px] text-red-400 hover:text-red-500 transition-colors"
+                                  >
+                                    ลบ Embed
+                                  </button>
+                                </div>
+                                <textarea
+                                  value={link.embedCode}
+                                  onChange={(e) => updateLink(link.id, 'embedCode', e.target.value)}
+                                  rows={2}
+                                  className="w-full px-2.5 py-1.5 text-[10px] font-mono text-violet-700 bg-white border border-violet-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-300 resize-y"
+                                />
+                              </div>
+                            )}
                             {/* Expanded edit area */}
                             <AnimatePresence>
                               {editingLinkId === link.id && (
@@ -2426,15 +2616,6 @@ export default function CreatePage() {
                                       />
                                     </div>
                                     <div>
-                                      <label className="block text-[11px] text-gray-400 mb-1">URL</label>
-                                      <input
-                                        type="url"
-                                        value={link.url}
-                                        onChange={(e) => updateLink(link.id, 'url', e.target.value)}
-                                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300"
-                                      />
-                                    </div>
-                                    <div>
                                       <label className="block text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-1.5">สีปุ่ม</label>
                                       <div className="grid grid-cols-10 gap-1.5 w-fit">
                                         {linkColors.map((c) => (
@@ -2449,6 +2630,82 @@ export default function CreatePage() {
                                           </button>
                                         ))}
                                       </div>
+                                    </div>
+                                    {/* ── Image Link ── */}
+                                    <div>
+                                      <label className="block text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-1.5">รูปภาพลิงก์</label>
+                                      {link.linkImage ? (
+                                        <div className="relative group">
+                                          <img src={link.linkImage} alt="" className="w-full h-28 object-cover rounded-xl border border-gray-200" />
+                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity flex items-center justify-center gap-2">
+                                            <button
+                                              onClick={() => { setBannerTargetLinkId(link.id); linkBannerInputRef.current?.click(); }}
+                                              className="px-3 py-1.5 text-[10px] font-bold text-white bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors"
+                                            >
+                                              เปลี่ยนรูป
+                                            </button>
+                                            <button
+                                              onClick={() => updateLink(link.id, 'linkImage', '')}
+                                              className="px-3 py-1.5 text-[10px] font-bold text-white bg-red-500/60 backdrop-blur-sm rounded-lg hover:bg-red-500/80 transition-colors"
+                                            >
+                                              ลบรูป
+                                            </button>
+                                          </div>
+                                          {link.url && (
+                                            <span className="absolute bottom-2 left-2 px-2 py-0.5 text-[8px] font-bold text-white bg-black/50 backdrop-blur-sm rounded-md">
+                                              คลิกเปิด → {link.url.length > 30 ? link.url.slice(0, 30) + '...' : link.url}
+                                            </span>
+                                          )}
+                                        </div>
+                                      ) : (
+                                        <div className="flex gap-2">
+                                          <button
+                                            onClick={() => { setBannerTargetLinkId(link.id); linkBannerInputRef.current?.click(); }}
+                                            className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-medium text-gray-500 bg-gray-50 hover:bg-gray-100 border border-dashed border-gray-200 hover:border-gray-300 rounded-xl transition-all"
+                                          >
+                                            <Upload size={14} /> อัปโหลดรูป
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              const url = prompt('วาง URL รูปภาพ:');
+                                              if (url?.trim()) updateLink(link.id, 'linkImage', url.trim());
+                                            }}
+                                            className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-medium text-gray-500 bg-gray-50 hover:bg-gray-100 border border-dashed border-gray-200 hover:border-gray-300 rounded-xl transition-all"
+                                          >
+                                            <Image size={14} /> ใส่ URL รูป
+                                          </button>
+                                        </div>
+                                      )}
+                                      <p className="text-[9px] text-gray-400 mt-1">เมื่อคนกดที่รูป จะเปิดลิงก์ในแท็บใหม่</p>
+                                    </div>
+                                    {/* ── Embed Code ── */}
+                                    <div>
+                                      <div className="flex items-center justify-between mb-1.5">
+                                        <label className="block text-[11px] text-gray-400 font-bold uppercase tracking-wider">Embed Code</label>
+                                        {link.url && urlToEmbedCode(link.url) && !link.embedCode && (
+                                          <button
+                                            onClick={() => { const code = urlToEmbedCode(link.url); if (code) updateLink(link.id, 'embedCode', code); }}
+                                            className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-full transition-colors"
+                                          >
+                                            <Code2 size={10} /> สร้างจาก URL อัตโนมัติ
+                                          </button>
+                                        )}
+                                      </div>
+                                      <textarea
+                                        value={link.embedCode || ''}
+                                        onChange={(e) => updateLink(link.id, 'embedCode', e.target.value)}
+                                        placeholder="วาง embed code (iframe) จาก YouTube, Spotify, TikTok ฯลฯ"
+                                        rows={3}
+                                        className="w-full px-3 py-2 text-xs font-mono border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300 resize-y bg-gray-50"
+                                      />
+                                      {link.embedCode && (
+                                        <button
+                                          onClick={() => updateLink(link.id, 'embedCode', '')}
+                                          className="mt-1.5 text-[10px] text-red-400 hover:text-red-500 transition-colors"
+                                        >
+                                          ลบ Embed Code
+                                        </button>
+                                      )}
                                     </div>
                                   </div>
                                 </motion.div>
@@ -2953,7 +3210,7 @@ export default function CreatePage() {
                       <div className="pt-8 pb-3 flex flex-col items-center px-6 relative z-[1]">
                         <div className="w-[68px] h-[68px] rounded-full bg-gray-300/20 flex items-center justify-center mb-2.5 overflow-hidden">
                           {avatar ? (
-                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
                           ) : (
                             <User size={22} className={`${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-25`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined} />
                           )}
@@ -3011,15 +3268,36 @@ export default function CreatePage() {
 
                       {/* Links */}
                       <div className="px-4 pb-4 space-y-2 flex-1 relative z-[1]">
-                        {links.filter((l) => l.title && l.enabled).length === 0 && (
+                        {links.filter((l) => {
+                          if (!l.enabled) return false;
+                          if (l.embedCode || l.linkImage) return true;
+                          const url = resolveUrl(l);
+                          return !!(l.title || (url && urlToEmbedCode(url)));
+                        }).length === 0 && (
                           <div className={`text-center py-6 ${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-15`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
                             <ExternalLink size={20} className="mx-auto mb-1.5" />
                             <p className="text-[10px]">เพิ่มลิงก์ด้านบน</p>
                           </div>
                         )}
                         {links
-                          .filter((l) => l.title && l.enabled)
-                          .map((link) => (
+                          .filter((l) => {
+                            if (!l.enabled) return false;
+                            if (l.embedCode || l.linkImage) return true;
+                            const url = resolveUrl(l);
+                            return !!(l.title || (url && urlToEmbedCode(url)));
+                          })
+                          .map((link) => {
+                            const actualUrl = resolveUrl(link);
+                            const resolvedEmbed = link.embedCode || (actualUrl ? urlToEmbedCode(actualUrl) : null);
+                            return resolvedEmbed ? (
+                              <div key={link.id} className="relative z-[1] rounded-xl overflow-hidden [&_iframe]:!h-[180px]">
+                                <div dangerouslySetInnerHTML={{ __html: resolvedEmbed }} />
+                              </div>
+                            ) : link.linkImage ? (
+                              <div key={link.id} className="relative z-[1] rounded-xl overflow-hidden cursor-pointer group">
+                                <img src={link.linkImage} alt={link.title} className="w-full rounded-xl object-cover transition-transform group-hover:scale-[1.02]" />
+                              </div>
+                            ) : (
                             <motion.div
                               key={link.id}
                               layout
@@ -3039,7 +3317,8 @@ export default function CreatePage() {
                               )}
                               <span className={`text-[11px] font-medium ${!link.color && !resolvedTextColor && !isCustom ? theme.text : ''} ${link.thumbnail ? 'flex-1 text-left' : ''}`} style={resolvedTextColor ? { color: resolvedTextColor } : link.color ? { color: '#374151' } : undefined}>{link.title}</span>
                             </motion.div>
-                          ))}
+                            );
+                          })}
                       </div>
                     </div>
                   </div>
@@ -3204,6 +3483,222 @@ export default function CreatePage() {
                           <p className="text-sm text-gray-400">ไม่พบรายการ</p>
                         </div>
                       )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ══════ Mobile Preview Float Button ══════ */}
+      <button
+        onClick={() => setMobilePreviewOpen(true)}
+        className="xl:hidden fixed bottom-6 right-6 z-40 w-14 h-14 bg-gradient-to-br from-[#7c3aed] to-[#a78bfa] rounded-full shadow-lg shadow-[#7c3aed]/30 flex items-center justify-center hover:shadow-xl hover:shadow-[#7c3aed]/40 transition-all active:scale-95"
+      >
+        <Eye size={22} className="text-white" />
+      </button>
+
+      {/* ══════ Mobile Preview Modal ══════ */}
+      <AnimatePresence>
+        {mobilePreviewOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 xl:hidden"
+              onClick={() => setMobilePreviewOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: '100%' }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: '100%' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="fixed inset-x-0 bottom-0 top-8 z-50 xl:hidden bg-gradient-to-b from-gray-100 to-gray-200 rounded-t-3xl flex flex-col overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-5 py-4 bg-white/80 backdrop-blur-xl border-b border-gray-200/60">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#7c3aed] to-[#a78bfa] flex items-center justify-center">
+                    <Eye size={10} className="text-white" />
+                  </div>
+                  <span className="text-sm font-bold text-gray-900">ตัวอย่าง</span>
+                </div>
+                <button
+                  onClick={() => setMobilePreviewOpen(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Phone Preview */}
+              <div className="flex-1 overflow-y-auto flex items-start justify-center py-6 px-4">
+                <div className="w-[290px] flex-shrink-0">
+                  <div className="rounded-[2.8rem] bg-gradient-to-b from-gray-800 to-gray-900 p-[10px] shadow-2xl shadow-gray-900/30 relative">
+                    {/* Glow effect behind phone */}
+                    <div className="absolute -inset-4 bg-gradient-to-b from-violet-300/25 via-indigo-200/15 to-purple-300/15 rounded-[3.5rem] blur-2xl -z-[1]" />
+                    {/* Side buttons */}
+                    <div className="absolute -left-[2px] top-24 w-[3px] h-8 bg-gray-700 rounded-l-sm" />
+                    <div className="absolute -left-[2px] top-36 w-[3px] h-12 bg-gray-700 rounded-l-sm" />
+                    <div className="absolute -left-[2px] top-[200px] w-[3px] h-12 bg-gray-700 rounded-l-sm" />
+                    <div className="absolute -right-[2px] top-32 w-[3px] h-16 bg-gray-700 rounded-r-sm" />
+                    <div className="relative">
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-gray-900 rounded-b-2xl z-10 flex items-center justify-center">
+                        <div className="w-12 h-3 bg-gray-800 rounded-full" />
+                      </div>
+                    </div>
+                    <div
+                      className={`rounded-[2.2rem] overflow-hidden ${!isCustom ? theme.bg : ''} min-h-[480px] flex flex-col ${fontStyle.cls} relative`}
+                      style={isCustom ? customTheme.bgStyle : undefined}
+                    >
+                      {/* Background image from template */}
+                      {bgImage && (
+                        <>
+                          <img src={bgImage} alt="" className="absolute inset-0 w-full h-full object-cover z-0" />
+                          <div
+                            className="absolute inset-0 z-0"
+                            style={{ background: `linear-gradient(to bottom, ${customBgColor}E6, ${customBgSecondary}B3)` }}
+                          />
+                        </>
+                      )}
+                      {/* Pattern overlay */}
+                      {selectedPattern !== 'none' && (
+                        <div className="absolute inset-0 pointer-events-none z-0 rounded-[2.3rem] overflow-hidden">
+                          <div
+                            className="absolute inset-[-50%] w-[200%] h-[200%]"
+                            style={{
+                              ...bgPatterns.find((p) => p.id === selectedPattern)?.style,
+                              ...getPatternAnimStyle(selectedPatternAnim),
+                            }}
+                          />
+                        </div>
+                      )}
+                      {/* Glow overlay */}
+                      {patternGlow && (
+                        <div className="absolute inset-0 pointer-events-none z-0 rounded-[2.3rem] overflow-hidden">
+                          <div
+                            className="absolute rounded-full blur-3xl"
+                            style={{
+                              width: '75%',
+                              height: '55%',
+                              top: '20%',
+                              left: '12%',
+                              animation: 'glowColorShift 8s ease-in-out infinite, glowMove 6s ease-in-out infinite',
+                            }}
+                          />
+                        </div>
+                      )}
+                      {/* Profile */}
+                      <div className="pt-8 pb-3 flex flex-col items-center px-6 relative z-[1]">
+                        <div className="w-[68px] h-[68px] rounded-full bg-gray-300/20 flex items-center justify-center mb-2.5 overflow-hidden">
+                          {avatar ? (
+                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+                          ) : (
+                            <User size={22} className={`${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-25`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined} />
+                          )}
+                        </div>
+                        <h3 className={`font-bold text-sm ${!resolvedTextColor && !isCustom ? theme.text : ''}`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
+                          {displayName || 'username'}
+                        </h3>
+                        {bio && (
+                          <p className={`text-[11px] mt-0.5 ${!resolvedTextColor && !isCustom ? theme.subtext : ''} text-center`} style={resolvedTextColor ? { color: resolvedTextColor, opacity: 0.6 } : undefined}>{bio}</p>
+                        )}
+                      </div>
+
+                      {/* Social Row */}
+                      {activeSocials.length > 0 && (
+                        <div className="px-5 pb-3 flex items-center justify-center gap-3 relative z-[1]">
+                          {activeSocials.map((id) => {
+                            const p = socialPlatforms.find((s) => s.id === id);
+                            if (!p) return null;
+                            const url = socialUrls[id];
+                            const Wrapper = url ? 'a' : 'div';
+                            return (
+                              <Wrapper
+                                key={id}
+                                {...(url ? { href: url, target: '_blank', rel: 'noopener noreferrer' } : {})}
+                                className={`w-7 h-7 rounded-full ${!isCustom ? theme.card : ''} flex items-center justify-center ${url ? 'hover:opacity-80 transition-opacity cursor-pointer' : ''}`}
+                                style={isCustom ? customTheme.cardStyle : undefined}
+                              >
+                                <p.icon size={12} className={`${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-50`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined} />
+                              </Wrapper>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Product Gallery */}
+                      {productImages.length > 0 && (
+                        <div className="px-4 pb-3 relative z-[1]">
+                          <div className="grid grid-cols-2 gap-2">
+                            {productImages.map((img, idx) => (
+                              <div
+                                key={idx}
+                                className={`aspect-square rounded-xl overflow-hidden ${!isCustom ? theme.card : ''} ${!isCustom ? theme.cardBorder : ''}`}
+                                style={isCustom ? customTheme.cardStyle : undefined}
+                              >
+                                <img
+                                  src={img}
+                                  alt={`Product ${idx + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Links */}
+                      <div className="px-4 pb-4 space-y-2 flex-1 relative z-[1]">
+                        {links.filter((l) => {
+                          if (!l.enabled) return false;
+                          if (l.embedCode || l.linkImage) return true;
+                          const url = resolveUrl(l);
+                          return !!(l.title || (url && urlToEmbedCode(url)));
+                        }).length === 0 && (
+                          <div className={`text-center py-6 ${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-15`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
+                            <ExternalLink size={20} className="mx-auto mb-1.5" />
+                            <p className="text-[10px]">เพิ่มลิงก์ด้านบน</p>
+                          </div>
+                        )}
+                        {links
+                          .filter((l) => {
+                            if (!l.enabled) return false;
+                            if (l.embedCode || l.linkImage) return true;
+                            const url = resolveUrl(l);
+                            return !!(l.title || (url && urlToEmbedCode(url)));
+                          })
+                          .map((link) => {
+                            const actualUrl = resolveUrl(link);
+                            const resolvedEmbed = link.embedCode || (actualUrl ? urlToEmbedCode(actualUrl) : null);
+                            return resolvedEmbed ? (
+                              <div key={link.id} className="relative z-[1] rounded-xl overflow-hidden [&_iframe]:!h-[180px]">
+                                <div dangerouslySetInnerHTML={{ __html: resolvedEmbed }} />
+                              </div>
+                            ) : link.linkImage ? (
+                              <div key={link.id} className="relative z-[1] rounded-xl overflow-hidden cursor-pointer group">
+                                <img src={link.linkImage} alt={link.title} className="w-full rounded-xl object-cover transition-transform group-hover:scale-[1.02]" />
+                              </div>
+                            ) : (
+                            <div
+                              key={link.id}
+                              className={`${!link.color && !isCustom ? `${theme.card} ${theme.cardBorder}` : ''} ${btnStyle.cls} px-4 py-2.5 ${link.thumbnail ? 'flex items-center gap-2' : 'text-center'} relative z-[1]`}
+                              style={link.color
+                                ? { backgroundColor: link.color, border: '1px solid rgba(0,0,0,0.06)' }
+                                : isCustom ? customTheme.cardStyle : undefined
+                              }
+                            >
+                              {link.thumbnail && (
+                                <img src={link.thumbnail} alt="" className="w-5 h-5 rounded object-cover flex-shrink-0" />
+                              )}
+                              <span className={`text-[11px] font-medium ${!link.color && !resolvedTextColor && !isCustom ? theme.text : ''} ${link.thumbnail ? 'flex-1 text-left' : ''}`} style={resolvedTextColor ? { color: resolvedTextColor } : link.color ? { color: '#374151' } : undefined}>{link.title}</span>
+                            </div>
+                            );
+                          })}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

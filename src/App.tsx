@@ -14,6 +14,7 @@ import PreviewPage from './pages/PreviewPage';
 import QRCodePage from './pages/QRCodePage';
 import LinkShortenerPage from './pages/LinkShortenerPage';
 import DashboardPage from './pages/DashboardPage';
+import EmbedGeneratorPage from './pages/EmbedGeneratorPage';
 
 function MainLayout() {
   return (
@@ -55,6 +56,7 @@ function AppRoutes() {
         <Route path="/qr-code" element={<QRCodePage />} />
         <Route path="/link-shortener" element={<LinkShortenerPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/embed-generator" element={<EmbedGeneratorPage />} />
       </Route>
     </Routes>
   );
