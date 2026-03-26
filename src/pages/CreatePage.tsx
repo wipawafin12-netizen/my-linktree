@@ -918,9 +918,8 @@ export default function CreatePage() {
     );
   };
 
-  // Avatar drag-to-pan handlers
+  // Avatar crop: drag-to-pan + pinch/wheel to zoom
   const handleAvatarDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-    if (avatarScale <= 1) return;
     e.preventDefault();
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
@@ -934,7 +933,7 @@ export default function CreatePage() {
       const clientX = 'touches' in e ? (e as TouchEvent).touches[0].clientX : (e as MouseEvent).clientX;
       const clientY = 'touches' in e ? (e as TouchEvent).touches[0].clientY : (e as MouseEvent).clientY;
       const container = avatarCropRef.current;
-      const size = container ? container.offsetWidth : 96;
+      const size = container ? container.offsetWidth : 192;
       const dx = clientX - avatarDragRef.current.startX;
       const dy = clientY - avatarDragRef.current.startY;
       const pctX = (dx / (size * avatarScale)) * 100;
@@ -955,6 +954,28 @@ export default function CreatePage() {
       window.removeEventListener('touchend', handleEnd);
     };
   }, [avatarScale]);
+
+  // Wheel zoom on avatar crop area
+  useEffect(() => {
+    const el = avatarCropRef.current;
+    if (!el) return;
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.15 : 0.15;
+      setAvatarScale(prev => {
+        const next = Math.max(1, Math.min(3, prev + delta));
+        if (next <= 1) { setAvatarX(0); setAvatarY(0); }
+        else {
+          const maxPan = 50 * (next - 1) / next;
+          setAvatarX(x => Math.max(-maxPan, Math.min(maxPan, x)));
+          setAvatarY(y => Math.max(-maxPan, Math.min(maxPan, y)));
+        }
+        return next;
+      });
+    };
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [avatar]);
 
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -2245,51 +2266,45 @@ export default function CreatePage() {
                         onClick={() => avatarInputRef.current?.click()}
                         className="text-xs font-medium text-pink-500 hover:text-pink-600 transition-colors"
                       >
-                        อัปโหลดรูปใหม่
+                        {avatar ? 'เปลี่ยนรูป' : 'อัปโหลดรูป'}
                       </button>
                     </div>
-                    <div className="flex flex-col items-center gap-3">
-                      <div
-                        ref={avatarCropRef}
-                        className={`w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100 ring-2 ring-white shadow-sm select-none ${avatar && avatarScale > 1 ? 'cursor-grab active:cursor-grabbing' : ''}`}
-                        onMouseDown={avatar ? handleAvatarDragStart : undefined}
-                        onTouchStart={avatar ? handleAvatarDragStart : undefined}
-                        onClick={!avatar ? () => avatarInputRef.current?.click() : undefined}
-                      >
-                        {avatar ? (
-                          <img src={avatar} alt="Avatar" className="w-full h-full object-cover pointer-events-none" draggable={false}
-                            style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <User size={28} className="text-pink-300" />
+                    <div className="flex flex-col items-center gap-2">
+                      {avatar ? (
+                        <>
+                          {/* LINE-style crop area */}
+                          <div
+                            ref={avatarCropRef}
+                            className="relative w-48 h-48 bg-black/90 rounded-2xl overflow-hidden select-none cursor-grab active:cursor-grabbing"
+                            onMouseDown={handleAvatarDragStart}
+                            onTouchStart={handleAvatarDragStart}
+                          >
+                            {/* Image */}
+                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover pointer-events-none" draggable={false}
+                              style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+                            {/* Dark overlay outside circle */}
+                            <div className="absolute inset-0 pointer-events-none"
+                              style={{ background: 'radial-gradient(circle at center, transparent 42%, rgba(0,0,0,0.55) 42.5%)' }} />
+                            {/* Circle border */}
+                            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                              <div className="w-[84%] h-[84%] rounded-full border border-white/30" />
+                            </div>
+                            {/* Grid lines */}
+                            <div className="absolute inset-0 pointer-events-none">
+                              <div className="absolute left-1/3 top-[8%] bottom-[8%] w-px bg-white/10" />
+                              <div className="absolute left-2/3 top-[8%] bottom-[8%] w-px bg-white/10" />
+                              <div className="absolute top-1/3 left-[8%] right-[8%] h-px bg-white/10" />
+                              <div className="absolute top-2/3 left-[8%] right-[8%] h-px bg-white/10" />
+                            </div>
                           </div>
-                        )}
-                      </div>
-                      {avatar && avatarScale > 1 && (
-                        <p className="text-[10px] text-gray-400">ลากเพื่อปรับตำแหน่ง</p>
-                      )}
-                      {avatar && (
-                        <div className="flex items-center gap-2 w-full max-w-[200px]">
-                          <Search size={11} className="text-gray-300 flex-shrink-0" />
-                          <input
-                            type="range"
-                            min="1"
-                            max="3"
-                            step="0.05"
-                            value={avatarScale}
-                            onChange={(e) => {
-                              const newScale = parseFloat(e.target.value);
-                              setAvatarScale(newScale);
-                              if (newScale <= 1) { setAvatarX(0); setAvatarY(0); }
-                              else {
-                                const maxPan = 50 * (newScale - 1) / newScale;
-                                setAvatarX(x => Math.max(-maxPan, Math.min(maxPan, x)));
-                                setAvatarY(y => Math.max(-maxPan, Math.min(maxPan, y)));
-                              }
-                            }}
-                            className="flex-1 h-1 accent-pink-400 cursor-pointer"
-                          />
-                          <span className="text-[10px] text-gray-400 w-8 text-right">{Math.round(avatarScale * 100)}%</span>
+                          <p className="text-[10px] text-gray-400">ลากเพื่อเลื่อน • เลื่อนล้อเมาส์เพื่อซูม</p>
+                        </>
+                      ) : (
+                        <div
+                          className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 ring-2 ring-white shadow-sm flex items-center justify-center cursor-pointer hover:shadow-md transition-shadow"
+                          onClick={() => avatarInputRef.current?.click()}
+                        >
+                          <User size={28} className="text-pink-300" />
                         </div>
                       )}
                     </div>
