@@ -244,6 +244,9 @@ export default function PreviewPage() {
             patternGlow: !!p.patternGlow,
             bgImage: localData?.bgImage || '',
             productImages: localData?.productImages || [],
+            avatarScale: localData?.avatarScale || 1,
+            avatarX: localData?.avatarX || 0,
+            avatarY: localData?.avatarY || 0,
           });
 
           // Load subscribe settings
