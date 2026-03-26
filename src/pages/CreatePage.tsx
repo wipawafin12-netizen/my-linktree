@@ -2270,42 +2270,24 @@ export default function CreatePage() {
                       </button>
                     </div>
                     <div className="flex flex-col items-center gap-2">
-                      {avatar ? (
-                        <>
-                          {/* LINE-style crop area */}
-                          <div
-                            ref={avatarCropRef}
-                            className="relative w-48 h-48 bg-black/90 rounded-2xl overflow-hidden select-none cursor-grab active:cursor-grabbing"
-                            onMouseDown={handleAvatarDragStart}
-                            onTouchStart={handleAvatarDragStart}
-                          >
-                            {/* Image */}
-                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover pointer-events-none" draggable={false}
-                              style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
-                            {/* Dark overlay outside circle */}
-                            <div className="absolute inset-0 pointer-events-none"
-                              style={{ background: 'radial-gradient(circle at center, transparent 42%, rgba(0,0,0,0.55) 42.5%)' }} />
-                            {/* Circle border */}
-                            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                              <div className="w-[84%] h-[84%] rounded-full border border-white/30" />
-                            </div>
-                            {/* Grid lines */}
-                            <div className="absolute inset-0 pointer-events-none">
-                              <div className="absolute left-1/3 top-[8%] bottom-[8%] w-px bg-white/10" />
-                              <div className="absolute left-2/3 top-[8%] bottom-[8%] w-px bg-white/10" />
-                              <div className="absolute top-1/3 left-[8%] right-[8%] h-px bg-white/10" />
-                              <div className="absolute top-2/3 left-[8%] right-[8%] h-px bg-white/10" />
-                            </div>
+                      <div
+                        ref={avatarCropRef}
+                        className={`w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100 ring-2 ring-white shadow-lg select-none ${avatar ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}`}
+                        onMouseDown={avatar ? handleAvatarDragStart : undefined}
+                        onTouchStart={avatar ? handleAvatarDragStart : undefined}
+                        onClick={!avatar ? () => avatarInputRef.current?.click() : undefined}
+                      >
+                        {avatar ? (
+                          <img src={avatar} alt="Avatar" className="w-full h-full object-cover pointer-events-none" draggable={false}
+                            style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <User size={32} className="text-pink-300" />
                           </div>
-                          <p className="text-[10px] text-gray-400">ลากเพื่อเลื่อน • เลื่อนล้อเมาส์เพื่อซูม</p>
-                        </>
-                      ) : (
-                        <div
-                          className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 ring-2 ring-white shadow-sm flex items-center justify-center cursor-pointer hover:shadow-md transition-shadow"
-                          onClick={() => avatarInputRef.current?.click()}
-                        >
-                          <User size={28} className="text-pink-300" />
-                        </div>
+                        )}
+                      </div>
+                      {avatar && (
+                        <p className="text-[10px] text-gray-400">ลากเพื่อเลื่อน • เลื่อนล้อเมาส์เพื่อซูม</p>
                       )}
                     </div>
                   </div>
