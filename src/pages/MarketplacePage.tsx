@@ -70,38 +70,38 @@ export default function MarketplacePage() {
 
       {/* Hero */}
       <div className="relative overflow-hidden bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[120px]" />
-          <div className="absolute bottom-10 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-[100px]" />
-          <div className="absolute top-40 right-1/3 w-64 h-64 bg-pink-500/15 rounded-full blur-[80px]" />
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 left-1/4 w-48 h-48 sm:w-96 sm:h-96 bg-purple-500/20 rounded-full blur-[120px]" />
+          <div className="absolute bottom-10 right-1/4 w-40 h-40 sm:w-80 sm:h-80 bg-blue-500/20 rounded-full blur-[100px]" />
+          <div className="absolute top-40 right-1/3 w-32 h-32 sm:w-64 sm:h-64 bg-pink-500/15 rounded-full blur-[80px]" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-32 pb-10 sm:pb-16">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-sm text-white/90 text-xs font-semibold rounded-full mb-6 border border-white/10">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-white/10 backdrop-blur-sm text-white/90 text-[11px] sm:text-xs font-semibold rounded-full mb-4 sm:mb-6 border border-white/10">
               <Sparkles size={14} className="text-yellow-400" /> การเชื่อมต่อกว่า 22 รายการ
             </div>
-            <h1 className="text-4xl sm:text-6xl font-bold text-white mb-5 leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-5 leading-tight">
               ค้นพบแอปสำหรับ<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400">OpenBio</span>
             </h1>
-            <p className="text-lg text-white/60 max-w-xl mx-auto mb-10">
+            <p className="text-base sm:text-lg text-white/60 max-w-xl mx-auto mb-6 sm:mb-10 px-2 sm:px-0">
               แชร์คอนเทนต์ สร้างรายได้ และขยายผู้ติดตามด้วยการเชื่อมต่อที่ทรงพลัง
             </p>
 
             {/* Search */}
             <div className="max-w-lg mx-auto relative">
-              <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-white/40" />
+              <Search size={18} className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 text-white/40" />
               <input
                 type="text"
                 placeholder="ค้นหาแอป..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-14 pr-5 py-4 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-400/50 transition-all text-sm"
+                className="w-full pl-11 sm:pl-14 pr-4 sm:pr-5 py-3 sm:py-4 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-400/50 transition-all text-sm"
               />
             </div>
           </motion.div>
@@ -113,44 +113,45 @@ export default function MarketplacePage() {
         </svg>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-20">
 
         {/* Featured Apps - Horizontal scroll */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-16 -mt-2"
+          className="mb-10 sm:mb-16 -mt-2"
         >
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <Star size={20} className="text-yellow-500" /> แนะนำ
+          <div className="flex items-center justify-between mb-4 sm:mb-5">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Star size={18} className="text-yellow-500" /> แนะนำ
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {featuredApps.map((app, i) => (
               <motion.div
                 key={app.name}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.15 + i * 0.07 }}
-                className="group relative rounded-2xl p-5 border border-gray-100 bg-white hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden"
+                className="group relative rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-gray-100 bg-white hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-[60px] opacity-20 transition-opacity group-hover:opacity-30" style={{ backgroundColor: app.color }} />
                 <div className="relative">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm" style={{ backgroundColor: app.color }}>
-                      <app.icon size={22} className="text-white" />
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm flex-shrink-0" style={{ backgroundColor: app.color }}>
+                      <app.icon size={20} className="text-white sm:hidden" />
+                      <app.icon size={22} className="text-white hidden sm:block" />
                     </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-gray-900">{app.name}</h3>
-                      <p className="text-[11px] text-gray-400">{app.installs} การติดตั้ง</p>
+                    <div className="min-w-0">
+                      <h3 className="text-xs sm:text-sm font-bold text-gray-900 truncate">{app.name}</h3>
+                      <p className="text-[10px] sm:text-[11px] text-gray-400">{app.installs} การติดตั้ง</p>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 leading-relaxed mb-4 line-clamp-2">{app.desc}</p>
+                  <p className="text-[11px] sm:text-xs text-gray-500 leading-relaxed mb-3 sm:mb-4 line-clamp-2">{app.desc}</p>
                   <button
                     onClick={() => toggleInstall(app.name)}
-                    className={`w-full py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                    className={`w-full py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-semibold transition-all duration-200 ${
                       installedApps.includes(app.name)
                         ? 'bg-gray-100 text-gray-500'
                         : 'bg-gray-900 text-white hover:bg-gray-800'
@@ -169,31 +170,32 @@ export default function MarketplacePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="mb-16"
+          className="mb-10 sm:mb-16"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
-            <Sparkles size={20} className="text-purple-500" /> ตัวเลือกของบรรณาธิการ
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-5 flex items-center gap-2">
+            <Sparkles size={18} className="text-purple-500" /> ตัวเลือกของบรรณาธิการ
           </h2>
-          <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 rounded-2xl p-6 border border-purple-100/50">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-purple-100/50">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
               {editorsPicks.map((app, i) => (
                 <motion.div
                   key={app.name}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: 0.25 + i * 0.06 }}
-                  className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                  className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-all cursor-pointer group"
                 >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: app.color }}>
-                      <app.icon size={18} className="text-white" />
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: app.color }}>
+                      <app.icon size={16} className="text-white sm:hidden" />
+                      <app.icon size={18} className="text-white hidden sm:block" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="text-sm font-semibold text-gray-900 truncate">{app.name}</h4>
-                      <p className="text-[11px] text-gray-400">{app.installs} การติดตั้ง</p>
+                      <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{app.name}</h4>
+                      <p className="text-[10px] sm:text-[11px] text-gray-400">{app.installs} การติดตั้ง</p>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 line-clamp-2 mb-3">{app.desc}</p>
+                  <p className="text-[11px] sm:text-xs text-gray-500 line-clamp-2 mb-2 sm:mb-3">{app.desc}</p>
                   <button
                     onClick={() => toggleInstall(app.name)}
                     className={`text-xs font-semibold transition-colors ${
@@ -216,18 +218,18 @@ export default function MarketplacePage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">ดูทั้งหมด</h2>
-            <p className="text-sm text-gray-400">{filtered.length} แอป</p>
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">ดูทั้งหมด</h2>
+            <p className="text-xs sm:text-sm text-gray-400">{filtered.length} แอป</p>
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-2 mb-8 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+          <div className="flex gap-1.5 sm:gap-2 mb-6 sm:mb-8 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0" style={{ scrollbarWidth: 'none' }}>
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl border whitespace-nowrap transition-all duration-200 ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-lg sm:rounded-xl border whitespace-nowrap transition-all duration-200 ${
                   activeCategory === cat.id
                     ? 'bg-gray-900 text-white border-gray-900 shadow-sm'
                     : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:text-gray-900'
@@ -247,7 +249,7 @@ export default function MarketplacePage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
             >
               {filtered.map((app, i) => {
                 const installed = installedApps.includes(app.name);
@@ -257,11 +259,11 @@ export default function MarketplacePage() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: i * 0.03 }}
-                    className="group bg-white rounded-2xl border border-gray-100 hover:border-gray-200 p-5 hover:shadow-lg transition-all duration-300"
+                    className="group bg-white rounded-xl sm:rounded-2xl border border-gray-100 hover:border-gray-200 p-4 sm:p-5 hover:shadow-lg transition-all duration-300"
                   >
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-3 sm:gap-4">
                       <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm"
+                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm"
                         style={{ backgroundColor: app.color }}
                       >
                         <app.icon size={22} className="text-white" />
@@ -308,9 +310,9 @@ export default function MarketplacePage() {
 
           {/* Empty */}
           {filtered.length === 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-24">
-              <Search size={40} className="text-gray-200 mx-auto mb-4" />
-              <p className="text-gray-400 text-lg mb-1">ไม่พบแอป</p>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16 sm:py-24">
+              <Search size={36} className="text-gray-200 mx-auto mb-4" />
+              <p className="text-gray-400 text-base sm:text-lg mb-1">ไม่พบแอป</p>
               <p className="text-gray-300 text-sm mb-4">ลองค้นหาอื่นหรือเปลี่ยนหมวดหมู่</p>
               <button
                 onClick={() => { setActiveCategory('all'); setSearchQuery(''); }}
@@ -327,22 +329,22 @@ export default function MarketplacePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-20 rounded-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-10 sm:p-14 relative overflow-hidden"
+          className="mt-12 sm:mt-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-10 lg:p-14 relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px]" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px]" />
-          <div className="relative flex flex-col sm:flex-row items-center gap-8">
-            <div className="flex-1">
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
+          <div className="absolute top-0 right-0 w-48 h-48 sm:w-80 sm:h-80 bg-purple-500/10 rounded-full blur-[100px]" />
+          <div className="absolute bottom-0 left-0 w-36 h-36 sm:w-64 sm:h-64 bg-blue-500/10 rounded-full blur-[80px]" />
+          <div className="relative flex flex-col sm:flex-row items-center gap-5 sm:gap-8">
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
                 สร้าง Link App ของคุณเอง
               </h2>
-              <p className="text-white/50 text-base max-w-lg">
+              <p className="text-white/50 text-sm sm:text-base max-w-lg">
                 ร่วมเป็นพาร์ทเนอร์กับ OpenBio และเข้าถึงครีเอเตอร์นับล้าน สร้างการเชื่อมต่อที่ช่วยครีเอเตอร์แชร์ ขาย และเติบโต
               </p>
             </div>
             <Link
-              to={isLoggedIn ? '/create' : '/signup'} 
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-gray-900 font-semibold rounded-full hover:bg-gray-100 transition-colors flex-shrink-0"
+              to={isLoggedIn ? '/create' : '/signup'}
+              className="inline-flex items-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 bg-white text-gray-900 text-sm sm:text-base font-semibold rounded-full hover:bg-gray-100 transition-colors flex-shrink-0"
             >
               เป็นพาร์ทเนอร์ <ArrowRight size={18} />
             </Link>
