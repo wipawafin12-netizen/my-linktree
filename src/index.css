@@ -29,11 +29,21 @@
   --font-satisfy: "Satisfy", cursive;
 }
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 body {
   background-color: #050505;
   color: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Custom Scrollbar */

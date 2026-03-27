@@ -922,8 +922,8 @@ export default function CreatePage() {
   };
 
   // Avatar crop: drag-to-pan + pinch/wheel to zoom
-  const clampPan = (scale: number, x: number, y: number) => {
-    const maxPan = scale <= 1 ? 0 : 50 * (scale - 1) / scale;
+  const clampPan = (_scale: number, x: number, y: number) => {
+    const maxPan = 50;
     return {
       x: Math.max(-maxPan, Math.min(maxPan, x)),
       y: Math.max(-maxPan, Math.min(maxPan, y)),
@@ -970,8 +970,8 @@ export default function CreatePage() {
       const size = container ? container.offsetWidth : 128;
       const dx = clientX - avatarDragRef.current.startX;
       const dy = clientY - avatarDragRef.current.startY;
-      const pctX = (dx / (size * avatarScale)) * 100;
-      const pctY = (dy / (size * avatarScale)) * 100;
+      const pctX = (dx / size) * 150;
+      const pctY = (dy / size) * 150;
       const clamped = clampPan(avatarScale, avatarDragRef.current.startAvatarX + pctX, avatarDragRef.current.startAvatarY + pctY);
       setAvatarX(clamped.x);
       setAvatarY(clamped.y);
@@ -1344,13 +1344,22 @@ export default function CreatePage() {
   // Manual save for Name/Bio
   const [profileSaving, setProfileSaving] = useState(false);
   const handleSaveProfile = async () => {
-    if (!pbPageId) return;
     setProfileSaving(true);
     try {
-      await pb.collection('pages').update(pbPageId, { displayName, bio });
+      if (pbPageId) {
+        await pb.collection('pages').update(pbPageId, { displayName, bio });
+      }
+      // Also force localStorage save
+      try {
+        localStorage.setItem('openbio_preview', JSON.stringify({
+          displayName, bio, avatar: compressedAvatar, avatarScale, avatarX, avatarY, selectedTheme, selectedButton, selectedFont,
+          customTextColor, customBgColor, customBgSecondary,
+          links, activeSocials, socialUrls, selectedPattern, selectedPatternAnim, patternGlow,
+          bgImage, productImages,
+        }));
+      } catch { /* ignore quota errors */ }
       showToast('บันทึกโปรไฟล์แล้ว!');
-    } catch (err) {
-      // Profile save failed silently
+    } catch {
       showToast('บันทึกโปรไฟล์ล้มเหลว');
     } finally {
       setProfileSaving(false);
@@ -2308,7 +2317,7 @@ export default function CreatePage() {
                         <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100 ring-2 ring-white shadow-sm">
                           {avatar ? (
                             <img src={avatar} alt="Avatar" className="w-full h-full object-cover"
-                              style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+                              style={{ objectPosition: `${50 - avatarX}% ${50 - avatarY}%`, transform: `scale(${avatarScale})` }} />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <User size={20} className="text-pink-300" />
@@ -2370,7 +2379,7 @@ export default function CreatePage() {
                     <button
                       onClick={handleSaveProfile}
                       disabled={profileSaving}
-                      className="px-4 py-1.5 text-xs font-medium text-white bg-[#7c3aed] rounded-lg hover:bg-[#6d28d9] transition-colors disabled:opacity-50"
+                      className="w-full sm:w-auto px-6 py-2.5 text-sm font-medium text-white bg-[#7c3aed] rounded-xl hover:bg-[#6d28d9] transition-colors disabled:opacity-50 active:scale-[0.98]"
                     >
                       {profileSaving ? 'กำลังบันทึก...' : 'บันทึกโปรไฟล์'}
                     </button>
@@ -3253,7 +3262,7 @@ export default function CreatePage() {
                       <div className="pt-8 pb-3 flex flex-col items-center px-6 relative z-[1]">
                         <div className="w-[68px] h-[68px] rounded-full bg-gray-300/20 flex items-center justify-center mb-2.5 overflow-hidden">
                           {avatar ? (
-                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" style={{ objectPosition: `${50 - avatarX}% ${50 - avatarY}%`, transform: `scale(${avatarScale})` }} />
                           ) : (
                             <User size={22} className={`${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-25`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined} />
                           )}
@@ -3637,7 +3646,7 @@ export default function CreatePage() {
                       <div className="pt-8 pb-3 flex flex-col items-center px-6 relative z-[1]">
                         <div className="w-[68px] h-[68px] rounded-full bg-gray-300/20 flex items-center justify-center mb-2.5 overflow-hidden">
                           {avatar ? (
-                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" style={{ objectPosition: `${50 - avatarX}% ${50 - avatarY}%`, transform: `scale(${avatarScale})` }} />
                           ) : (
                             <User size={22} className={`${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-25`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined} />
                           )}
@@ -3768,15 +3777,15 @@ export default function CreatePage() {
             <div className="flex-1 bg-gray-900 flex items-center justify-center relative overflow-hidden">
               <div
                 ref={avatarCropRef}
-                className="relative select-none cursor-grab active:cursor-grabbing"
+                className="relative select-none cursor-grab active:cursor-grabbing overflow-hidden touch-none"
                 style={{ width: 'min(80vw, 80vh)', height: 'min(80vw, 80vh)' }}
                 onMouseDown={handleAvatarDragStart}
                 onTouchStart={handleAvatarDragStart}
               >
-                {/* Image */}
-                <div className="w-full h-full rounded-full overflow-hidden">
+                {/* Scale wrapper - separate from object-position to avoid interference */}
+                <div className="w-full h-full" style={{ transform: `scale(${avatarScale})`, transformOrigin: 'center' }}>
                   <img src={avatar} alt="Crop" className="w-full h-full object-cover pointer-events-none" draggable={false}
-                    style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+                    style={{ objectPosition: `${50 - avatarX}% ${50 - avatarY}%` }} />
                 </div>
               </div>
               {/* Dark overlay outside circle */}

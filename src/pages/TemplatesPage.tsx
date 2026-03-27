@@ -725,18 +725,18 @@ export default function TemplatesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-12 sm:pb-20">
 
         {/* ── Hero ── */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16 relative"
+          className="text-center mb-10 sm:mb-16 relative"
         >
           {/* Decorative blobs */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[600px] h-[200px] sm:h-[300px] pointer-events-none overflow-hidden">
             <div className="absolute top-0 left-0 w-72 h-72 bg-purple-200/30 rounded-full blur-[80px]" />
             <div className="absolute bottom-0 right-0 w-72 h-72 bg-pink-200/30 rounded-full blur-[80px]" />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-200/20 rounded-full blur-[60px]" />
@@ -752,14 +752,14 @@ export default function TemplatesPage() {
               <Layers size={13} />
               {templates.length}+ เทมเพลต
             </motion.div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-5 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-5 leading-tight">
               ค้นหา
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600">
                 เทมเพลตที่ใช่
               </span>
             </h1>
-            <p className="text-base sm:text-lg text-gray-500 max-w-xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg text-gray-500 max-w-xl mx-auto leading-relaxed">
               เลือกจากเทมเพลตที่ออกแบบมาอย่างสวยงาม
               และปรับแต่งให้เข้ากับแบรนด์ของคุณได้ในไม่กี่วินาที
             </p>
@@ -771,7 +771,7 @@ export default function TemplatesPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="max-w-xl mx-auto mb-10"
+          className="max-w-xl mx-auto mb-6 sm:mb-10"
         >
           <div className="relative group">
             <Search size={19} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-violet-500 transition-colors" />
@@ -798,7 +798,7 @@ export default function TemplatesPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.25 }}
-          className="relative mb-12"
+          className="relative mb-8 sm:mb-12"
         >
           {/* Mobile filter toggle */}
           <button
@@ -832,7 +832,7 @@ export default function TemplatesPage() {
 
             <div
               ref={scrollRef}
-              className="flex lg:flex-wrap lg:justify-center gap-2 overflow-x-auto scrollbar-hide px-10 lg:px-0 pb-2 lg:pb-0"
+              className="flex lg:flex-wrap lg:justify-center gap-2 overflow-x-auto scrollbar-hide px-4 sm:px-10 lg:px-0 pb-2 lg:pb-0"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {categories.map((cat, i) => {
@@ -920,7 +920,7 @@ export default function TemplatesPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5"
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-5"
           >
             {filtered.map((t, i) => (
               <TemplateCard

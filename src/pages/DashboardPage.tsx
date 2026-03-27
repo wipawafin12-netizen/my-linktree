@@ -129,16 +129,17 @@ function StatCard({
       initial={{ opacity: 0, y: 24, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ delay, type: 'spring', stiffness: 260, damping: 24 }}
-      className="relative group bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+      className="relative group bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
     >
       <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${gradient}`} />
       <div className="relative">
-        <div className={`w-11 h-11 ${bg} rounded-xl flex items-center justify-center mb-3`}>
-          <Icon size={20} className={color} />
+        <div className={`w-9 h-9 sm:w-11 sm:h-11 ${bg} rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-3`}>
+          <Icon size={18} className={`${color} sm:hidden`} />
+          <Icon size={20} className={`${color} hidden sm:block`} />
         </div>
-        <p className="text-2xl font-bold text-gray-900 tabular-nums">{value.toLocaleString()}</p>
-        <div className="flex items-center justify-between mt-1">
-          <p className="text-xs text-gray-500">{label}</p>
+        <p className="text-lg sm:text-2xl font-bold text-gray-900 tabular-nums">{value.toLocaleString()}</p>
+        <div className="flex items-center justify-between mt-0.5 sm:mt-1">
+          <p className="text-[10px] sm:text-xs text-gray-500 truncate mr-1">{label}</p>
           {trend !== undefined && trend !== 0 && (
             <div className={`flex items-center gap-0.5 text-[11px] font-medium ${trend > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
               {trend > 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
@@ -308,8 +309,8 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 overflow-x-hidden">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-12 sm:pb-20">
 
         {/* ── Header ── */}
         <motion.div
@@ -318,13 +319,13 @@ export default function DashboardPage() {
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4"
         >
           <div>
-            <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-violet-200">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-violet-200 flex-shrink-0">
                 {(username || 'U')[0].toUpperCase()}
               </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">แดชบอร์ด</h1>
-                <p className="text-gray-400 text-sm">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">แดชบอร์ด</h1>
+                <p className="text-gray-400 text-xs sm:text-sm truncate">
                   สวัสดี, <span className="text-gray-600 font-medium">{username || 'User'}</span> — นี่คือภาพรวมของคุณ
                 </p>
               </div>
@@ -334,23 +335,24 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={handleCopyLink}
-              className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-violet-700 bg-violet-50 border border-violet-100 rounded-xl hover:bg-violet-100 transition-colors"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-violet-700 bg-violet-50 border border-violet-100 rounded-xl hover:bg-violet-100 transition-colors"
             >
-              {copied ? <Check size={15} /> : <Copy size={15} />}
-              {copied ? 'คัดลอกแล้ว!' : 'คัดลอกลิงก์'}
+              {copied ? <Check size={14} /> : <Copy size={14} />}
+              {copied ? 'คัดลอกแล้ว!' : 'คัดลอก'}
             </button>
             <button
               onClick={() => window.open(`/${pageSlug}`, '_blank')}
-              className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-sm shadow-violet-200"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-sm shadow-violet-200"
             >
-              <ExternalLink size={15} />
-              ดูหน้าเพจ
+              <ExternalLink size={14} />
+              <span className="hidden sm:inline">ดูหน้าเพจ</span>
+              <span className="sm:hidden">ดู</span>
             </button>
             <button
               onClick={() => navigate('/create')}
-              className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
             >
-              <ArrowLeft size={15} />
+              <ArrowLeft size={14} />
               แก้ไข
             </button>
           </div>
@@ -392,7 +394,7 @@ export default function DashboardPage() {
         {/* ── Stats Cards ── */}
         {hasData && (
           <>
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
               <StatCard label="ยอดเข้าชมทั้งหมด" value={totalViews} icon={Eye} color="text-blue-600" bg="bg-blue-50" gradient="bg-gradient-to-br from-blue-50/50 to-transparent" delay={0} />
               <StatCard label="ยอดคลิกทั้งหมด" value={totalClicks} icon={MousePointerClick} color="text-violet-600" bg="bg-violet-50" gradient="bg-gradient-to-br from-violet-50/50 to-transparent" delay={0.06} />
               <StatCard label="เข้าชมวันนี้" value={viewsToday} icon={TrendingUp} color="text-emerald-600" bg="bg-emerald-50" gradient="bg-gradient-to-br from-emerald-50/50 to-transparent" trend={viewsTrend} delay={0.12} />
@@ -405,25 +407,25 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex flex-wrap gap-4 mb-8"
+              className="flex flex-wrap gap-2 sm:gap-4 mb-6 sm:mb-8"
             >
-              <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-100 shadow-sm text-sm">
-                <Link2 size={15} className="text-violet-500" />
-                <span className="text-gray-500">ลิงก์ที่ใช้งาน</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-gray-100 shadow-sm text-xs sm:text-sm">
+                <Link2 size={14} className="text-violet-500 flex-shrink-0" />
+                <span className="text-gray-500">ลิงก์</span>
                 <span className="font-bold text-gray-900">{totalUniqueLinks}</span>
               </div>
-              <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-100 shadow-sm text-sm">
-                <Activity size={15} className="text-blue-500" />
-                <span className="text-gray-500">เข้าชมเฉลี่ย/วัน</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-gray-100 shadow-sm text-xs sm:text-sm">
+                <Activity size={14} className="text-blue-500 flex-shrink-0" />
+                <span className="text-gray-500">เข้าชม/วัน</span>
                 <span className="font-bold text-gray-900">
                   {analytics.viewHistory.length > 0
                     ? Math.round(analytics.viewHistory.length / 7)
                     : 0}
                 </span>
               </div>
-              <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-100 shadow-sm text-sm">
-                <Users size={15} className="text-emerald-500" />
-                <span className="text-gray-500">คลิกเฉลี่ย/วัน</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-gray-100 shadow-sm text-xs sm:text-sm">
+                <Users size={14} className="text-emerald-500 flex-shrink-0" />
+                <span className="text-gray-500">คลิก/วัน</span>
                 <span className="font-bold text-gray-900">
                   {analytics.linkClicks.length > 0
                     ? Math.round(analytics.linkClicks.length / 7)
@@ -589,9 +591,9 @@ export default function DashboardPage() {
                         <p className="text-xs mt-1">แชร์ลิงก์ของคุณเพื่อเริ่มเก็บสถิติ!</p>
                       </div>
                     ) : (
-                      <div className="space-y-4">
+                      <div className="space-y-4 overflow-x-auto -mx-2 px-2">
                         {/* Table header */}
-                        <div className="grid grid-cols-12 gap-4 text-xs text-gray-400 font-medium px-1 pb-2 border-b border-gray-50">
+                        <div className="grid grid-cols-12 gap-2 sm:gap-4 text-xs text-gray-400 font-medium px-1 pb-2 border-b border-gray-50 min-w-[480px]">
                           <div className="col-span-1">#</div>
                           <div className="col-span-5">ลิงก์</div>
                           <div className="col-span-3">ประสิทธิภาพ</div>
@@ -612,7 +614,7 @@ export default function DashboardPage() {
                               initial={{ opacity: 0, y: 8 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: i * 0.05 }}
-                              className="grid grid-cols-12 gap-4 items-center px-1 py-2.5 rounded-xl hover:bg-gray-50/70 transition-colors group"
+                              className="grid grid-cols-12 gap-2 sm:gap-4 items-center px-1 py-2.5 rounded-xl hover:bg-gray-50/70 transition-colors group min-w-[480px]"
                             >
                               <div className="col-span-1">
                                 <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${

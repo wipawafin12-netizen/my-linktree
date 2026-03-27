@@ -467,10 +467,10 @@ export default function PreviewPage() {
       )}
 
       {/* Profile */}
-      <div className="pt-14 pb-4 flex flex-col items-center px-6 w-full max-w-md relative z-[1]">
-        <div className="w-20 h-20 rounded-full bg-gray-300/20 flex items-center justify-center mb-3 overflow-hidden">
+      <div className="pt-10 sm:pt-14 pb-4 flex flex-col items-center px-4 sm:px-6 w-full max-w-md relative z-[1]">
+        <div className="w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-full bg-gray-300/20 flex items-center justify-center mb-3 overflow-hidden">
           {avatar ? (
-            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" style={{ transform: `scale(${avatarScale}) translate(${avatarX}%, ${avatarY}%)` }} />
+            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" style={{ objectPosition: `${50 - avatarX}% ${50 - avatarY}%`, transform: `scale(${avatarScale})` }} />
           ) : (
             <User size={28} className={`${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-25`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined} />
           )}
@@ -515,7 +515,7 @@ export default function PreviewPage() {
 
       {/* Product Gallery */}
       {productImages.length > 0 && (
-        <div className="px-5 pb-6 w-full max-w-md relative z-[1]">
+        <div className="px-4 sm:px-5 pb-6 w-full max-w-md relative z-[1]">
           <div className="grid grid-cols-2 gap-3">
             {productImages.map((img, idx) => (
               <button
@@ -539,7 +539,7 @@ export default function PreviewPage() {
       )}
 
       {/* Links */}
-      <div className="px-5 pb-10 space-y-3 w-full max-w-md relative z-[1]">
+      <div className="px-4 sm:px-5 pb-10 space-y-3 w-full max-w-md relative z-[1]">
         {enabledLinks.length === 0 && (
           <div className={`text-center py-10 ${!resolvedTextColor && !isCustom ? theme.text : ''} opacity-20`} style={resolvedTextColor ? { color: resolvedTextColor } : undefined}>
             <ExternalLink size={24} className="mx-auto mb-2" />
@@ -602,7 +602,7 @@ export default function PreviewPage() {
 
       {/* Subscribe Form */}
       {showSubscribe && pbPageId && (
-        <div className="px-5 pb-4 w-full max-w-md relative z-[1]">
+        <div className="px-4 sm:px-5 pb-4 w-full max-w-md relative z-[1]">
           <div
             className={`${!isCustom ? `${theme.card} ${theme.cardBorder}` : ''} rounded-2xl p-6 text-center`}
             style={isCustom ? customCardStyle : undefined}
@@ -624,7 +624,7 @@ export default function PreviewPage() {
                 ขอบคุณที่ติดตาม!
               </p>
             ) : (
-              <form onSubmit={handleSubscribe} className="flex gap-2 mt-3">
+              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2 mt-3">
                 <input
                   type="email"
                   placeholder="your@email.com"

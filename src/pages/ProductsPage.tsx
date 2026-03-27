@@ -40,26 +40,26 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafaf9]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+    <div className="min-h-screen bg-[#fafaf9] overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-12 sm:pb-20">
 
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16 px-1"
         >
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
             ทุกอย่างที่คุณต้องการเพื่อ<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">เชื่อมต่อ</span>
           </h1>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-lg text-gray-500 max-w-2xl mx-auto">
             ลิงก์เดียวเพื่อแชร์ทุกอย่างที่คุณสร้าง รวบรวม และขายผ่านโซเชียลทั้งหมด
           </p>
         </motion.div>
 
         {/* Main Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-12 sm:mb-20">
           {sidebarItems.map((item, i) => (
             <motion.div
               key={item.label}
@@ -67,14 +67,14 @@ export default function ProductsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="group bg-white rounded-2xl p-6 border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
+              className="group bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
             >
-              <div className="w-12 h-12 rounded-xl bg-gray-100 group-hover:bg-gray-900 flex items-center justify-center mb-4 transition-colors duration-300">
-                <item.icon size={22} className="text-gray-600 group-hover:text-white transition-colors duration-300" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gray-100 group-hover:bg-gray-900 flex items-center justify-center mb-3 sm:mb-4 transition-colors duration-300">
+                <item.icon size={20} className="text-gray-600 group-hover:text-white transition-colors duration-300" />
               </div>
-              <h3 className="text-base font-semibold text-gray-900 mb-1">{item.label}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
-              <div className="mt-4 flex items-center gap-1 text-sm font-medium text-gray-400 group-hover:text-gray-900 transition-colors">
+              <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1">{item.label}</h3>
+              <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+              <div className="mt-3 sm:mt-4 flex items-center gap-1 text-xs sm:text-sm font-medium text-gray-400 group-hover:text-gray-900 transition-colors">
                 เรียนรู้เพิ่มเติม <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </div>
             </motion.div>
@@ -87,10 +87,10 @@ export default function ProductsPage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">ผลิตภัณฑ์ของเรา</h2>
-          <p className="text-gray-500 text-center mb-10">เครื่องมือที่สร้างโดยครีเอเตอร์ เพื่อครีเอเตอร์</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 text-center">ผลิตภัณฑ์ของเรา</h2>
+          <p className="text-sm sm:text-base text-gray-500 text-center mb-6 sm:mb-10">เครื่องมือที่สร้างโดยครีเอเตอร์ เพื่อครีเอเตอร์</p>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
             {productItems.map((item, i) => (
               <motion.div
                 key={item.title}
@@ -115,12 +115,12 @@ export default function ProductsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-20 rounded-3xl overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-10 sm:p-14 text-white relative"
+          className="mt-12 sm:mt-20 rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-6 sm:p-10 md:p-14 text-white relative"
         >
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]" />
           <div className="relative z-10 max-w-2xl">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">เข้าร่วมกว่า 70 ล้านคนที่ใช้ OpenBio เป็นลิงก์ในไบโอ</h2>
-            <p className="text-white/80 text-base mb-8">
+            <h2 className="text-xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">เข้าร่วมกว่า 70 ล้านคนที่ใช้ OpenBio เป็นลิงก์ในไบโอ</h2>
+            <p className="text-white/80 text-sm sm:text-base mb-5 sm:mb-8">
               ลิงก์เดียวเพื่อแชร์ทุกอย่างที่คุณสร้าง รวบรวม และขายผ่านโซเชียลทั้งหมด
             </p>
             <Link

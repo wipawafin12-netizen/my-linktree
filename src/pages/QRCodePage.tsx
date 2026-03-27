@@ -114,8 +114,8 @@ export default function QRCodePage() {
   }, [url]);
 
   return (
-    <div className="min-h-screen bg-[#f5f3f0] pt-24 pb-16">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+    <div className="min-h-screen bg-[#f5f3f0] pt-20 sm:pt-24 pb-12 sm:pb-16 overflow-x-hidden">
+      <div className="max-w-5xl mx-auto px-3 sm:px-6">
 
         {/* URL Bar + Live Preview label */}
         <motion.div
@@ -128,18 +128,18 @@ export default function QRCodePage() {
             href={`${siteUrl}/${shortName}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-gray-200 shadow-sm hover:shadow-md hover:border-purple-200 transition-all cursor-pointer"
+            className="flex items-center gap-2 bg-white rounded-full px-3 sm:px-4 py-2 border border-gray-200 shadow-sm hover:shadow-md hover:border-purple-200 transition-all cursor-pointer max-w-full"
           >
-            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
               <span className="text-white text-[8px] font-bold">LC</span>
             </div>
-            <span className="text-sm text-gray-500">linkc.ee/</span>
-            <span className="text-sm font-semibold text-gray-900">{shortName}</span>
-            <ExternalLink size={13} className="ml-1 text-gray-400" />
+            <span className="text-xs sm:text-sm text-gray-500 flex-shrink-0">linkc.ee/</span>
+            <span className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{shortName}</span>
+            <ExternalLink size={13} className="ml-1 text-gray-400 flex-shrink-0" />
           </a>
         </motion.div>
 
-        <div className="grid lg:grid-cols-[1fr_340px] gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 sm:gap-10 items-start">
 
           {/* Left: Phone Preview */}
           <motion.div
@@ -148,7 +148,7 @@ export default function QRCodePage() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="flex justify-center"
           >
-            <div className="mx-auto w-[290px]">
+            <div className="mx-auto w-[260px] sm:w-[290px]">
               <div className="rounded-[2.8rem] bg-gradient-to-b from-gray-800 to-gray-900 p-[10px] shadow-2xl shadow-gray-900/30 relative">
                 {/* Glow */}
                 <div className="absolute -inset-4 bg-gradient-to-b from-violet-300/25 via-indigo-200/15 to-purple-300/15 rounded-[3.5rem] blur-2xl -z-[1]" />

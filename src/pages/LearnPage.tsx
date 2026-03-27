@@ -125,26 +125,26 @@ export default function LearnPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#fafaf9]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+    <div className="min-h-screen bg-[#fafaf9] overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-12 sm:pb-20">
 
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-14"
+          className="text-center mb-8 sm:mb-14 px-1"
         >
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
             เรียนรู้กับ <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500">OpenBio</span>
           </h1>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-lg text-gray-500 max-w-2xl mx-auto">
             แหล่งข้อมูล คู่มือ และคอร์สเพื่อช่วยคุณสร้าง เติบโต และสร้างรายได้จากการออนไลน์
           </p>
         </motion.div>
 
         {/* Main Layout: Sidebar + Content */}
-        <div className="flex flex-col lg:flex-row gap-10">
+        <div className="flex flex-col lg:flex-row gap-6 sm:gap-10">
 
           {/* Left Sidebar */}
           <motion.div
@@ -260,7 +260,7 @@ export default function LearnPage() {
                 <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <BookOpen size={18} /> ล่าสุดจากบล็อก
                 </h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-14">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 mb-8 sm:mb-14">
                   {filteredPosts.map((post, i) => (
                     <motion.a
                       key={post.title}
@@ -305,7 +305,7 @@ export default function LearnPage() {
                 <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Star size={18} className="text-yellow-500" /> คอร์สเรียน
                 </h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
                   {courses.map((course, i) => (
                     <motion.div
                       key={course.title}

@@ -72,7 +72,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#050510] text-white font-sans overflow-x-hidden">
 
       {/* ══════ HERO ══════ */}
-      <section className="relative pt-28 sm:pt-36 pb-20 sm:pb-32 px-4 overflow-hidden">
+      <section className="relative pt-20 sm:pt-36 pb-12 sm:pb-32 px-3 sm:px-4 overflow-hidden">
         {/* Aurora mesh background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-b from-[#050510] via-[#0a0a20] to-[#050510]" />
@@ -117,7 +117,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.08 }}
-                className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.06] mb-6"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.06] mb-5 sm:mb-6"
               >
                 ทุกอย่างที่เป็นคุณ
                 <br />
@@ -131,7 +131,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.16 }}
-                className="text-lg text-gray-400 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed"
+                className="text-sm sm:text-lg text-gray-400 max-w-lg mx-auto lg:mx-0 mb-6 sm:mb-8 leading-relaxed"
               >
                 ลิงก์เดียวเพื่อแชร์ทุกอย่างที่คุณสร้าง รวบรวม และขาย —
                 จาก Instagram, TikTok, Twitter และอื่น ๆ
@@ -171,35 +171,35 @@ export default function HomePage() {
 
 
       {/* ══════ FEATURES BENTO GRID ══════ */}
-      <section className="py-24 sm:py-32 px-4">
+      <section className="py-16 sm:py-24 md:py-32 px-3 sm:px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3 sm:mb-4">
               ทุกอย่างที่คุณต้องการเพื่อ{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">
                 โดดเด่น
               </span>
             </h2>
-            <p className="text-gray-500 text-lg max-w-xl mx-auto">
+            <p className="text-gray-500 text-sm sm:text-lg max-w-xl mx-auto">
               เครื่องมือทรงพลังเพื่อขยายผู้ติดตาม ติดตามผลลัพธ์ และสร้างรายได้จากคอนเทนต์ของคุณ
             </p>
           </motion.div>
 
           {/* Bento grid */}
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
             {/* Large card */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="md:col-span-2 group relative rounded-3xl p-8 bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/[0.06] hover:border-violet-500/20 transition-all duration-500 overflow-hidden"
+              className="md:col-span-2 group relative rounded-2xl sm:rounded-3xl p-5 sm:p-8 bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/[0.06] hover:border-violet-500/20 transition-all duration-500 overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-violet-500/5 rounded-full blur-3xl group-hover:bg-violet-500/10 transition-all duration-700" />
               <div className="relative">
@@ -224,7 +224,7 @@ export default function HomePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="group relative rounded-3xl p-8 bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/[0.06] hover:border-indigo-500/20 transition-all duration-500 overflow-hidden"
+              className="group relative rounded-2xl sm:rounded-3xl p-5 sm:p-8 bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/[0.06] hover:border-indigo-500/20 transition-all duration-500 overflow-hidden"
             >
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl group-hover:bg-indigo-500/10 transition-all duration-700" />
               <div className="relative">
@@ -242,7 +242,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-24 sm:py-32 px-4 relative">
+      <section className="py-16 sm:py-24 md:py-32 px-3 sm:px-4 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-500/[0.03] to-transparent" />
         <div className="relative max-w-5xl mx-auto">
           <motion.div
@@ -250,18 +250,18 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3 sm:mb-4">
               เริ่มต้นใน{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">
                 3 ขั้นตอนง่าย ๆ
               </span>
             </h2>
-            <p className="text-gray-500 text-lg">สร้างหน้าเพจของคุณได้ในไม่ถึง 60 วินาที</p>
+            <p className="text-gray-500 text-sm sm:text-lg">สร้างหน้าเพจของคุณได้ในไม่ถึง 60 วินาที</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
             {[
               { step: '01', title: 'จอง URL ของคุณ', desc: 'สมัครสมาชิกและรับ URL เฉพาะตัว linkc.ee/yourname', icon: Link2 },
               { step: '02', title: 'ปรับแต่งตามใจ', desc: 'เลือกเทมเพลต เพิ่มลิงก์ และปรับแต่งได้ตามต้องการ', icon: Paintbrush },
@@ -273,17 +273,18 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.12 }}
-                className="relative group rounded-3xl p-8 bg-gradient-to-br from-white/[0.05] to-transparent border border-white/[0.06] hover:border-violet-500/20 hover:-translate-y-1 transition-all duration-300"
+                className="relative group rounded-2xl sm:rounded-3xl p-5 sm:p-8 bg-gradient-to-br from-white/[0.05] to-transparent border border-white/[0.06] hover:border-violet-500/20 hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="text-6xl font-extrabold text-white/10 absolute top-5 right-6 group-hover:text-violet-500/20 transition-colors duration-300">
+                <div className="text-4xl sm:text-6xl font-extrabold text-white/10 absolute top-4 sm:top-5 right-4 sm:right-6 group-hover:text-violet-500/20 transition-colors duration-300">
                   {step}
                 </div>
                 <div className="relative">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center mb-5 shadow-lg shadow-violet-500/20">
-                    <Icon size={22} className="text-white" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center mb-3 sm:mb-5 shadow-lg shadow-violet-500/20">
+                    <Icon size={20} className="text-white sm:hidden" />
+                    <Icon size={22} className="text-white hidden sm:block" />
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+                  <h3 className="text-base sm:text-lg font-bold text-white mb-1.5 sm:mb-2">{title}</h3>
+                  <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">{desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -292,46 +293,46 @@ export default function HomePage() {
       </section>
 
       
-      <section className="py-24 sm:py-32 px-4">
+      <section className="py-16 sm:py-24 md:py-32 px-3 sm:px-4">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="relative rounded-3xl overflow-hidden"
+            className="relative rounded-2xl sm:rounded-3xl overflow-hidden"
           >
             {/* Gradient background */}
             <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700" />
             {/* Decorative shapes */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4" />
+            <div className="absolute top-0 right-0 w-40 sm:w-80 h-40 sm:h-80 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3" />
+            <div className="absolute bottom-0 left-0 w-32 sm:w-64 h-32 sm:h-64 bg-white/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4" />
             {/* Grid pattern */}
             <div className="absolute inset-0 opacity-[0.04]" style={{
               backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
               backgroundSize: '40px 40px',
             }} />
 
-            <div className="relative px-8 sm:px-16 py-16 sm:py-20 text-center">
-              <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
+            <div className="relative px-4 sm:px-16 py-10 sm:py-20 text-center">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-3 sm:mb-4">
                 พร้อมสร้าง
                 <br />
                 LinkCenter ของคุณแล้วหรือยัง?
               </h2>
-              <p className="text-white/60 text-lg max-w-lg mx-auto mb-10">
+              <p className="text-white/60 text-sm sm:text-lg max-w-lg mx-auto mb-6 sm:mb-10">
                 เข้าร่วมกับครีเอเตอร์นับล้าน สร้างหน้าเพจได้ในไม่กี่วินาที — ฟรีตลอดไป
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
                 <Link
                   to="/create"
-                  className="group inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 font-bold text-sm rounded-full hover:shadow-xl hover:shadow-white/20 transition-all duration-300"
+                  className="group inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white text-gray-900 font-bold text-sm rounded-full hover:shadow-xl hover:shadow-white/20 transition-all duration-300"
                 >
                   เริ่มต้นใช้งานฟรี
                   <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
                 </Link>
                 <Link
                   to="/templates"
-                  className="inline-flex items-center gap-2 px-8 py-4 text-white/80 font-semibold text-sm rounded-full border border-white/20 hover:bg-white/10 transition-all duration-300"
+                  className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 text-white/80 font-semibold text-sm rounded-full border border-white/20 hover:bg-white/10 transition-all duration-300"
                 >
                   ดูเทมเพลต
                 </Link>
@@ -342,9 +343,9 @@ export default function HomePage() {
       </section>
 
       {/* ══════ FOOTER ══════ */}
-      <footer className="border-t border-white/5 py-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+      <footer className="border-t border-white/5 py-8 sm:py-12">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
             <img src="/linkcenter.png" alt="LinkCenter" className="h-8" />
             <div className="flex items-center gap-4">
               {[Instagram, Music2, Twitter, Youtube].map((Icon, i) => (
@@ -359,7 +360,7 @@ export default function HomePage() {
               ))}
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600">
+          <div className="mt-6 sm:mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600">
             <span>&copy; 2026 LinkCenter. สงวนลิขสิทธิ์</span>
             <div className="flex items-center gap-6">
               <a href="#" className="hover:text-violet-400 transition-colors">ความเป็นส่วนตัว</a>

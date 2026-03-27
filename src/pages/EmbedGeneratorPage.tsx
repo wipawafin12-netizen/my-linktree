@@ -102,19 +102,19 @@ export default function EmbedGeneratorPage() {
   const isTikTok = embedCode.includes('tiktok.com');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white overflow-x-hidden">
+      <div className="max-w-2xl mx-auto px-3 sm:px-6 py-8 sm:py-16 pt-20 sm:pt-24">
         {/* Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-200 mb-4">
-            <Code2 size={24} className="text-white" />
+        <div className="text-center mb-8 sm:mb-10">
+          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-200 mb-3 sm:mb-4">
+            <Code2 size={22} className="text-white" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-2">Embed Generator</h1>
-          <p className="text-gray-500 text-sm">วางลิงก์แล้วรับโค้ด embed ได้ทันที</p>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-2">Embed Generator</h1>
+          <p className="text-gray-500 text-xs sm:text-sm">วางลิงก์แล้วรับโค้ด embed ได้ทันที</p>
         </div>
 
         {/* Main Card */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-8">
+        <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-8">
           {/* Input */}
           <div className="mb-4">
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">ลิงก์ที่ต้องการ</label>
@@ -202,7 +202,7 @@ export default function EmbedGeneratorPage() {
                   <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">ตัวอย่าง</span>
                   <div
                     className={`rounded-xl overflow-hidden border border-gray-200 bg-black ${
-                      isTikTok ? 'max-w-[325px] mx-auto' : ''
+                      isTikTok ? 'max-w-full sm:max-w-[325px] mx-auto' : ''
                     }`}
                     style={isSpotify ? { background: '#282828' } : undefined}
                   >

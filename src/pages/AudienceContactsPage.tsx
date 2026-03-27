@@ -201,16 +201,16 @@ export default function AudienceContactsPage() {
   }).length;
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] text-gray-900 font-sans pt-16">
+    <div className="min-h-screen bg-[#f9f9f9] text-gray-900 font-sans pt-16 overflow-x-hidden">
       {/* Top Header */}
       <div className="border-b border-gray-200 bg-white sticky top-16 z-10">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-          <div className="flex items-center gap-6">
-            <h1 className="text-lg font-bold text-gray-900">ผู้ติดตาม</h1>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between h-12 sm:h-14 gap-2">
+          <div className="flex items-center gap-2 sm:gap-6 min-w-0">
+            <h1 className="text-sm sm:text-lg font-bold text-gray-900 flex-shrink-0">ผู้ติดตาม</h1>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setActiveTab('contacts')}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                className={`px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                   activeTab === 'contacts'
                     ? 'bg-[#6d28d9] text-white'
                     : 'text-gray-600 hover:bg-[#f5f3ff]'
@@ -220,47 +220,49 @@ export default function AudienceContactsPage() {
               </button>
               <button
                 onClick={() => setActiveTab('integrations')}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                className={`px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                   activeTab === 'integrations'
                     ? 'bg-[#6d28d9] text-white'
                     : 'text-gray-600 hover:bg-[#f5f3ff]'
                 }`}
               >
-                การเชื่อมต่อ
+                <span className="hidden sm:inline">การเชื่อมต่อ</span>
+                <span className="sm:hidden">เชื่อมต่อ</span>
               </button>
             </div>
           </div>
           {subscribers.length > 0 && (
             <button
               onClick={handleExportCSV}
-              className="flex items-center gap-1.5 border border-gray-300 rounded-full px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-1.5 border border-gray-300 rounded-full px-2.5 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex-shrink-0"
             >
-              <Download className="w-4 h-4" />
-              ส่งออก CSV
+              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">ส่งออก CSV</span>
+              <span className="sm:hidden">CSV</span>
             </button>
           )}
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8">
         {activeTab === 'contacts' && (
           <>
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
-                <p className="text-3xl font-bold text-gray-900">{subscribers.length}</p>
-                <p className="text-xs text-gray-400 mt-1">ผู้ติดตามทั้งหมด</p>
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
+              <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-gray-200 text-center">
+                <p className="text-xl sm:text-3xl font-bold text-gray-900">{subscribers.length}</p>
+                <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1">ทั้งหมด</p>
               </div>
-              <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
-                <p className="text-3xl font-bold text-gray-900">{thisWeekCount}</p>
-                <p className="text-xs text-gray-400 mt-1">สัปดาห์นี้</p>
+              <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-gray-200 text-center">
+                <p className="text-xl sm:text-3xl font-bold text-gray-900">{thisWeekCount}</p>
+                <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1">สัปดาห์นี้</p>
               </div>
-              <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
-                <p className="text-3xl font-bold text-gray-900">
+              <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-gray-200 text-center">
+                <p className="text-xl sm:text-3xl font-bold text-gray-900">
                   {subscribers.filter(s => s.source === 'form').length}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">จากฟอร์มสาธารณะ</p>
+                <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1">จากฟอร์ม</p>
               </div>
             </div>
 
@@ -277,13 +279,13 @@ export default function AudienceContactsPage() {
                 </div>
                 <div className="divide-y divide-gray-50">
                   {subscribers.map((sub) => (
-                    <div key={sub.id} className="flex items-center justify-between px-6 py-3 hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xs font-bold">
+                    <div key={sub.id} className="flex items-center justify-between px-4 sm:px-6 py-3 hover:bg-gray-50 transition-colors gap-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xs font-bold flex-shrink-0">
                           {sub.email.substring(0, 2).toUpperCase()}
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-800">{sub.email}</p>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-gray-800 truncate">{sub.email}</p>
                           <p className="text-[10px] text-gray-400">
                             {sub.source === 'manual' ? 'เพิ่มด้วยตนเอง' : 'จากฟอร์มสมัครสมาชิก'}
                           </p>
