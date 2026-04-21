@@ -457,6 +457,8 @@ export default function CreatePage() {
   const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
   const [showSocialPicker, setShowSocialPicker] = useState(false);
   const [socialSearch, setSocialSearch] = useState('');
+  const [draggedLinkIndex, setDraggedLinkIndex] = useState<number | null>(null);
+  const [dragOverLinkIndex, setDragOverLinkIndex] = useState<number | null>(null);
   const [toast, setToast] = useState('');
   const [showAvatarCrop, setShowAvatarCrop] = useState(false);
   const [prevAvatarCrop, setPrevAvatarCrop] = useState({ scale: 1, x: 0, y: 0, avatar: '' });
@@ -2619,9 +2621,46 @@ export default function CreatePage() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0, height: 0 }}
-                            className={`border-b border-gray-50 last:border-b-0 transition-colors ${!link.enabled ? 'opacity-40' : 'hover:bg-gray-50/40'}`}
+                            onDragOver={(e) => {
+                              if (draggedLinkIndex === null || draggedLinkIndex === linkIndex) return;
+                              e.preventDefault();
+                              setDragOverLinkIndex(linkIndex);
+                            }}
+                            onDragLeave={() => {
+                              setDragOverLinkIndex((prev) => (prev === linkIndex ? null : prev));
+                            }}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              if (draggedLinkIndex !== null && draggedLinkIndex !== linkIndex) {
+                                const next = [...links];
+                                const [moved] = next.splice(draggedLinkIndex, 1);
+                                next.splice(linkIndex, 0, moved);
+                                setLinks(next);
+                              }
+                              setDraggedLinkIndex(null);
+                              setDragOverLinkIndex(null);
+                            }}
+                            data-link-row
+                            className={`border-b border-gray-50 last:border-b-0 transition-colors ${!link.enabled ? 'opacity-40' : 'hover:bg-gray-50/40'} ${dragOverLinkIndex === linkIndex ? 'bg-pink-50/70' : ''} ${draggedLinkIndex === linkIndex ? 'opacity-50' : ''}`}
                           >
                             <div className="flex items-center gap-3 px-6 py-3.5">
+                              <div
+                                draggable
+                                onDragStart={(e) => {
+                                  setDraggedLinkIndex(linkIndex);
+                                  e.dataTransfer.effectAllowed = 'move';
+                                  const row = (e.currentTarget as HTMLElement).closest('[data-link-row]') as HTMLElement | null;
+                                  if (row) e.dataTransfer.setDragImage(row, 20, 20);
+                                }}
+                                onDragEnd={() => {
+                                  setDraggedLinkIndex(null);
+                                  setDragOverLinkIndex(null);
+                                }}
+                                className="flex items-center justify-center text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing flex-shrink-0"
+                                title="ลากเพื่อจัดเรียงลำดับ"
+                              >
+                                <GripVertical size={14} />
+                              </div>
                               <div
                                 className="w-1.5 h-8 rounded-full flex-shrink-0"
                                 style={{ backgroundColor: link.color || ['#ec4899', '#a855f7', '#6366f1', '#10b981', '#f59e0b', '#f43f5e'][linkIndex % 6] }}
