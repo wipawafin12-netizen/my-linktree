@@ -579,8 +579,9 @@ export default function PreviewPage() {
             <a
               key={link.id}
               href={actualUrl || '#'}
-              target="_blank"
-              rel="noopener noreferrer"
+              {...(actualUrl && !/^(tel:|mailto:|sms:)/i.test(actualUrl)
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
               onClick={() => trackLinkClick(link)}
               className="block w-full rounded-2xl overflow-hidden relative z-[1] hover:scale-[1.02] transition-transform"
             >
@@ -590,8 +591,9 @@ export default function PreviewPage() {
           <a
             key={link.id}
             href={actualUrl || '#'}
-            target={actualUrl ? '_blank' : undefined}
-            rel="noopener noreferrer"
+            {...(actualUrl && !/^(tel:|mailto:|sms:)/i.test(actualUrl)
+              ? { target: '_blank', rel: 'noopener noreferrer' }
+              : {})}
             onClick={() => trackLinkClick(link)}
             className={`${link.thumbnail ? 'flex items-center gap-3' : 'block text-center'} ${!link.color && !isCustom ? `${theme.card} ${theme.cardBorder}` : ''} ${btnCls} px-5 py-3.5 hover:scale-[1.02] transition-transform`}
             style={link.color
