@@ -18,6 +18,8 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
+import { generateUniqueSlug, buildShortUrl } from '../lib/shortUrl';
+import type { ShortUrlRecord } from '../lib/types';
 
 
 const LineIcon = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
@@ -507,7 +509,7 @@ export default function CreatePage() {
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [autoReplyKeywords, setAutoReplyKeywords] = useState('link, links, website, url');
   const [shortenerInput, setShortenerInput] = useState('');
-  const [shortenedLinks, setShortenedLinks] = useState<{ original: string; short: string; clicks: number; createdAt: string }[]>(() => {
+  const [shortenedLinks, setShortenedLinks] = useState<{ id?: string; slug?: string; original: string; short: string; clicks: number; createdAt: string }[]>(() => {
     try { const saved = localStorage.getItem('openbio_shortened_links'); return saved ? JSON.parse(saved) : []; } catch { return []; }
   });
   const [shortenerLoading, setShortenerLoading] = useState(false);
@@ -873,43 +875,76 @@ export default function CreatePage() {
     setTimeout(() => setToast(''), 2000);
   };
 
-  // Persist shortened links to localStorage
+  // Persist shortened links to localStorage (cache)
   useEffect(() => {
     localStorage.setItem('openbio_shortened_links', JSON.stringify(shortenedLinks));
   }, [shortenedLinks]);
 
-  // Shorten URL using is.gd API with fallback
+  // Load user's short URLs from PocketBase when signed in, with click counts
+  useEffect(() => {
+    if (!user?.id || !isPocketBaseEnabled) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const list = await pb.collection('short_urls').getFullList<ShortUrlRecord>({
+          filter: `user = "${user.id}"`,
+          sort: '-created',
+        });
+        if (cancelled) return;
+        setShortenedLinks(list.map((rec) => ({
+          id: rec.id,
+          slug: rec.slug,
+          original: rec.originalUrl,
+          short: buildShortUrl(rec.slug),
+          clicks: rec.clicks || 0,
+          createdAt: rec.created,
+        })));
+      } catch { /* ignore, keep cached list */ }
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
+  // Shorten URL using our own system (PocketBase) so we own the data and stats
   const handleShortenUrl = async () => {
     const url = shortenerInput.trim();
     if (!url) return;
-    // Basic URL validation
     try { new URL(url); } catch {
       setShortenerError('กรุณาใส่ URL ที่ถูกต้อง (เช่น https://example.com)');
       return;
     }
-    // Check for duplicates
     if (shortenedLinks.some(l => l.original === url)) {
       setShortenerError('URL นี้ถูกย่อไปแล้ว');
+      return;
+    }
+    if (!user?.id || !isPocketBaseEnabled) {
+      setShortenerError('กรุณาเข้าสู่ระบบก่อนใช้งาน');
       return;
     }
     setShortenerLoading(true);
     setShortenerError('');
     try {
-      const res = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(url)}`);
-      const data = await res.json();
-      if (data.shorturl) {
-        setShortenedLinks(prev => [{ original: url, short: data.shorturl, clicks: 0, createdAt: new Date().toISOString() }, ...prev]);
-        setShortenerInput('');
-        showToast('ย่อลิงก์สำเร็จ!');
-      } else {
-        throw new Error(data.errormessage || 'API error');
-      }
-    } catch {
-      // Fallback: generate a local short code
-      const rand = Math.random().toString(36).substring(2, 8);
-      setShortenedLinks(prev => [{ original: url, short: `https://is.gd/${rand}`, clicks: 0, createdAt: new Date().toISOString() }, ...prev]);
+      const slug = await generateUniqueSlug(6);
+      const rec = await pb.collection('short_urls').create<ShortUrlRecord>({
+        user: user.id,
+        slug,
+        originalUrl: url,
+        title: '',
+        enabled: true,
+        clicks: 0,
+      });
+      setShortenedLinks(prev => [{
+        id: rec.id,
+        slug: rec.slug,
+        original: url,
+        short: buildShortUrl(rec.slug),
+        clicks: 0,
+        createdAt: rec.created,
+      }, ...prev]);
       setShortenerInput('');
-      showToast('ย่อลิงก์สำเร็จ! (offline mode)');
+      showToast('ย่อลิงก์สำเร็จ!');
+    } catch (err) {
+      const msg = (err as { message?: string })?.message || 'ย่อลิงก์ไม่สำเร็จ กรุณาลองใหม่';
+      setShortenerError(msg);
     } finally {
       setShortenerLoading(false);
     }
@@ -2228,7 +2263,12 @@ export default function CreatePage() {
                                       <ExternalLink size={14} />
                                     </a>
                                     <button
-                                      onClick={() => setShortenedLinks(shortenedLinks.filter((_, idx) => idx !== i))}
+                                      onClick={async () => {
+                                        if (link.id && isPocketBaseEnabled) {
+                                          try { await pb.collection('short_urls').delete(link.id); } catch { /* ignore */ }
+                                        }
+                                        setShortenedLinks(shortenedLinks.filter((_, idx) => idx !== i));
+                                      }}
                                       className="p-2 text-gray-300 hover:text-red-400 rounded-lg hover:bg-red-50 transition-all"
                                       title="ลบ"
                                     >
@@ -2240,13 +2280,25 @@ export default function CreatePage() {
                                   <span className="text-[10px] text-gray-400">
                                     {new Date(link.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' })}
                                   </span>
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-medium text-orange-600">
+                                    <BarChart3 size={10} /> {link.clicks} คลิก
+                                  </span>
                                 </div>
                               </div>
                             ))}
                           </div>
                           {shortenedLinks.length > 0 && (
                             <button
-                              onClick={() => { if (confirm('ลบลิงก์ทั้งหมด?')) setShortenedLinks([]); }}
+                              onClick={async () => {
+                                if (!confirm('ลบลิงก์ทั้งหมด?')) return;
+                                if (isPocketBaseEnabled) {
+                                  await Promise.all(shortenedLinks
+                                    .filter(l => l.id)
+                                    .map(l => pb.collection('short_urls').delete(l.id!).catch(() => undefined))
+                                  );
+                                }
+                                setShortenedLinks([]);
+                              }}
                               className="mt-4 w-full py-2 text-xs text-red-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                             >
                               ลบทั้งหมด
