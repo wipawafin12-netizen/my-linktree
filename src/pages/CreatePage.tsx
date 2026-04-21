@@ -2606,13 +2606,35 @@ export default function CreatePage() {
                                     <span className="px-2 py-0.5 text-[10px] font-medium text-gray-400 bg-gray-100 rounded-full">ซ่อนอยู่</span>
                                   )}
                                 </div>
-                                <input
-                                  type="url"
-                                  value={link.url}
-                                  onChange={(e) => updateLink(link.id, 'url', e.target.value)}
-                                  placeholder="URL"
-                                  className="block w-full text-[11px] text-gray-400 placeholder-gray-300 bg-transparent focus:outline-none mt-0.5"
-                                />
+                                {(() => {
+                                  const t = (link.title || '').toLowerCase().trim();
+                                  const isPhone = link.url.startsWith('tel:') || t === 'เบอร์โทรศัพท์' || t === 'เบอร์โทร' || t === 'phone';
+                                  if (isPhone) {
+                                    const phoneValue = link.url.startsWith('tel:') ? link.url.slice(4) : link.url;
+                                    return (
+                                      <input
+                                        type="tel"
+                                        inputMode="tel"
+                                        value={phoneValue}
+                                        onChange={(e) => {
+                                          const num = e.target.value.replace(/^tel:/, '').trim();
+                                          updateLink(link.id, 'url', num ? `tel:${num}` : '');
+                                        }}
+                                        placeholder="กรอกเบอร์โทร เช่น 0812345678 (กดเพื่อโทรได้เลย)"
+                                        className="block w-full text-[11px] text-gray-400 placeholder-gray-300 bg-transparent focus:outline-none mt-0.5"
+                                      />
+                                    );
+                                  }
+                                  return (
+                                    <input
+                                      type="url"
+                                      value={link.url}
+                                      onChange={(e) => updateLink(link.id, 'url', e.target.value)}
+                                      placeholder="URL"
+                                      className="block w-full text-[11px] text-gray-400 placeholder-gray-300 bg-transparent focus:outline-none mt-0.5"
+                                    />
+                                  );
+                                })()}
                                 {/* Embed badge / action */}
                                 {link.embedCode ? (
                                   <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 text-[9px] font-bold text-violet-600 bg-violet-50 rounded-full w-fit">
