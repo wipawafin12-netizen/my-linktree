@@ -113,7 +113,7 @@ function urlToEmbedCode(url: string): string | null {
 const socialIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   instagram: Instagram, youtube: Youtube, twitter: Twitter, tiktok: Music2,
   facebook: Facebook, twitch: Twitch, github: Github, website: Globe,
-  linkedin: AtSign, email: Mail, telegram: Send, whatsapp: Phone, line: MessageCircle,
+  linkedin: AtSign, email: Mail, telegram: Send, whatsapp: Phone, line: MessageCircle, phone: Phone,
   spotify: Headphones, soundcloud: Music, podcast: Podcast, pinterest: MapPin,
   snapchat: Camera, reddit: MessageSquare, discord: Gamepad2, steam: Flame,
   shopify: Store, etsy: Shirt, rss: Rss, blog: BookOpen, newsletter: Newspaper,
@@ -499,10 +499,11 @@ export default function PreviewPage() {
             if (!Icon) return null;
             const url = socialUrls[id];
             const Wrapper = url ? 'a' : 'div';
+            const isTel = !!url && url.startsWith('tel:');
             return (
               <Wrapper
                 key={id}
-                {...(url ? { href: url, target: '_blank', rel: 'noopener noreferrer' } : {})}
+                {...(url ? (isTel ? { href: url } : { href: url, target: '_blank', rel: 'noopener noreferrer' }) : {})}
                 className={`w-9 h-9 rounded-full ${!isCustom ? theme.card : ''} flex items-center justify-center ${url ? 'hover:opacity-80 transition-opacity cursor-pointer' : ''}`}
                 style={customCardStyle}
               >

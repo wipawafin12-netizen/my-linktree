@@ -314,6 +314,7 @@ const socialPlatforms = [
   { id: 'telegram', icon: Send, label: 'Telegram' },
   { id: 'whatsapp', icon: Phone, label: 'WhatsApp' },
   { id: 'line', icon: MessageCircle, label: 'Line' },
+  { id: 'phone', icon: Phone, label: 'Phone' },
   { id: 'spotify', icon: Headphones, label: 'Spotify' },
   { id: 'soundcloud', icon: Music, label: 'SoundCloud' },
   { id: 'podcast', icon: Podcast, label: 'Podcast' },
@@ -2424,16 +2425,27 @@ export default function CreatePage() {
                         {activeSocials.map((id) => {
                           const p = socialPlatforms.find((s) => s.id === id);
                           if (!p) return null;
+                          const isPhone = id === 'phone';
+                          const rawVal = socialUrls[id] || '';
+                          const phoneDisplay = rawVal.startsWith('tel:') ? rawVal.slice(4) : rawVal;
                           return (
                             <div key={id} className="flex items-center gap-2">
                               <div className="w-6 h-6 rounded-md bg-pink-50 text-pink-400 flex items-center justify-center flex-shrink-0">
                                 <p.icon size={11} />
                               </div>
                               <input
-                                type="url"
-                                value={socialUrls[id] || ''}
-                                onChange={(e) => setSocialUrls({ ...socialUrls, [id]: e.target.value })}
-                                placeholder={`${p.label} URL`}
+                                type={isPhone ? 'tel' : 'url'}
+                                inputMode={isPhone ? 'tel' : undefined}
+                                value={isPhone ? phoneDisplay : rawVal}
+                                onChange={(e) => {
+                                  if (isPhone) {
+                                    const num = e.target.value.replace(/^tel:/, '').trim();
+                                    setSocialUrls({ ...socialUrls, [id]: num ? `tel:${num}` : '' });
+                                  } else {
+                                    setSocialUrls({ ...socialUrls, [id]: e.target.value });
+                                  }
+                                }}
+                                placeholder={isPhone ? 'เบอร์โทรศัพท์ เช่น 0812345678 (กดเพื่อโทร)' : `${p.label} URL`}
                                 className="flex-1 text-xs text-gray-600 placeholder-gray-300 bg-gray-50/80 border border-gray-100 rounded-lg px-3 py-1.5 focus:outline-none focus:border-pink-300 transition-all"
                               />
                               {socialUrls[id] && urlToEmbedCode(socialUrls[id]) && (
