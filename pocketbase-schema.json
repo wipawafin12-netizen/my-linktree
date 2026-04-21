@@ -339,6 +339,154 @@
       "createRule": "",
       "updateRule": null,
       "deleteRule": "@request.auth.id != \"\" && page.user = @request.auth.id"
+    },
+    {
+      "name": "short_urls",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {
+          "name": "user",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "_pb_users_auth_",
+            "cascadeDelete": true,
+            "minSelect": null,
+            "maxSelect": 1,
+            "displayFields": ["email"]
+          }
+        },
+        {
+          "name": "slug",
+          "type": "text",
+          "required": true,
+          "options": {
+            "min": 3,
+            "max": 32,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          }
+        },
+        {
+          "name": "originalUrl",
+          "type": "url",
+          "required": true,
+          "options": {
+            "exceptDomains": [],
+            "onlyDomains": []
+          }
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": 200,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "enabled",
+          "type": "bool",
+          "required": false
+        },
+        {
+          "name": "expiresAt",
+          "type": "date",
+          "required": false,
+          "options": {
+            "min": "",
+            "max": ""
+          }
+        },
+        {
+          "name": "clicks",
+          "type": "number",
+          "required": false,
+          "options": {
+            "min": 0,
+            "max": null
+          }
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_short_urls_slug ON short_urls (slug)",
+        "CREATE INDEX idx_short_urls_user ON short_urls (user)"
+      ],
+      "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "viewRule": "",
+      "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+    },
+    {
+      "name": "short_url_clicks",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {
+          "name": "shortUrl",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "short_urls",
+            "cascadeDelete": true,
+            "minSelect": null,
+            "maxSelect": 1,
+            "displayFields": ["slug"]
+          }
+        },
+        {
+          "name": "referrer",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": 500,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "userAgent",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": 500,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "device",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": 32,
+            "pattern": ""
+          }
+        },
+        {
+          "name": "browser",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": 32,
+            "pattern": ""
+          }
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_short_url_clicks_url ON short_url_clicks (shortUrl)",
+        "CREATE INDEX idx_short_url_clicks_created ON short_url_clicks (created)"
+      ],
+      "listRule": "@request.auth.id != \"\" && shortUrl.user = @request.auth.id",
+      "viewRule": "@request.auth.id != \"\" && shortUrl.user = @request.auth.id",
+      "createRule": "",
+      "updateRule": null,
+      "deleteRule": null
     }
   ]
 }

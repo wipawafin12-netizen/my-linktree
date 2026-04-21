@@ -15,6 +15,7 @@ import QRCodePage from './pages/QRCodePage';
 import LinkShortenerPage from './pages/LinkShortenerPage';
 import DashboardPage from './pages/DashboardPage';
 import EmbedGeneratorPage from './pages/EmbedGeneratorPage';
+import ShortUrlRedirectPage from './pages/ShortUrlRedirectPage';
 
 function MainLayout() {
   return (
@@ -38,6 +39,9 @@ function AppRoutes() {
 
   return (
     <Routes>
+      {/* Short URL redirect – no Navbar, must be before /:username */}
+      <Route path="/s/:slug" element={<ShortUrlRedirectPage />} />
+
       {/* Preview page – no Navbar */}
       <Route path="/preview" element={<PreviewPage />} />
       <Route path="/:username" element={<PreviewPage />} />

@@ -58,6 +58,33 @@ export interface SubscriberRecord {
   created: string;
 }
 
+export interface ShortUrlRecord {
+  id: string;
+  collectionId: string;
+  collectionName: string;
+  user: string;
+  slug: string;
+  originalUrl: string;
+  title: string;
+  enabled: boolean;
+  expiresAt: string;
+  clicks: number;
+  created: string;
+  updated: string;
+}
+
+export interface ShortUrlClickRecord {
+  id: string;
+  collectionId: string;
+  collectionName: string;
+  shortUrl: string;
+  referrer: string;
+  userAgent: string;
+  device: string;
+  browser: string;
+  created: string;
+}
+
 export interface LinkItem {
   id: string;
   title: string;
