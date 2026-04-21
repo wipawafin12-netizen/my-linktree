@@ -2426,26 +2426,41 @@ export default function CreatePage() {
                           const p = socialPlatforms.find((s) => s.id === id);
                           if (!p) return null;
                           const isPhone = id === 'phone';
+                          const isWhatsApp = id === 'whatsapp';
                           const rawVal = socialUrls[id] || '';
-                          const phoneDisplay = rawVal.startsWith('tel:') ? rawVal.slice(4) : rawVal;
+                          let displayVal = rawVal;
+                          if (isPhone) {
+                            displayVal = rawVal.startsWith('tel:') ? rawVal.slice(4) : rawVal;
+                          } else if (isWhatsApp) {
+                            displayVal = rawVal.replace(/^https?:\/\/wa\.me\//i, '');
+                          }
+                          const placeholder = isPhone
+                            ? 'เบอร์โทรศัพท์ เช่น 0812345678 (กดเพื่อโทร)'
+                            : isWhatsApp
+                              ? 'เบอร์ WhatsApp เช่น 66812345678 (พร้อมรหัสประเทศ)'
+                              : `${p.label} URL`;
                           return (
                             <div key={id} className="flex items-center gap-2">
                               <div className="w-6 h-6 rounded-md bg-pink-50 text-pink-400 flex items-center justify-center flex-shrink-0">
                                 <p.icon size={11} />
                               </div>
                               <input
-                                type={isPhone ? 'tel' : 'url'}
-                                inputMode={isPhone ? 'tel' : undefined}
-                                value={isPhone ? phoneDisplay : rawVal}
+                                type={isPhone || isWhatsApp ? 'tel' : 'url'}
+                                inputMode={isPhone || isWhatsApp ? 'tel' : undefined}
+                                value={displayVal}
                                 onChange={(e) => {
+                                  const v = e.target.value;
                                   if (isPhone) {
-                                    const num = e.target.value.replace(/^tel:/, '').trim();
+                                    const num = v.replace(/^tel:/, '').trim();
                                     setSocialUrls({ ...socialUrls, [id]: num ? `tel:${num}` : '' });
+                                  } else if (isWhatsApp) {
+                                    const digits = v.replace(/\D/g, '');
+                                    setSocialUrls({ ...socialUrls, [id]: digits ? `https://wa.me/${digits}` : '' });
                                   } else {
-                                    setSocialUrls({ ...socialUrls, [id]: e.target.value });
+                                    setSocialUrls({ ...socialUrls, [id]: v });
                                   }
                                 }}
-                                placeholder={isPhone ? 'เบอร์โทรศัพท์ เช่น 0812345678 (กดเพื่อโทร)' : `${p.label} URL`}
+                                placeholder={placeholder}
                                 className="flex-1 text-xs text-gray-600 placeholder-gray-300 bg-gray-50/80 border border-gray-100 rounded-lg px-3 py-1.5 focus:outline-none focus:border-pink-300 transition-all"
                               />
                               {socialUrls[id] && urlToEmbedCode(socialUrls[id]) && (
