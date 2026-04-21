@@ -25,14 +25,14 @@ const LineIcon = ({ size = 16, className = '' }: { size?: number; className?: st
     width={size}
     height={size}
     viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
+    fill="currentColor"
     className={className}
   >
-    <path d="M7 4v16h10" />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M12 2.5C6.2 2.5 1.5 6.3 1.5 11c0 4.2 3.8 7.7 8.9 8.4.3.1.8.2.9.5.1.3.1.7 0 1l-.2 1c-.1.3-.2 1.2 1 .7 1.3-.5 6.9-4.1 9.4-7 1.7-1.9 2.5-3.9 2.5-6.1 0-4.7-4.7-8.5-10.5-8.5zM7.1 13.3H5c-.2 0-.3-.1-.3-.3V8.9c0-.2.1-.3.3-.3h.5c.2 0 .3.1.3.3v3.2h1.3c.2 0 .3.1.3.3v.5c0 .2-.1.4-.3.4zm1.8-.3c0 .2-.1.3-.3.3H8c-.2 0-.3-.1-.3-.3V8.9c0-.2.1-.3.3-.3h.5c.2 0 .3.1.3.3V13zm4.6 0c0 .2-.1.3-.3.3h-.5c-.1 0-.2-.1-.2-.1l-1.9-2.6V13c0 .2-.1.3-.3.3h-.5c-.2 0-.3-.1-.3-.3V8.9c0-.2.1-.3.3-.3h.6s.1 0 .1.1l1.9 2.6V8.9c0-.2.1-.3.3-.3h.5c.2 0 .3.1.3.3V13zm3.8-3.6c0 .2-.1.3-.3.3h-1.3v.7h1.3c.2 0 .3.1.3.3v.5c0 .2-.1.3-.3.3h-1.3v.7h1.3c.2 0 .3.1.3.3v.5c0 .2-.1.3-.3.3h-2.1c-.2 0-.3-.1-.3-.3V8.9c0-.2.1-.3.3-.3h2.1c.2 0 .3.1.3.3v.5z"
+    />
   </svg>
 );
 
