@@ -2,13 +2,29 @@ import React, { useState, useEffect } from 'react';
 import {
   Instagram, Youtube, Twitter, Music2, Facebook, Twitch, Github, Globe,
   AtSign, Mail, Send, Phone, User, ExternalLink, X,
-  Headphones, Music, Podcast, MapPin, Camera, MessageSquare, MessageCircle, Gamepad2,
+  Headphones, Music, Podcast, MapPin, Camera, MessageSquare, Gamepad2,
   Flame, Store, Shirt, Rss, BookOpen, Newspaper, Crown, Coffee, Gift,
   Video, Tv, Radio, Mic, Clapperboard, PenTool, Brush, Wallet, Bitcoin,
   Code2, Terminal, Rocket, Megaphone, Anchor, Star, Zap,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
+
+const LineIcon = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M7 4v16h10" />
+  </svg>
+);
 
 // Same themes as CreatePage
 const themes = [
@@ -113,7 +129,7 @@ function urlToEmbedCode(url: string): string | null {
 const socialIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   instagram: Instagram, youtube: Youtube, twitter: Twitter, tiktok: Music2,
   facebook: Facebook, twitch: Twitch, github: Github, website: Globe,
-  linkedin: AtSign, email: Mail, telegram: Send, whatsapp: Phone, line: MessageCircle, phone: Phone,
+  linkedin: AtSign, email: Mail, telegram: Send, whatsapp: Phone, line: LineIcon, phone: Phone,
   spotify: Headphones, soundcloud: Music, podcast: Podcast, pinterest: MapPin,
   snapchat: Camera, reddit: MessageSquare, discord: Gamepad2, steam: Flame,
   shopify: Store, etsy: Shirt, rss: Rss, blog: BookOpen, newsletter: Newspaper,

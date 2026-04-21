@@ -5,7 +5,7 @@ import {
   Instagram, Youtube, Twitter, Music2, Globe, Github, Twitch, Facebook,
   User, Palette, Type, ChevronRight, ChevronDown, Settings, Sparkles,
   Share2, BarChart3, DollarSign, Users, TrendingUp, Calendar,
-  MessageSquare, MessageCircle, Link2, Scissors, Lightbulb, Archive, FolderOpen,
+  MessageSquare, Link2, Scissors, Lightbulb, Archive, FolderOpen,
   Check, Upload, Pencil, X, Search, Heart, Play, Phone, FileText,
   ShoppingBag, Grid3x3, Tag, ClipboardList, Download, Mail,
   Copy, CheckCircle2, Coins, Info, GraduationCap,
@@ -19,6 +19,22 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
 
+
+const LineIcon = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M7 4v16h10" />
+  </svg>
+);
 
 const sidebarMain = [
   { icon: Link2, label: 'OpenBio ของฉัน', id: 'links' },
@@ -313,7 +329,7 @@ const socialPlatforms = [
   { id: 'email', icon: Mail, label: 'Email' },
   { id: 'telegram', icon: Send, label: 'Telegram' },
   { id: 'whatsapp', icon: Phone, label: 'WhatsApp' },
-  { id: 'line', icon: MessageCircle, label: 'Line' },
+  { id: 'line', icon: LineIcon, label: 'Line' },
   { id: 'phone', icon: Phone, label: 'Phone' },
   { id: 'spotify', icon: Headphones, label: 'Spotify' },
   { id: 'soundcloud', icon: Music, label: 'SoundCloud' },
@@ -384,7 +400,7 @@ const addSuggestedItems = [
   { icon: ShoppingBag, label: 'ร้านค้า', desc: 'ขายสินค้าโดยตรงจาก OpenBio', category: 'commerce', gradient: 'from-[#ec4899] to-[#f472b6]' },
   { icon: Facebook, label: 'Facebook', desc: 'เชื่อมต่อโปรไฟล์หรือเพจ Facebook ของคุณ', category: 'social', gradient: 'from-[#1877F2] to-[#4299e1]' },
   { icon: Twitter, label: 'Twitter', desc: 'แชร์ทวีตและโปรไฟล์', category: 'social', gradient: 'from-[#1DA1F2] to-[#0d8bd9]' },
-  { icon: MessageCircle, label: 'Line', desc: 'แชร์ LINE ID หรือ LINE Official Account ของคุณ', category: 'social', gradient: 'from-[#06C755] to-[#00B900]' },
+  { icon: LineIcon, label: 'Line', desc: 'แชร์ LINE ID หรือ LINE Official Account ของคุณ', category: 'social', gradient: 'from-[#06C755] to-[#00B900]' },
   { icon: Phone, label: 'เบอร์โทรศัพท์', desc: 'ให้ผู้เข้าชมโทรหาคุณได้โดยตรง', category: 'contact', gradient: 'from-[#10b981] to-[#34d399]' },
   { icon: Mail, label: 'แบบฟอร์มติดต่อ', desc: 'รับข้อความจากผู้เข้าชมของคุณ', category: 'contact', gradient: 'from-[#8b5cf6] to-[#a78bfa]' },
   { icon: Calendar, label: 'กิจกรรม', desc: 'โปรโมตกิจกรรมที่กำลังจะมาถึง', category: 'events', gradient: 'from-[#f59e0b] to-[#fbbf24]' },
