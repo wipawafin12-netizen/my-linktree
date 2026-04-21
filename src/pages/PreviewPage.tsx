@@ -15,17 +15,15 @@ const LineIcon = ({ size = 16, className = '' }: { size?: number; className?: st
     width={size}
     height={size}
     viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     className={className}
   >
-    <rect width="24" height="24" rx="5" fill="#06C755" />
-    <path
-      d="M6 6.75 A 1.25 1.25 0 0 1 7.25 5.5 H 16.75 A 1.25 1.25 0 0 1 18 6.75 V 13 C 18 16.2 15.2 18.2 12 19 C 8.8 18.2 6 16.2 6 13 Z"
-      fill="#fff"
-    />
-    <path
-      d="M 10.5 9 h 1.6 v 3.4 h 2.4 v 1.6 h -4 z"
-      fill="#06C755"
-    />
+    <path d="M5 5 H 19 V 13 C 19 16.5 15.5 18.5 12 19.5 C 8.5 18.5 5 16.5 5 13 Z" />
+    <path d="M 10 9 V 14 H 13.5" />
   </svg>
 );
 
