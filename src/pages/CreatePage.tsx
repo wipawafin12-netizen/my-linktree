@@ -439,6 +439,7 @@ export default function CreatePage() {
   const [showArchive, setShowArchive] = useState(false);
   const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
   const [showSocialPicker, setShowSocialPicker] = useState(false);
+  const [socialSearch, setSocialSearch] = useState('');
   const [toast, setToast] = useState('');
   const [showAvatarCrop, setShowAvatarCrop] = useState(false);
   const [prevAvatarCrop, setPrevAvatarCrop] = useState({ scale: 1, x: 0, y: 0, avatar: '' });
@@ -2473,23 +2474,46 @@ export default function CreatePage() {
                           className="ml-32 pt-2 pb-1 overflow-hidden"
                         >
                           <p className="text-[10px] font-medium text-gray-400 mb-2 uppercase tracking-wider">แพลตฟอร์มทั้งหมด</p>
+                          <div className="relative mb-2">
+                            <Search size={11} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input
+                              type="text"
+                              value={socialSearch}
+                              onChange={(e) => setSocialSearch(e.target.value)}
+                              placeholder="ค้นหาแพลตฟอร์ม..."
+                              className="w-full pl-7 pr-7 py-1.5 rounded-md bg-gray-50 border border-gray-200 text-[11px] text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-pink-300 focus:bg-white transition-colors"
+                            />
+                            {socialSearch && (
+                              <button
+                                onClick={() => setSocialSearch('')}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                              >
+                                <X size={11} />
+                              </button>
+                            )}
+                          </div>
                           <div className="flex flex-wrap gap-1.5">
-                            {socialPlatforms.map((p) => {
-                              const isActive = activeSocials.includes(p.id);
-                              return (
-                                <button
-                                  key={p.id}
-                                  onClick={() => toggleSocial(p.id)}
-                                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${isActive
-                                    ? 'bg-pink-100 text-pink-600'
-                                    : 'bg-gray-50 text-gray-500 hover:bg-pink-50 hover:text-pink-500'
-                                    }`}
-                                >
-                                  <p.icon size={11} />
-                                  {p.label}
-                                </button>
-                              );
-                            })}
+                            {socialPlatforms
+                              .filter((p) => p.label.toLowerCase().includes(socialSearch.toLowerCase()))
+                              .map((p) => {
+                                const isActive = activeSocials.includes(p.id);
+                                return (
+                                  <button
+                                    key={p.id}
+                                    onClick={() => toggleSocial(p.id)}
+                                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${isActive
+                                      ? 'bg-pink-100 text-pink-600'
+                                      : 'bg-gray-50 text-gray-500 hover:bg-pink-50 hover:text-pink-500'
+                                      }`}
+                                  >
+                                    <p.icon size={11} />
+                                    {p.label}
+                                  </button>
+                                );
+                              })}
+                            {socialPlatforms.filter((p) => p.label.toLowerCase().includes(socialSearch.toLowerCase())).length === 0 && (
+                              <p className="text-[11px] text-gray-400 py-2">ไม่พบแพลตฟอร์มที่ค้นหา</p>
+                            )}
                           </div>
                         </motion.div>
                       )}
