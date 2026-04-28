@@ -1,29 +1,24 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import type { ReactNode, FormEvent } from 'react';
+import type { FormEvent } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Scissors, Link2, Copy, CheckCircle2, ExternalLink, Trash2,
   BarChart3, QrCode, Power, PowerOff, X, Download, Lock,
-  Calendar, TrendingUp, MousePointerClick, Globe2, Smartphone, Monitor, Tablet,
+  Calendar, TrendingUp, MousePointerClick, Info,
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useAuth } from '../contexts/AuthContext';
 import pb, { isPocketBaseEnabled } from '../lib/pb';
 import {
   generateUniqueSlug, slugExists, validateSlug, buildShortUrl,
+  PLATFORMS, getPlatform, detectPlatform, translateShortUrlError,
 } from '../lib/shortUrl';
 import type { ShortUrlRecord, ShortUrlClickRecord } from '../lib/types';
+import ShortUrlStats from '../components/ShortUrlStats';
+import PlatformBarChart from '../components/PlatformBarChart';
 
 function extractPbError(err: unknown): string {
-  const anyErr = err as { response?: { message?: string; data?: Record<string, { message?: string }> } };
-  const fieldErrors = anyErr?.response?.data;
-  if (fieldErrors && typeof fieldErrors === 'object' && Object.keys(fieldErrors).length > 0) {
-    const details = Object.entries(fieldErrors)
-      .map(([field, info]) => `${field}: ${info?.message || 'invalid'}`)
-      .join(', ');
-    if (details) return details;
-  }
-  return anyErr?.response?.message || 'เกิดข้อผิดพลาด';
+  return translateShortUrlError(err).message;
 }
 
 function formatDateTH(iso: string) {
@@ -32,188 +27,6 @@ function formatDateTH(iso: string) {
       day: 'numeric', month: 'short', year: '2-digit',
     });
   } catch { return iso; }
-}
-
-function formatDateTimeTH(iso: string) {
-  try {
-    return new Date(iso).toLocaleString('th-TH', {
-      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
-    });
-  } catch { return iso; }
-}
-
-function getHostFromUrl(u: string): string {
-  if (!u) return 'ไม่ระบุ';
-  try { return new URL(u).hostname; } catch { return u; }
-}
-
-function deviceIcon(d: string, size = 14) {
-  if (d === 'mobile') return <Smartphone size={size} />;
-  if (d === 'tablet') return <Tablet size={size} />;
-  return <Monitor size={size} />;
-}
-
-// ─── Stats panel ─────────────────────────────────────────────────
-function StatsPanel({ urlId }: { urlId: string }) {
-  const [clicks, setClicks] = useState<ShortUrlClickRecord[] | null>(null);
-  const [err, setErr] = useState('');
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const list = await pb.collection('short_url_clicks').getFullList<ShortUrlClickRecord>({
-          filter: `shortUrl="${urlId}"`,
-          sort: '-created',
-          batch: 500,
-        });
-        if (!cancelled) setClicks(list);
-      } catch (e) {
-        if (!cancelled) setErr(extractPbError(e));
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [urlId]);
-
-  const last7Days = useMemo(() => {
-    if (!clicks) return [];
-    const days: { label: string; date: string; count: number }[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toDateString();
-      const count = clicks.filter(c => new Date(c.created).toDateString() === dateStr).length;
-      days.push({
-        label: d.toLocaleDateString('th-TH', { weekday: 'short' }),
-        date: d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }),
-        count,
-      });
-    }
-    return days;
-  }, [clicks]);
-
-  const maxCount = Math.max(1, ...last7Days.map(d => d.count));
-
-  const referrers = useMemo(() => {
-    if (!clicks) return [];
-    const map = new Map<string, number>();
-    for (const c of clicks) {
-      const host = c.referrer ? getHostFromUrl(c.referrer) : 'Direct';
-      map.set(host, (map.get(host) || 0) + 1);
-    }
-    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  }, [clicks]);
-
-  const devices = useMemo(() => {
-    if (!clicks) return [];
-    const map = new Map<string, number>();
-    for (const c of clicks) map.set(c.device || 'unknown', (map.get(c.device || 'unknown') || 0) + 1);
-    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
-  }, [clicks]);
-
-  const browsers = useMemo(() => {
-    if (!clicks) return [];
-    const map = new Map<string, number>();
-    for (const c of clicks) map.set(c.browser || 'unknown', (map.get(c.browser || 'unknown') || 0) + 1);
-    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
-  }, [clicks]);
-
-  if (err) {
-    return <div className="mt-3 p-4 bg-red-50 text-red-600 text-xs rounded-xl">{err}</div>;
-  }
-
-  if (!clicks) {
-    return (
-      <div className="mt-3 p-6 flex justify-center">
-        <div className="w-6 h-6 border-2 border-gray-200 border-t-orange-500 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  const total = clicks.length;
-
-  if (total === 0) {
-    return (
-      <div className="mt-3 p-6 text-center bg-gray-50 rounded-xl text-xs text-gray-400">
-        ยังไม่มีคลิก — แชร์ลิงก์นี้เพื่อเริ่มเก็บสถิติ
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-3 space-y-4">
-      {/* 7-day bar chart */}
-      <div className="bg-gray-50 rounded-xl p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <BarChart3 size={14} className="text-gray-400" />
-          <p className="text-xs font-semibold text-gray-600">คลิก 7 วันล่าสุด</p>
-        </div>
-        <div className="flex items-end gap-1.5 h-24">
-          {last7Days.map((d, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center gap-1">
-              <div className="text-[10px] font-semibold text-gray-500">{d.count || ''}</div>
-              <div
-                className="w-full bg-gradient-to-t from-orange-400 to-orange-300 rounded-t min-h-[2px] transition-all"
-                style={{ height: `${(d.count / maxCount) * 100}%` }}
-              />
-              <div className="text-[10px] text-gray-400">{d.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Referrers + Devices + Browsers */}
-      <div className="grid md:grid-cols-3 gap-3">
-        <StatList title="Top Referrers" icon={<Globe2 size={12} />} items={referrers} total={total} />
-        <StatList title="อุปกรณ์" icon={<Smartphone size={12} />} items={devices} total={total} renderIcon={(k) => deviceIcon(k, 12)} />
-        <StatList title="เบราว์เซอร์" icon={<Monitor size={12} />} items={browsers} total={total} />
-      </div>
-
-      {/* Recent clicks */}
-      <div className="bg-gray-50 rounded-xl p-4">
-        <p className="text-xs font-semibold text-gray-600 mb-2.5">คลิกล่าสุด ({Math.min(20, total)} จาก {total})</p>
-        <div className="space-y-1.5 max-h-56 overflow-y-auto">
-          {clicks.slice(0, 20).map((c) => (
-            <div key={c.id} className="flex items-center gap-2 text-[11px] text-gray-500 py-1 border-b border-gray-100 last:border-0">
-              <span className="text-gray-400 shrink-0">{formatDateTimeTH(c.created)}</span>
-              <span className="flex items-center gap-1 text-gray-400">{deviceIcon(c.device, 10)} {c.device}</span>
-              <span className="text-gray-400">· {c.browser}</span>
-              {c.referrer && <span className="truncate text-gray-400">· {getHostFromUrl(c.referrer)}</span>}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StatList({
-  title, icon, items, total, renderIcon,
-}: {
-  title: string; icon: ReactNode; items: [string, number][]; total: number;
-  renderIcon?: (k: string) => ReactNode;
-}) {
-  return (
-    <div className="bg-gray-50 rounded-xl p-4">
-      <div className="flex items-center gap-1.5 mb-2.5 text-gray-400">
-        {icon}<p className="text-xs font-semibold text-gray-600">{title}</p>
-      </div>
-      {items.length === 0 ? (
-        <p className="text-[11px] text-gray-400">ไม่มีข้อมูล</p>
-      ) : (
-        <div className="space-y-1.5">
-          {items.map(([k, v]) => (
-            <div key={k} className="flex items-center gap-2 text-[11px]">
-              {renderIcon && <span className="text-gray-400">{renderIcon(k)}</span>}
-              <span className="text-gray-600 flex-1 truncate">{k}</span>
-              <span className="font-semibold text-gray-900">{v}</span>
-              <span className="text-gray-400 tabular-nums w-9 text-right">{Math.round((v / total) * 100)}%</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
 }
 
 // ─── QR modal ────────────────────────────────────────────────────
@@ -263,12 +76,16 @@ export default function LinkShortenerPage() {
   const [title, setTitle] = useState('');
   const [customSlug, setCustomSlug] = useState('');
   const [expiresAt, setExpiresAt] = useState('');
+  const [platform, setPlatform] = useState('');
+  const [platformTouched, setPlatformTouched] = useState(false);
   const [error, setError] = useState('');
+  const [setupIssue, setSetupIssue] = useState(false);
 
   const [toast, setToast] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [qrFor, setQrFor] = useState<ShortUrlRecord | null>(null);
+  const [filterPlatform, setFilterPlatform] = useState<string>('all');
 
   const [totalsLoading, setTotalsLoading] = useState(true);
   const [totals, setTotals] = useState({ clicks: 0, last7: 0 });
@@ -290,8 +107,11 @@ export default function LinkShortenerPage() {
         sort: '-created',
       });
       setLinks(list);
+      setSetupIssue(false);
     } catch (e) {
-      setError(extractPbError(e));
+      const t = translateShortUrlError(e);
+      setError(t.message);
+      if (t.isSetupIssue) setSetupIssue(true);
     } finally {
       setListLoading(false);
     }
@@ -352,6 +172,7 @@ export default function LinkShortenerPage() {
         slug = await generateUniqueSlug(6);
       }
 
+      const resolvedPlatform = platform || detectPlatform(url);
       const payload: Record<string, unknown> = {
         user: user.id,
         slug,
@@ -359,16 +180,20 @@ export default function LinkShortenerPage() {
         title: title.trim(),
         enabled: true,
         clicks: 0,
+        platform: resolvedPlatform,
       };
       if (expiresAt) payload.expiresAt = new Date(expiresAt).toISOString();
 
       await pb.collection('short_urls').create(payload);
 
       setOriginalUrl(''); setTitle(''); setCustomSlug(''); setExpiresAt('');
+      setPlatform(''); setPlatformTouched(false);
       showToast('ย่อลิงก์สำเร็จ!');
       await refresh();
     } catch (err) {
-      setError(extractPbError(err));
+      const t = translateShortUrlError(err);
+      setError(t.message);
+      if (t.isSetupIssue) setSetupIssue(true);
     } finally {
       setLoading(false);
     }
@@ -402,6 +227,26 @@ export default function LinkShortenerPage() {
       showToast(extractPbError(e));
     }
   };
+
+  const platformBreakdown = useMemo(() => {
+    const map = new Map<string, { links: number; clicks: number }>();
+    for (const l of links) {
+      const id = l.platform || 'other';
+      const cur = map.get(id) || { links: 0, clicks: 0 };
+      cur.links += 1;
+      cur.clicks += l.clicks || 0;
+      map.set(id, cur);
+    }
+    return Array.from(map.entries())
+      .map(([id, v]) => ({ id, ...v, def: getPlatform(id) }))
+      .sort((a, b) => b.clicks - a.clicks || b.links - a.links);
+  }, [links]);
+
+  const visibleLinks = useMemo(() => (
+    filterPlatform === 'all'
+      ? links
+      : links.filter((l) => (l.platform || 'other') === filterPlatform)
+  ), [links, filterPlatform]);
 
   // ─── Not logged in state ──────────────────────────────────────
   if (!isLoggedIn) {
@@ -445,6 +290,22 @@ export default function LinkShortenerPage() {
     <div className="min-h-screen bg-[#fafaf9] pt-28 pb-20 px-4">
       <div className="max-w-3xl mx-auto">
 
+        {/* Setup banner */}
+        {setupIssue && (
+          <div className="mb-5 p-4 rounded-xl border border-amber-200 bg-amber-50/60 flex items-start gap-3">
+            <Info size={18} className="text-amber-600 mt-0.5 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-amber-700">ระบบย่อลิงก์ยังไม่พร้อมใช้งาน</p>
+              <p className="text-xs text-amber-600 mt-1 leading-relaxed">
+                Collection <code className="font-mono bg-amber-100 px-1 rounded">short_urls</code> ยังไม่มีใน PocketBase
+                — ผู้ดูแลกรุณาเข้าหน้า Admin ของ PocketBase แล้ว Import ไฟล์{' '}
+                <code className="font-mono bg-amber-100 px-1 rounded">pocketbase-schema.json</code>{' '}
+                ที่ Settings → Import collections
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-rose-400 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-200">
@@ -461,7 +322,15 @@ export default function LinkShortenerPage() {
             <input
               type="url"
               value={originalUrl}
-              onChange={(e) => { setOriginalUrl(e.target.value); setError(''); }}
+              onChange={(e) => {
+                const v = e.target.value;
+                setOriginalUrl(v);
+                setError('');
+                if (!platformTouched) {
+                  try { new URL(v); setPlatform(detectPlatform(v)); }
+                  catch { /* ignore — wait for valid URL */ }
+                }
+              }}
               placeholder="https://example.com/very-long-url"
               className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300"
               disabled={loading}
@@ -499,18 +368,42 @@ export default function LinkShortenerPage() {
             </div>
           </div>
 
-          <div>
-            <label className="text-xs font-semibold text-gray-700 mb-1.5 block">
-              <Calendar size={12} className="inline mr-1 -mt-0.5" /> วันหมดอายุ (ไม่บังคับ)
-            </label>
-            <input
-              type="date"
-              value={expiresAt}
-              onChange={(e) => setExpiresAt(e.target.value)}
-              min={new Date().toISOString().split('T')[0]}
-              className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300"
-              disabled={loading}
-            />
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+                แพลตฟอร์ม{!platformTouched && originalUrl && <span className="ml-1 text-[10px] font-normal text-orange-500">· ตรวจจับอัตโนมัติ</span>}
+              </label>
+              <div className="relative">
+                <span
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full"
+                  style={{ backgroundColor: getPlatform(platform).color }}
+                />
+                <select
+                  value={platform}
+                  onChange={(e) => { setPlatform(e.target.value); setPlatformTouched(true); }}
+                  className="w-full pl-8 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 bg-white appearance-none"
+                  disabled={loading}
+                >
+                  <option value="">— ตรวจจับจาก URL —</option>
+                  {PLATFORMS.map((p) => (
+                    <option key={p.id} value={p.id}>{p.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+                <Calendar size={12} className="inline mr-1 -mt-0.5" /> วันหมดอายุ (ไม่บังคับ)
+              </label>
+              <input
+                type="date"
+                value={expiresAt}
+                onChange={(e) => setExpiresAt(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+                className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300"
+                disabled={loading}
+              />
+            </div>
           </div>
 
           {error && <p className="text-xs text-red-500 -mt-1">{error}</p>}
@@ -527,7 +420,7 @@ export default function LinkShortenerPage() {
         </form>
 
         {/* Summary */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-3">
           <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
             <div className="flex items-center justify-center gap-1 text-gray-400 mb-1">
               <Link2 size={12} /><p className="text-[10px] font-semibold uppercase">ลิงก์</p>
@@ -550,35 +443,89 @@ export default function LinkShortenerPage() {
           </div>
         </div>
 
+        {/* Platform breakdown — vertical bar chart */}
+        <div className="mb-6">
+          <PlatformBarChart
+            items={platformBreakdown}
+            title="คลิกตามแพลตฟอร์ม"
+            subtitle="แยกยอดคลิกแต่ละแพลตฟอร์มแบบเทียบกัน"
+          />
+        </div>
+
         {/* List */}
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-          <h3 className="text-sm font-semibold text-gray-900 mb-4">
-            ลิงก์ของคุณ ({links.length})
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-900">
+              ลิงก์ของคุณ ({visibleLinks.length}{filterPlatform !== 'all' && `/${links.length}`})
+            </h3>
+          </div>
+
+          {/* Platform filter chips */}
+          {platformBreakdown.length > 0 && (
+            <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+              <button
+                onClick={() => setFilterPlatform('all')}
+                className={`px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap border transition-colors ${
+                  filterPlatform === 'all'
+                    ? 'bg-gray-900 text-white border-gray-900'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                ทั้งหมด · {links.length}
+              </button>
+              {platformBreakdown.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => setFilterPlatform(p.id)}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap border transition-colors flex items-center gap-1.5 ${
+                    filterPlatform === p.id
+                      ? 'text-white border-transparent'
+                      : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                  }`}
+                  style={filterPlatform === p.id ? { backgroundColor: p.def.color } : undefined}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: filterPlatform === p.id ? '#fff' : p.def.color }}
+                  />
+                  {p.def.label} · {p.links}
+                </button>
+              ))}
+            </div>
+          )}
 
           {listLoading ? (
             <div className="py-10 flex justify-center">
               <div className="w-6 h-6 border-2 border-gray-200 border-t-orange-500 rounded-full animate-spin" />
             </div>
-          ) : links.length === 0 ? (
+          ) : visibleLinks.length === 0 ? (
             <div className="py-10 text-center">
               <div className="w-14 h-14 rounded-2xl bg-orange-50 flex items-center justify-center mx-auto mb-3">
                 <Scissors size={24} className="text-orange-300" />
               </div>
-              <p className="text-sm text-gray-500">ยังไม่มีลิงก์ที่ย่อ</p>
-              <p className="text-xs text-gray-400 mt-1">สร้างลิงก์แรกของคุณด้านบน</p>
+              <p className="text-sm text-gray-500">
+                {links.length === 0 ? 'ยังไม่มีลิงก์ที่ย่อ' : 'ไม่มีลิงก์ในแพลตฟอร์มนี้'}
+              </p>
+              <p className="text-xs text-gray-400 mt-1">
+                {links.length === 0 ? 'สร้างลิงก์แรกของคุณด้านบน' : 'ลองเลือกแพลตฟอร์มอื่น'}
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
-              {links.map((rec) => {
+              {visibleLinks.map((rec) => {
                 const shortUrl = buildShortUrl(rec.slug);
                 const isExpired = !!rec.expiresAt && new Date(rec.expiresAt).getTime() < Date.now();
                 const isExpanded = expandedId === rec.id;
+                const platformDef = getPlatform(rec.platform);
                 return (
                   <div key={rec.id} className="px-4 py-3.5 bg-gray-50 rounded-xl border border-gray-100 hover:border-orange-200 transition-colors">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-orange-100 flex items-center justify-center shrink-0">
-                        <Link2 size={16} className="text-orange-500" />
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                        style={{ backgroundColor: `${platformDef.color}1a` }}
+                        title={platformDef.label}
+                      >
+                        <Link2 size={16} style={{ color: platformDef.color }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         {rec.title && <p className="text-xs font-semibold text-gray-700 truncate">{rec.title}</p>}
@@ -587,6 +534,13 @@ export default function LinkShortenerPage() {
                         </a>
                         <p className="text-[11px] text-gray-400 truncate">{rec.originalUrl}</p>
                         <div className="flex items-center gap-2 mt-1 flex-wrap">
+                          <span
+                            className="text-[10px] font-semibold px-1.5 py-0.5 rounded flex items-center gap-1"
+                            style={{ backgroundColor: `${platformDef.color}1a`, color: platformDef.color }}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: platformDef.color }} />
+                            {platformDef.label}
+                          </span>
                           <span className="text-[10px] text-gray-400">{formatDateTH(rec.created)}</span>
                           <span className="text-[10px] text-orange-500 font-semibold">{rec.clicks || 0} คลิก</span>
                           {rec.enabled === false && (
@@ -618,7 +572,7 @@ export default function LinkShortenerPage() {
                         </button>
                       </div>
                     </div>
-                    {isExpanded && <StatsPanel urlId={rec.id} />}
+                    {isExpanded && <ShortUrlStats urlId={rec.id} />}
                   </div>
                 );
               })}

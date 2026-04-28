@@ -408,11 +408,22 @@
             "min": 0,
             "max": null
           }
+        },
+        {
+          "name": "platform",
+          "type": "text",
+          "required": false,
+          "options": {
+            "min": null,
+            "max": 32,
+            "pattern": ""
+          }
         }
       ],
       "indexes": [
         "CREATE UNIQUE INDEX idx_short_urls_slug ON short_urls (slug)",
-        "CREATE INDEX idx_short_urls_user ON short_urls (user)"
+        "CREATE INDEX idx_short_urls_user ON short_urls (user)",
+        "CREATE INDEX idx_short_urls_platform ON short_urls (platform)"
       ],
       "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
       "viewRule": "",

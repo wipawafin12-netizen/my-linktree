@@ -69,6 +69,7 @@ export interface ShortUrlRecord {
   enabled: boolean;
   expiresAt: string;
   clicks: number;
+  platform: string;
   created: string;
   updated: string;
 }

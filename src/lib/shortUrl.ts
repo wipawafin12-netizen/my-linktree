@@ -67,3 +67,118 @@ export function buildShortUrl(slug: string): string {
   const base = import.meta.env.VITE_SITE_URL || window.location.origin;
   return `${base.replace(/\/$/, '')}/s/${slug}`;
 }
+
+export interface PlatformDef {
+  id: string;
+  label: string;
+  color: string;
+  hosts: string[];
+}
+
+export const PLATFORMS: PlatformDef[] = [
+  { id: 'facebook',  label: 'Facebook',  color: '#1877F2', hosts: ['facebook.com', 'fb.com', 'fb.me', 'm.facebook.com'] },
+  { id: 'instagram', label: 'Instagram', color: '#E1306C', hosts: ['instagram.com', 'instagr.am'] },
+  { id: 'tiktok',    label: 'TikTok',    color: '#000000', hosts: ['tiktok.com', 'vm.tiktok.com', 'vt.tiktok.com'] },
+  { id: 'youtube',   label: 'YouTube',   color: '#FF0000', hosts: ['youtube.com', 'youtu.be', 'm.youtube.com'] },
+  { id: 'twitter',   label: 'X (Twitter)', color: '#000000', hosts: ['twitter.com', 'x.com', 't.co'] },
+  { id: 'line',      label: 'LINE',      color: '#06C755', hosts: ['line.me', 'lin.ee', 'liff.line.me'] },
+  { id: 'whatsapp',  label: 'WhatsApp',  color: '#25D366', hosts: ['whatsapp.com', 'wa.me', 'api.whatsapp.com'] },
+  { id: 'telegram',  label: 'Telegram',  color: '#0088CC', hosts: ['telegram.org', 't.me', 'telegram.me'] },
+  { id: 'discord',   label: 'Discord',   color: '#5865F2', hosts: ['discord.com', 'discord.gg', 'discordapp.com'] },
+  { id: 'linkedin',  label: 'LinkedIn',  color: '#0A66C2', hosts: ['linkedin.com', 'lnkd.in'] },
+  { id: 'shopee',    label: 'Shopee',    color: '#EE4D2D', hosts: ['shopee.co.th', 'shopee.com', 'shp.ee'] },
+  { id: 'lazada',    label: 'Lazada',    color: '#0F146D', hosts: ['lazada.co.th', 'lazada.com'] },
+  { id: 'spotify',   label: 'Spotify',   color: '#1DB954', hosts: ['spotify.com', 'open.spotify.com', 'spoti.fi'] },
+  { id: 'email',     label: 'Email',     color: '#6366F1', hosts: [] },
+  { id: 'sms',       label: 'SMS',       color: '#10B981', hosts: [] },
+  { id: 'website',   label: 'เว็บไซต์',   color: '#64748B', hosts: [] },
+  { id: 'other',     label: 'อื่นๆ',      color: '#94A3B8', hosts: [] },
+];
+
+const PLATFORM_BY_ID: Record<string, PlatformDef> = Object.fromEntries(
+  PLATFORMS.map((p) => [p.id, p]),
+);
+
+export function getPlatform(id: string | undefined | null): PlatformDef {
+  if (id && PLATFORM_BY_ID[id]) return PLATFORM_BY_ID[id];
+  return PLATFORM_BY_ID.other;
+}
+
+interface PbErrorShape {
+  status?: number;
+  message?: string;
+  response?: {
+    code?: number;
+    message?: string;
+    data?: Record<string, { message?: string }>;
+  };
+}
+
+export function translateShortUrlError(err: unknown): { message: string; isSetupIssue: boolean } {
+  // Log the full error to console for debugging — strip in production if noisy
+  if (typeof console !== 'undefined') {
+    // eslint-disable-next-line no-console
+    console.error('[shortUrl] PocketBase error:', err);
+  }
+
+  const e = err as PbErrorShape;
+  const status = e?.status ?? e?.response?.code;
+  const rawMsg = (e?.response?.message || e?.message || '').toString();
+  const fieldErrors = e?.response?.data;
+
+  if (fieldErrors && typeof fieldErrors === 'object') {
+    const entries = Object.entries(fieldErrors).filter(([, v]) => v?.message);
+    if (entries.length > 0) {
+      const details = entries.map(([f, v]) => `${f}: ${v?.message}`).join(', ');
+      return { message: details, isSetupIssue: false };
+    }
+  }
+
+  if (status === 404 || /missing or invalid collection|no collection|not found/i.test(rawMsg)) {
+    return {
+      message: 'ระบบยังไม่ได้ติดตั้ง collection "short_urls" ใน PocketBase — กรุณา import pocketbase-schema.json ที่หน้า Admin',
+      isSetupIssue: true,
+    };
+  }
+  if (status === 401 || status === 403 || /authoriz|unauthor|admin or record/i.test(rawMsg)) {
+    return { message: 'ไม่มีสิทธิ์เข้าใช้งาน — กรุณาออกจากระบบแล้วเข้าใหม่ (auth token อาจหมดอายุ)', isSetupIssue: false };
+  }
+  if (status === 0 || /network|failed to fetch/i.test(rawMsg)) {
+    return { message: 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ — ตรวจสอบอินเทอร์เน็ตหรือสถานะ PocketBase', isSetupIssue: true };
+  }
+  if (status === 400) {
+    // 400 with no field errors usually means createRule failed — auth state issue
+    if (/failed to create|failed to update/i.test(rawMsg)) {
+      return {
+        message: 'สร้างไม่สำเร็จ — ลองออกจากระบบแล้วเข้าใหม่ (auth token หมดอายุ) หรือตรวจสอบว่า URL ถูกต้อง',
+        isSetupIssue: false,
+      };
+    }
+    return { message: rawMsg || 'ข้อมูลไม่ถูกต้อง', isSetupIssue: false };
+  }
+
+  return { message: rawMsg || 'เกิดข้อผิดพลาด กรุณาลองใหม่', isSetupIssue: false };
+}
+
+export function detectPlatform(url: string): string {
+  if (!url) return 'other';
+  const trimmed = url.trim();
+  const lower = trimmed.toLowerCase();
+  if (lower.startsWith('mailto:')) return 'email';
+  if (lower.startsWith('sms:') || lower.startsWith('tel:')) return 'sms';
+
+  let host = '';
+  try {
+    host = new URL(trimmed).hostname.toLowerCase().replace(/^www\./, '');
+  } catch {
+    return 'other';
+  }
+  if (!host) return 'other';
+
+  for (const p of PLATFORMS) {
+    if (p.hosts.some((h) => host === h || host.endsWith(`.${h}`))) {
+      return p.id;
+    }
+  }
+  return 'website';
+}

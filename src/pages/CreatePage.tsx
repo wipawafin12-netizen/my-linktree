@@ -18,8 +18,11 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
-import { generateUniqueSlug, buildShortUrl } from '../lib/shortUrl';
+import { generateUniqueSlug, buildShortUrl, detectPlatform, getPlatform, translateShortUrlError } from '../lib/shortUrl';
 import type { ShortUrlRecord } from '../lib/types';
+import ShortUrlStats from '../components/ShortUrlStats';
+import PlatformBarChart from '../components/PlatformBarChart';
+import { QRCodeCanvas } from 'qrcode.react';
 
 
 const LineIcon = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
@@ -509,12 +512,15 @@ export default function CreatePage() {
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [autoReplyKeywords, setAutoReplyKeywords] = useState('link, links, website, url');
   const [shortenerInput, setShortenerInput] = useState('');
-  const [shortenedLinks, setShortenedLinks] = useState<{ id?: string; slug?: string; original: string; short: string; clicks: number; createdAt: string }[]>(() => {
+  const [shortenedLinks, setShortenedLinks] = useState<{ id?: string; slug?: string; original: string; short: string; clicks: number; createdAt: string; platform?: string }[]>(() => {
     try { const saved = localStorage.getItem('openbio_shortened_links'); return saved ? JSON.parse(saved) : []; } catch { return []; }
   });
   const [shortenerLoading, setShortenerLoading] = useState(false);
   const [shortenerError, setShortenerError] = useState('');
+  const [shortenerSetupIssue, setShortenerSetupIssue] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [expandedShortIdx, setExpandedShortIdx] = useState<number | null>(null);
+  const [shortSearchQuery, setShortSearchQuery] = useState('');
   const [expandedSidebar, setExpandedSidebar] = useState<string | null>(null);
   const [sidebarUserMenu, setSidebarUserMenu] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -898,8 +904,13 @@ export default function CreatePage() {
           short: buildShortUrl(rec.slug),
           clicks: rec.clicks || 0,
           createdAt: rec.created,
+          platform: rec.platform || detectPlatform(rec.originalUrl),
         })));
-      } catch { /* ignore, keep cached list */ }
+      } catch (err) {
+        if (cancelled) return;
+        const t = translateShortUrlError(err);
+        if (t.isSetupIssue) setShortenerSetupIssue(true);
+      }
     })();
     return () => { cancelled = true; };
   }, [user?.id]);
@@ -920,6 +931,10 @@ export default function CreatePage() {
       setShortenerError('กรุณาเข้าสู่ระบบก่อนใช้งาน');
       return;
     }
+    if (!pb.authStore.isValid || pb.authStore.record?.id !== user.id) {
+      setShortenerError('Session หมดอายุ — กรุณาออกจากระบบแล้วเข้าใหม่');
+      return;
+    }
     setShortenerLoading(true);
     setShortenerError('');
     try {
@@ -931,6 +946,7 @@ export default function CreatePage() {
         title: '',
         enabled: true,
         clicks: 0,
+        platform: detectPlatform(url),
       });
       setShortenedLinks(prev => [{
         id: rec.id,
@@ -939,12 +955,14 @@ export default function CreatePage() {
         short: buildShortUrl(rec.slug),
         clicks: 0,
         createdAt: rec.created,
+        platform: rec.platform || detectPlatform(url),
       }, ...prev]);
       setShortenerInput('');
       showToast('ย่อลิงก์สำเร็จ!');
     } catch (err) {
-      const msg = (err as { message?: string })?.message || 'ย่อลิงก์ไม่สำเร็จ กรุณาลองใหม่';
-      setShortenerError(msg);
+      const t = translateShortUrlError(err);
+      setShortenerError(t.message);
+      if (t.isSetupIssue) setShortenerSetupIssue(true);
     } finally {
       setShortenerLoading(false);
     }
@@ -2185,6 +2203,18 @@ export default function CreatePage() {
                             <p className="text-[11px] text-gray-400">สร้างลิงก์สั้นแบบมีแบรนด์</p>
                           </div>
                         </div>
+                        {shortenerSetupIssue && (
+                          <div className="mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50/60 flex items-start gap-2">
+                            <Info size={14} className="text-amber-600 mt-0.5 shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-semibold text-amber-700">ระบบย่อลิงก์ยังไม่พร้อมใช้งาน</p>
+                              <p className="text-[11px] text-amber-600 mt-0.5">
+                                Collection <code className="font-mono bg-amber-100 px-1 rounded">short_urls</code> ยังไม่ถูกสร้างใน PocketBase
+                                — ผู้ดูแลกรุณา import ไฟล์ <code className="font-mono bg-amber-100 px-1 rounded">pocketbase-schema.json</code> ที่หน้า Admin → Settings → Import collections
+                              </p>
+                            </div>
+                          </div>
+                        )}
                         <form onSubmit={(e) => { e.preventDefault(); handleShortenUrl(); }} className="flex gap-2">
                           <div className="flex-1">
                             <input
@@ -2210,102 +2240,312 @@ export default function CreatePage() {
                       </div>
 
                       {/* Stats summary */}
-                      {shortenedLinks.length > 0 && (
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
-                            <p className="text-2xl font-bold text-orange-500">{shortenedLinks.length}</p>
-                            <p className="text-[11px] text-gray-400">ลิงก์ทั้งหมด</p>
-                          </div>
-                          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
-                            <p className="text-2xl font-bold text-orange-500">{shortenedLinks.reduce((sum, l) => sum + l.clicks, 0)}</p>
-                            <p className="text-[11px] text-gray-400">คลิกทั้งหมด</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Shortened links list */}
-                      {shortenedLinks.length > 0 && (
-                        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                          <h3 className="text-sm font-semibold text-gray-900 mb-3">ลิงก์ที่ย่อแล้ว ({shortenedLinks.length})</h3>
-                          <div className="space-y-3">
-                            {shortenedLinks.map((link, i) => (
-                              <div key={i} className="px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-orange-200 transition-colors">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center shrink-0">
-                                    <Link2 size={14} className="text-orange-500" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <a href={link.short} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-orange-600 hover:text-orange-700 hover:underline">
-                                      {link.short}
-                                    </a>
-                                    <p className="text-[11px] text-gray-400 truncate">{link.original}</p>
-                                  </div>
-                                  <div className="flex items-center gap-1 shrink-0">
-                                    <button
-                                      onClick={() => {
-                                        navigator.clipboard.writeText(link.short);
-                                        setCopiedIndex(i);
-                                        setTimeout(() => setCopiedIndex(null), 2000);
-                                        showToast('คัดลอกลิงก์แล้ว!');
-                                      }}
-                                      className={`p-2 rounded-lg transition-all ${copiedIndex === i ? 'text-green-500 bg-green-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
-                                      title="คัดลอก"
-                                    >
-                                      {copiedIndex === i ? <CheckCircle2 size={14} /> : <Copy size={14} />}
-                                    </button>
-                                    <a
-                                      href={link.original}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="p-2 text-gray-400 hover:text-blue-500 rounded-lg hover:bg-blue-50 transition-all"
-                                      title="เปิดลิงก์ต้นฉบับ"
-                                    >
-                                      <ExternalLink size={14} />
-                                    </a>
-                                    <button
-                                      onClick={async () => {
-                                        if (link.id && isPocketBaseEnabled) {
-                                          try { await pb.collection('short_urls').delete(link.id); } catch { /* ignore */ }
-                                        }
-                                        setShortenedLinks(shortenedLinks.filter((_, idx) => idx !== i));
-                                      }}
-                                      className="p-2 text-gray-300 hover:text-red-400 rounded-lg hover:bg-red-50 transition-all"
-                                      title="ลบ"
-                                    >
-                                      <Trash2 size={14} />
-                                    </button>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-3 mt-2 ml-11">
-                                  <span className="text-[10px] text-gray-400">
-                                    {new Date(link.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' })}
-                                  </span>
-                                  <span className="inline-flex items-center gap-1 text-[10px] font-medium text-orange-600">
-                                    <BarChart3 size={10} /> {link.clicks} คลิก
-                                  </span>
-                                </div>
+                      {shortenedLinks.length > 0 && (() => {
+                        const totalClicks = shortenedLinks.reduce((sum, l) => sum + l.clicks, 0);
+                        const platformMap = new Map<string, { links: number; clicks: number }>();
+                        for (const l of shortenedLinks) {
+                          const id = l.platform || detectPlatform(l.original);
+                          const cur = platformMap.get(id) || { links: 0, clicks: 0 };
+                          cur.links += 1;
+                          cur.clicks += l.clicks || 0;
+                          platformMap.set(id, cur);
+                        }
+                        const platforms = Array.from(platformMap.entries())
+                          .map(([id, v]) => ({ id, ...v, def: getPlatform(id) }))
+                          .sort((a, b) => b.clicks - a.clicks || b.links - a.links);
+                        const topPlatform = platforms[0];
+                        return (
+                          <>
+                            <div className="grid grid-cols-3 gap-3">
+                              <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+                                <p className="text-2xl font-bold text-orange-500">{shortenedLinks.length}</p>
+                                <p className="text-[11px] text-gray-400">ลิงก์ทั้งหมด</p>
                               </div>
-                            ))}
+                              <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+                                <p className="text-2xl font-bold text-orange-500">{totalClicks}</p>
+                                <p className="text-[11px] text-gray-400">คลิกทั้งหมด</p>
+                              </div>
+                              <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+                                <p className="text-lg font-bold flex items-center justify-center gap-1.5" style={{ color: topPlatform ? topPlatform.def.color : '#9CA3AF' }}>
+                                  {topPlatform && <span className="w-2 h-2 rounded-full" style={{ backgroundColor: topPlatform.def.color }} />}
+                                  {topPlatform ? topPlatform.def.label : '—'}
+                                </p>
+                                <p className="text-[11px] text-gray-400">แพลตฟอร์มยอดนิยม</p>
+                              </div>
+                            </div>
+
+                            {/* Platform breakdown — vertical bar chart */}
+                            <PlatformBarChart items={platforms} />
+                          </>
+                        );
+                      })()}
+
+                      {/* Shortened links list — Bitly-style cards */}
+                      {shortenedLinks.length > 0 && (() => {
+                        const filtered = shortSearchQuery.trim()
+                          ? shortenedLinks.filter((l) => {
+                              const q = shortSearchQuery.toLowerCase();
+                              return (
+                                l.short.toLowerCase().includes(q) ||
+                                l.original.toLowerCase().includes(q) ||
+                                (l.platform || '').toLowerCase().includes(q)
+                              );
+                            })
+                          : shortenedLinks;
+
+                        return (
+                          <div>
+                            {/* Header bar */}
+                            <div className="flex items-center justify-between mb-3 flex-wrap gap-3">
+                              <div>
+                                <h3 className="text-base font-bold text-gray-900">ลิงก์ของคุณ</h3>
+                                <p className="text-[11px] text-gray-400">{filtered.length} จาก {shortenedLinks.length} ลิงก์</p>
+                              </div>
+                            </div>
+
+                            {/* Toolbar: search */}
+                            <div className="flex items-center gap-2 mb-4 flex-wrap">
+                              <div className="flex-1 min-w-[200px] relative">
+                                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                <input
+                                  type="text"
+                                  value={shortSearchQuery}
+                                  onChange={(e) => setShortSearchQuery(e.target.value)}
+                                  placeholder="ค้นหาลิงก์..."
+                                  className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300"
+                                />
+                              </div>
+                              {shortenedLinks.length > 0 && (
+                                <button
+                                  onClick={async () => {
+                                    if (!confirm('ลบลิงก์ทั้งหมด?')) return;
+                                    if (isPocketBaseEnabled) {
+                                      await Promise.all(shortenedLinks
+                                        .filter(l => l.id)
+                                        .map(l => pb.collection('short_urls').delete(l.id!).catch(() => undefined))
+                                      );
+                                    }
+                                    setShortenedLinks([]);
+                                    setExpandedShortIdx(null);
+                                  }}
+                                  className="px-3 py-2 text-xs font-medium text-red-500 hover:text-red-600 hover:bg-red-50 border border-red-100 rounded-lg transition-colors flex items-center gap-1.5"
+                                >
+                                  <Trash2 size={13} /> ลบทั้งหมด
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Bitly-style cards */}
+                            <div className="space-y-3">
+                              {filtered.length === 0 ? (
+                                <div className="bg-white rounded-2xl p-8 border border-gray-100 text-center">
+                                  <Search size={28} className="text-gray-200 mx-auto mb-2" />
+                                  <p className="text-sm text-gray-400">ไม่พบลิงก์ที่ตรงกับ "{shortSearchQuery}"</p>
+                                </div>
+                              ) : filtered.map((link) => {
+                                const i = shortenedLinks.indexOf(link);
+                                const platformDef = getPlatform(link.platform);
+                                const isExpanded = expandedShortIdx === i;
+                                const canExpand = !!link.id && isPocketBaseEnabled;
+                                let linkTitle = '';
+                                try { linkTitle = new URL(link.original).hostname; } catch { linkTitle = 'untitled'; }
+                                const shortDisplay = link.short.replace(/^https?:\/\//, '');
+                                const dateDisplay = new Date(link.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                                return (
+                                  <div
+                                    key={link.id || i}
+                                    className="bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all overflow-hidden"
+                                  >
+                                    <div className="p-4 sm:p-5">
+                                      <div className="flex items-start gap-3 sm:gap-4">
+                                        {/* Platform icon */}
+                                        <div
+                                          className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
+                                          style={{
+                                            background: `linear-gradient(135deg, ${platformDef.color}, ${platformDef.color}dd)`,
+                                          }}
+                                        >
+                                          <Link2 size={20} className="text-white" strokeWidth={2.5} />
+                                        </div>
+
+                                        {/* Main content */}
+                                        <div className="flex-1 min-w-0">
+                                          {/* Title */}
+                                          <h4 className="text-sm sm:text-base font-bold text-gray-900 truncate">
+                                            {linkTitle} <span className="text-gray-400 font-normal">– untitled</span>
+                                          </h4>
+
+                                          {/* Short URL with copy */}
+                                          <div className="flex items-center gap-1.5 mt-0.5">
+                                            <a
+                                              href={link.short}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="text-[13px] sm:text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline truncate"
+                                            >
+                                              {shortDisplay}
+                                            </a>
+                                            <button
+                                              onClick={() => {
+                                                navigator.clipboard.writeText(link.short);
+                                                setCopiedIndex(i);
+                                                setTimeout(() => setCopiedIndex(null), 2000);
+                                                showToast('คัดลอกลิงก์แล้ว!');
+                                              }}
+                                              className={`p-0.5 rounded transition-colors shrink-0 ${
+                                                copiedIndex === i ? 'text-green-500' : 'text-gray-400 hover:text-blue-600'
+                                              }`}
+                                              title="คัดลอก"
+                                            >
+                                              {copiedIndex === i ? <CheckCircle2 size={13} /> : <Copy size={13} />}
+                                            </button>
+                                          </div>
+
+                                          {/* Original URL with arrow */}
+                                          <div className="flex items-center gap-1.5 mt-1">
+                                            <span className="text-gray-300 shrink-0 text-base leading-none">↳</span>
+                                            <a
+                                              href={link.original}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="text-[12px] text-gray-500 hover:text-gray-700 truncate"
+                                            >
+                                              {link.original}
+                                            </a>
+                                          </div>
+
+                                          {/* Footer badges */}
+                                          <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+                                            <button
+                                              onClick={() => canExpand && setExpandedShortIdx(isExpanded ? null : i)}
+                                              disabled={!canExpand}
+                                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border transition-colors ${
+                                                isExpanded
+                                                  ? 'border-orange-200 text-orange-600 bg-orange-50'
+                                                  : canExpand
+                                                  ? 'border-gray-200 text-gray-600 hover:bg-gray-50 cursor-pointer'
+                                                  : 'border-gray-100 text-gray-400 cursor-default'
+                                              }`}
+                                            >
+                                              <BarChart3 size={11} />
+                                              <span>Click data</span>
+                                              {link.clicks > 0 && (
+                                                <span className="ml-0.5 px-1.5 bg-orange-100 text-orange-700 rounded font-semibold tabular-nums">
+                                                  {link.clicks}
+                                                </span>
+                                              )}
+                                            </button>
+                                            <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
+                                              <Calendar size={11} className="text-gray-400" />
+                                              {dateDisplay}
+                                            </span>
+                                            <span
+                                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium"
+                                              style={{ backgroundColor: `${platformDef.color}15`, color: platformDef.color }}
+                                            >
+                                              <Tag size={10} />
+                                              {platformDef.label}
+                                            </span>
+                                            {!canExpand && (
+                                              <span className="text-[10px] text-gray-400 italic">(ลิงก์เก่า)</span>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        {/* Right actions */}
+                                        <div className="flex flex-col sm:flex-row items-end sm:items-start gap-1 shrink-0">
+                                          <button
+                                            onClick={() => {
+                                              if (typeof navigator.share === 'function') {
+                                                navigator.share({ url: link.short, title: linkTitle }).catch(() => {});
+                                              } else {
+                                                navigator.clipboard.writeText(link.short);
+                                                showToast('คัดลอกลิงก์เพื่อแชร์แล้ว!');
+                                              }
+                                            }}
+                                            className="p-2 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-all"
+                                            title="แชร์"
+                                          >
+                                            <Share2 size={15} />
+                                          </button>
+                                          {canExpand && (
+                                            <button
+                                              onClick={() => setExpandedShortIdx(isExpanded ? null : i)}
+                                              className={`p-2 rounded-lg transition-all ${
+                                                isExpanded
+                                                  ? 'text-orange-600 bg-orange-50'
+                                                  : 'text-gray-400 hover:text-orange-600 hover:bg-orange-50'
+                                              }`}
+                                              title="ดูสถิติ"
+                                            >
+                                              <BarChart3 size={15} />
+                                            </button>
+                                          )}
+                                          <button
+                                            onClick={async () => {
+                                              if (!confirm(`ลบลิงก์ ${shortDisplay}?`)) return;
+                                              if (link.id && isPocketBaseEnabled) {
+                                                try { await pb.collection('short_urls').delete(link.id); } catch { /* ignore */ }
+                                              }
+                                              if (expandedShortIdx === i) setExpandedShortIdx(null);
+                                              setShortenedLinks(shortenedLinks.filter((_, idx) => idx !== i));
+                                            }}
+                                            className="p-2 text-gray-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition-all"
+                                            title="ลบ"
+                                          >
+                                            <Trash2 size={15} />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Expanded: QR + Stats (Bitly detail style) */}
+                                    {isExpanded && link.id && (
+                                      <div className="border-t border-gray-100 bg-gray-50/40 p-4 sm:p-5 space-y-4">
+                                        {/* QR Code section */}
+                                        <div className="bg-white rounded-xl p-4 border border-gray-100">
+                                          <div className="flex items-center gap-4 flex-wrap">
+                                            <div className="bg-white rounded-lg p-2 border border-gray-100">
+                                              <QRCodeCanvas value={link.short} size={88} />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                              <h5 className="text-sm font-semibold text-gray-900 mb-0.5">QR Code</h5>
+                                              <p className="text-[11px] text-gray-500 mb-2 truncate">{shortDisplay}</p>
+                                              <button
+                                                onClick={() => {
+                                                  const canvas = document.querySelectorAll<HTMLCanvasElement>('canvas');
+                                                  const target = Array.from(canvas).find((c) =>
+                                                    c.closest(`[data-qr-key="${link.id}"]`)
+                                                  );
+                                                  const c = target || canvas[canvas.length - 1];
+                                                  if (!c) return;
+                                                  const a = document.createElement('a');
+                                                  a.download = `qr-${link.slug || 'short'}.png`;
+                                                  a.href = c.toDataURL('image/png');
+                                                  a.click();
+                                                }}
+                                                className="text-[11px] text-blue-600 hover:text-blue-700 hover:underline inline-flex items-center gap-1"
+                                              >
+                                                <Download size={11} /> ดาวน์โหลด QR
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {/* Engagements / stats */}
+                                        <div data-qr-key={link.id}>
+                                          <ShortUrlStats urlId={link.id} />
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
-                          {shortenedLinks.length > 0 && (
-                            <button
-                              onClick={async () => {
-                                if (!confirm('ลบลิงก์ทั้งหมด?')) return;
-                                if (isPocketBaseEnabled) {
-                                  await Promise.all(shortenedLinks
-                                    .filter(l => l.id)
-                                    .map(l => pb.collection('short_urls').delete(l.id!).catch(() => undefined))
-                                  );
-                                }
-                                setShortenedLinks([]);
-                              }}
-                              className="mt-4 w-full py-2 text-xs text-red-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            >
-                              ลบทั้งหมด
-                            </button>
-                          )}
-                        </div>
-                      )}
+                        );
+                      })()}
 
                       {/* Empty state */}
                       {shortenedLinks.length === 0 && (

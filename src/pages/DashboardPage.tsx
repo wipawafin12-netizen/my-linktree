@@ -1,14 +1,20 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Eye, MousePointerClick, Link2, TrendingUp, TrendingDown,
   ArrowLeft, ExternalLink, BarChart3, Clock, Copy, Check,
   QrCode, Share2, Sparkles, Activity, Percent, Users,
-  Zap, ArrowUpRight, Trash2, RefreshCw,
+  Zap, ArrowUpRight, Trash2, RefreshCw, Scissors, ChevronDown,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import pb, { isPocketBaseEnabled } from '../lib/pb';
+import { buildShortUrl, getPlatform } from '../lib/shortUrl';
+import type { ShortUrlRecord, ShortUrlClickRecord } from '../lib/types';
+import ShortUrlStats from '../components/ShortUrlStats';
+import ShortUrlComparisonCharts from '../components/ShortUrlComparisonCharts';
+import PlatformBarChart from '../components/PlatformBarChart';
+import ShortUrlStatusWidgets from '../components/ShortUrlStatusWidgets';
 
 
 interface LinkClick {
@@ -209,8 +215,15 @@ export default function DashboardPage() {
   const { isLoggedIn, username, user } = useAuth();
   const [analytics, setAnalytics] = useState<AnalyticsData>({ pageViews: 0, linkClicks: [], viewHistory: [] });
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'links'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'links' | 'shortLinks'>('overview');
   const [displayName, setDisplayName] = useState('');
+  const [shortLinks, setShortLinks] = useState<ShortUrlRecord[]>([]);
+  const [shortLoading, setShortLoading] = useState(false);
+  const [expandedShortId, setExpandedShortId] = useState<string | null>(null);
+  const [shortClicks7d, setShortClicks7d] = useState(0);
+  const [copiedShortId, setCopiedShortId] = useState<string | null>(null);
+  const [shortClicksHistory, setShortClicksHistory] = useState<ShortUrlClickRecord[]>([]);
+  const [shortClicksLoading, setShortClicksLoading] = useState(false);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -284,6 +297,74 @@ export default function DashboardPage() {
   const totalUniqueLinks = Object.keys(clicksPerLink).length;
 
   const hasData = totalViews > 0 || totalClicks > 0;
+
+  // ── Short links data ──
+  const refreshShortLinks = useCallback(async () => {
+    if (!user?.id || !isPocketBaseEnabled) return;
+    setShortLoading(true);
+    setShortClicksLoading(true);
+    try {
+      const list = await pb.collection('short_urls').getFullList<ShortUrlRecord>({
+        filter: `user="${user.id}"`,
+        sort: '-clicks,-created',
+      });
+      setShortLinks(list);
+
+      const fourteenAgo = new Date();
+      fourteenAgo.setDate(fourteenAgo.getDate() - 14);
+      const iso14 = fourteenAgo.toISOString().replace('T', ' ').slice(0, 19);
+      try {
+        const history = await pb.collection('short_url_clicks').getFullList<ShortUrlClickRecord>({
+          filter: `shortUrl.user="${user.id}" && created >= "${iso14}"`,
+          sort: '-created',
+          batch: 1000,
+        });
+        setShortClicksHistory(history);
+
+        const sevenAgo = new Date();
+        sevenAgo.setDate(sevenAgo.getDate() - 7);
+        const sevenMs = sevenAgo.getTime();
+        setShortClicks7d(history.filter((c) => new Date(c.created).getTime() >= sevenMs).length);
+      } catch { /* ignore */ }
+    } catch { /* ignore */ } finally {
+      setShortLoading(false);
+      setShortClicksLoading(false);
+    }
+  }, [user?.id]);
+
+  const shortPlatformByUrl = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const l of shortLinks) map.set(l.id, l.platform || 'other');
+    return map;
+  }, [shortLinks]);
+
+  useEffect(() => { refreshShortLinks(); }, [refreshShortLinks]);
+
+  const shortTotalClicks = useMemo(
+    () => shortLinks.reduce((s, l) => s + (l.clicks || 0), 0),
+    [shortLinks],
+  );
+
+  const shortPlatformBreakdown = useMemo(() => {
+    const map = new Map<string, { links: number; clicks: number }>();
+    for (const l of shortLinks) {
+      const id = l.platform || 'other';
+      const cur = map.get(id) || { links: 0, clicks: 0 };
+      cur.links += 1;
+      cur.clicks += l.clicks || 0;
+      map.set(id, cur);
+    }
+    return Array.from(map.entries())
+      .map(([id, v]) => ({ id, ...v, def: getPlatform(id) }))
+      .sort((a, b) => b.clicks - a.clicks || b.links - a.links);
+  }, [shortLinks]);
+
+  const handleCopyShort = (rec: ShortUrlRecord) => {
+    const url = buildShortUrl(rec.slug);
+    navigator.clipboard.writeText(url);
+    setCopiedShortId(rec.id);
+    setTimeout(() => setCopiedShortId(null), 1800);
+  };
 
   const pageSlug = displayName || username || 'preview';
 
@@ -455,18 +536,29 @@ export default function DashboardPage() {
             </motion.div>
 
             {/* ── Tabs ── */}
-            <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl w-fit mb-6">
-              {(['overview', 'links'] as const).map((tab) => (
+            <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl w-fit mb-6 overflow-x-auto max-w-full">
+              {(['overview', 'links', 'shortLinks'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-5 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`px-4 sm:px-5 py-2 text-sm font-medium rounded-lg transition-all whitespace-nowrap flex items-center gap-1.5 ${
                     activeTab === tab
                       ? 'bg-white text-gray-900 shadow-sm'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  {tab === 'overview' ? 'ภาพรวม' : 'ประสิทธิภาพลิงก์'}
+                  {tab === 'overview' && 'ภาพรวม'}
+                  {tab === 'links' && 'ประสิทธิภาพลิงก์'}
+                  {tab === 'shortLinks' && (
+                    <>
+                      <Scissors size={14} /> ลิงก์ย่อ
+                      {shortLinks.length > 0 && (
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                          activeTab === 'shortLinks' ? 'bg-orange-100 text-orange-600' : 'bg-gray-200 text-gray-500'
+                        }`}>{shortLinks.length}</span>
+                      )}
+                    </>
+                  )}
                 </button>
               ))}
             </div>
@@ -559,6 +651,165 @@ export default function DashboardPage() {
                                 <p className="text-[11px] font-medium text-gray-500">{timeStr}</p>
                                 <p className="text-[10px] text-gray-400">{dateStr}</p>
                               </div>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'shortLinks' && (
+                <motion.div
+                  key="shortLinks"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.25 }}
+                  className="space-y-6"
+                >
+                  {/* Summary cards */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+                      <div className="flex items-center justify-center gap-1 text-gray-400 mb-1">
+                        <Link2 size={12} /><p className="text-[10px] font-semibold uppercase">ลิงก์ย่อ</p>
+                      </div>
+                      <p className="text-2xl font-bold text-gray-900">{shortLinks.length}</p>
+                    </div>
+                    <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+                      <div className="flex items-center justify-center gap-1 text-gray-400 mb-1">
+                        <MousePointerClick size={12} /><p className="text-[10px] font-semibold uppercase">คลิกรวม</p>
+                      </div>
+                      <p className="text-2xl font-bold text-orange-500">{shortTotalClicks}</p>
+                    </div>
+                    <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+                      <div className="flex items-center justify-center gap-1 text-gray-400 mb-1">
+                        <TrendingUp size={12} /><p className="text-[10px] font-semibold uppercase">7 วัน</p>
+                      </div>
+                      <p className="text-2xl font-bold text-gray-900">{shortClicks7d}</p>
+                    </div>
+                  </div>
+
+                  {/* Comparison charts */}
+                  <ShortUrlComparisonCharts
+                    clicks={shortClicksHistory}
+                    platformMap={shortPlatformByUrl}
+                    loading={shortClicksLoading && shortClicksHistory.length === 0}
+                  />
+
+                  {/* Status + Avg KPI widgets (Aavenir-style) */}
+                  <ShortUrlStatusWidgets links={shortLinks} />
+
+                  {/* Platform breakdown — horizontal progress bars */}
+                  <PlatformBarChart
+                    items={shortPlatformBreakdown}
+                    title="คลิกตามแพลตฟอร์ม"
+                    subtitle="สัดส่วนคลิกของแต่ละแพลตฟอร์ม"
+                    iconColor="text-violet-500"
+                  />
+
+                  {/* Short links list */}
+                  <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-100 shadow-sm">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Scissors size={16} className="text-orange-500" />
+                      <h2 className="text-base font-semibold text-gray-900">ยอดคลิกแต่ละลิงก์</h2>
+                      <span className="text-xs text-gray-400 ml-auto">เรียงตามคลิกมากสุด</span>
+                    </div>
+
+                    {shortLoading ? (
+                      <div className="py-10 flex justify-center">
+                        <div className="w-6 h-6 border-2 border-gray-200 border-t-orange-500 rounded-full animate-spin" />
+                      </div>
+                    ) : shortLinks.length === 0 ? (
+                      <div className="text-center py-10 text-gray-400">
+                        <Scissors size={32} className="mx-auto mb-3 opacity-30" />
+                        <p className="text-sm font-medium">ยังไม่มีลิงก์ย่อ</p>
+                        <p className="text-xs mt-1">สร้างลิงก์แรกของคุณที่หน้า ย่อลิงก์</p>
+                        <button
+                          onClick={() => navigate('/link-shortener')}
+                          className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-orange-600 bg-orange-50 border border-orange-100 rounded-lg hover:bg-orange-100 transition-colors"
+                        >
+                          <Scissors size={13} /> ไปหน้าย่อลิงก์
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {shortLinks.map((rec, i) => {
+                          const url = buildShortUrl(rec.slug);
+                          const platformDef = getPlatform(rec.platform);
+                          const isExpanded = expandedShortId === rec.id;
+                          const isExpired = !!rec.expiresAt && new Date(rec.expiresAt).getTime() < Date.now();
+                          const pct = shortTotalClicks > 0 ? ((rec.clicks || 0) / shortTotalClicks) * 100 : 0;
+                          return (
+                            <motion.div
+                              key={rec.id}
+                              initial={{ opacity: 0, y: 6 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: i * 0.02 }}
+                              className="rounded-xl border border-gray-100 hover:border-orange-200 transition-colors overflow-hidden"
+                            >
+                              <button
+                                onClick={() => setExpandedShortId(isExpanded ? null : rec.id)}
+                                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left"
+                              >
+                                <div
+                                  className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                                  style={{ backgroundColor: `${platformDef.color}1a` }}
+                                >
+                                  <Link2 size={16} style={{ color: platformDef.color }} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  {rec.title && <p className="text-xs font-semibold text-gray-700 truncate">{rec.title}</p>}
+                                  <p className="text-sm font-semibold text-orange-600 truncate">{url}</p>
+                                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                    <span
+                                      className="text-[10px] font-semibold px-1.5 py-0.5 rounded flex items-center gap-1"
+                                      style={{ backgroundColor: `${platformDef.color}1a`, color: platformDef.color }}
+                                    >
+                                      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: platformDef.color }} />
+                                      {platformDef.label}
+                                    </span>
+                                    <span className="text-[11px] text-gray-400 truncate">{rec.originalUrl}</span>
+                                    {rec.enabled === false && (
+                                      <span className="text-[10px] bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">ปิดใช้งาน</span>
+                                    )}
+                                    {isExpired && (
+                                      <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded">หมดอายุ</span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="hidden sm:block w-32 shrink-0">
+                                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"
+                                      style={{ width: `${pct}%` }}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="text-right shrink-0 w-20">
+                                  <p className="text-lg font-bold text-gray-900 tabular-nums">{rec.clicks || 0}</p>
+                                  <p className="text-[10px] text-gray-400">คลิก</p>
+                                </div>
+                                <div className="flex items-center gap-1 shrink-0">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); handleCopyShort(rec); }}
+                                    className={`p-2 rounded-lg transition-all ${copiedShortId === rec.id ? 'text-green-500 bg-green-50' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'}`}
+                                    title="คัดลอก"
+                                  >
+                                    {copiedShortId === rec.id ? <Check size={14} /> : <Copy size={14} />}
+                                  </button>
+                                  <ChevronDown
+                                    size={16}
+                                    className={`text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                  />
+                                </div>
+                              </button>
+                              {isExpanded && (
+                                <div className="px-4 pb-4">
+                                  <ShortUrlStats urlId={rec.id} />
+                                </div>
+                              )}
                             </motion.div>
                           );
                         })}
