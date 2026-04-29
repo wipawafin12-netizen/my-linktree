@@ -3178,6 +3178,9 @@ export default function CreatePage() {
                       <span className="text-[10px] text-gray-500">
                         <span className="font-bold text-pink-600 tabular-nums">{filteredLinkClickTotal}</span>
                         <span className="text-gray-400"> คลิกในช่วงนี้</span>
+                        {linkClickRecords.length > 0 && linkRange !== 'all' && (
+                          <span className="text-gray-300"> · {linkClickRecords.length} ทั้งหมด</span>
+                        )}
                       </span>
                     </div>
 
@@ -3212,6 +3215,11 @@ export default function CreatePage() {
                           รีเซ็ต
                         </button>
                       </div>
+                    )}
+                    {linkClickRecords.length === 0 && visibleLinks.length > 0 && (
+                      <p className="text-[10px] text-gray-400 italic pt-0.5">
+                        ยังไม่มีคลิกถูกบันทึก — เมื่อมีคนกดลิงก์จากหน้าโปรไฟล์ ตัวเลขจะอัปเดตที่นี่
+                      </p>
                     )}
                   </div>
 
@@ -3363,10 +3371,8 @@ export default function CreatePage() {
                                 </button>
                                 <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 border border-gray-100">
                                   <BarChart3 size={12} className="text-gray-400" />
-                                  <span className="text-xs font-medium text-gray-600">
-                                    {linkRange === 'all' && linkClickRecords.length === 0
-                                      ? (link.clicks || 0)
-                                      : (filteredLinkClickCounts[link.id] || 0)}
+                                  <span className="text-xs font-medium text-gray-600 tabular-nums">
+                                    {filteredLinkClickCounts[link.id] || 0}
                                   </span>
                                   <span className="text-[10px] text-gray-400">คลิก</span>
                                 </div>
