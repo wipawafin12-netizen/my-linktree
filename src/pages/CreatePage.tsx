@@ -2382,13 +2382,21 @@ export default function CreatePage() {
                                   onClick={async () => {
                                     if (!confirm('ลบลิงก์ทั้งหมด?')) return;
                                     if (isPocketBaseEnabled) {
-                                      await Promise.all(shortenedLinks
-                                        .filter(l => l.id)
-                                        .map(l => pb.collection('short_urls').delete(l.id!).catch(() => undefined))
+                                      const results = await Promise.allSettled(
+                                        shortenedLinks
+                                          .filter((l) => l.id)
+                                          .map((l) => pb.collection('short_urls').delete(l.id!))
                                       );
+                                      const failed = results.filter((r) => r.status === 'rejected').length;
+                                      if (failed > 0) {
+                                        showToast(`ลบไม่สำเร็จ ${failed} ลิงก์`);
+                                        await refreshShortLinks();
+                                        return;
+                                      }
                                     }
                                     setShortenedLinks([]);
                                     setExpandedShortIdx(null);
+                                    showToast('ลบลิงก์ทั้งหมดแล้ว');
                                   }}
                                   className="px-3 py-2 text-xs font-medium text-red-500 hover:text-red-600 hover:bg-red-50 border border-red-100 rounded-lg transition-colors flex items-center gap-1.5"
                                 >
@@ -2662,10 +2670,21 @@ export default function CreatePage() {
                                             onClick={async () => {
                                               if (!confirm(`ลบลิงก์ ${shortDisplay}?`)) return;
                                               if (link.id && isPocketBaseEnabled) {
-                                                try { await pb.collection('short_urls').delete(link.id); } catch { /* ignore */ }
+                                                try {
+                                                  await pb.collection('short_urls').delete(link.id);
+                                                } catch (err) {
+                                                  const t = translateShortUrlError(err);
+                                                  showToast(`ลบไม่สำเร็จ: ${t.message}`);
+                                                  // resync UI with whatever PocketBase actually has
+                                                  await refreshShortLinks();
+                                                  return;
+                                                }
                                               }
                                               if (expandedShortIdx === i) setExpandedShortIdx(null);
-                                              setShortenedLinks(shortenedLinks.filter((_, idx) => idx !== i));
+                                              setShortenedLinks((prev) => prev.filter((l) =>
+                                                link.id ? l.id !== link.id : l !== link
+                                              ));
+                                              showToast('ลบลิงก์แล้ว');
                                             }}
                                             className="p-2 text-gray-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition-all"
                                             title="ลบ"
