@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Plus, Trash2, GripVertical, ExternalLink, Image, Eye, EyeOff,
@@ -449,6 +449,18 @@ export default function CreatePage() {
   const [customBgColor, setCustomBgColor] = useState('#6366f1');
   const [customBgSecondary, setCustomBgSecondary] = useState('#4f46e5');
   const [links, setLinks] = useState<LinkItem[]>([]);
+  const [linkClickRecords, setLinkClickRecords] = useState<{ linkId: string; created: string }[]>([]);
+  const [linkRange, setLinkRange] = useState<'7d' | '30d' | '90d' | 'all' | 'custom'>('all');
+  const [linkRangeStart, setLinkRangeStart] = useState(() => {
+    const d = new Date(); d.setDate(d.getDate() - 7);
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  });
+  const [linkRangeEnd, setLinkRangeEnd] = useState(() => {
+    const d = new Date();
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  });
   const [activeSocials, setActiveSocials] = useState<string[]>([]);
   const [socialUrls, setSocialUrls] = useState<Record<string, string>>({});
   const [fontCategory, setFontCategory] = useState('all');
@@ -627,11 +639,14 @@ export default function CreatePage() {
               const clickRecords = await pb.collection('analytics').getFullList({
                 filter: `page = "${p.id}" && type = "click"`,
               });
+              const rawRecords: { linkId: string; created: string }[] = [];
               clickRecords.forEach((r: any) => {
                 if (r.linkId) {
                   clickCounts[r.linkId] = (clickCounts[r.linkId] || 0) + 1;
+                  rawRecords.push({ linkId: r.linkId, created: r.created });
                 }
               });
+              if (!cancelled) setLinkClickRecords(rawRecords);
             } catch { /* ignore */ }
 
             if (!cancelled && linksResult.length > 0) {
@@ -892,6 +907,30 @@ export default function CreatePage() {
   }, [shortenedLinks]);
 
   // Reusable: refresh short URL list from PocketBase
+  // Click counts per link, filtered by the selected date range on the link list
+  const filteredLinkClickCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    let cutoffStart = 0;
+    let cutoffEnd = Number.MAX_SAFE_INTEGER;
+
+    const startOfDayMs = (d: Date) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x.getTime(); };
+
+    if (linkRange === 'custom') {
+      if (linkRangeStart) cutoffStart = startOfDayMs(new Date(linkRangeStart));
+      if (linkRangeEnd) cutoffEnd = startOfDayMs(new Date(linkRangeEnd)) + 86400000;
+    } else if (linkRange !== 'all') {
+      const days = linkRange === '7d' ? 7 : linkRange === '30d' ? 30 : 90;
+      cutoffStart = startOfDayMs(new Date()) - (days - 1) * 86400000;
+    }
+
+    for (const r of linkClickRecords) {
+      const t = new Date(r.created).getTime();
+      if (t < cutoffStart || t >= cutoffEnd) continue;
+      counts[r.linkId] = (counts[r.linkId] || 0) + 1;
+    }
+    return counts;
+  }, [linkClickRecords, linkRange, linkRangeStart, linkRangeEnd]);
+
   const refreshShortLinks = useCallback(async () => {
     if (!user?.id || !isPocketBaseEnabled) return;
     try {
@@ -3099,6 +3138,58 @@ export default function CreatePage() {
                     </div>
                   </div>
 
+                  {/* Date range selector — filters click counts shown next to each link */}
+                  <div className="px-4 py-2 bg-gray-50/60 border-b border-gray-100/80 space-y-1.5">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-1 flex-wrap">
+                        <Calendar size={11} className="text-gray-400 ml-0.5 mr-1" />
+                        {([
+                          { id: '7d', label: '7 วัน' },
+                          { id: '30d', label: '30 วัน' },
+                          { id: '90d', label: '90 วัน' },
+                          { id: 'all', label: 'ทั้งหมด' },
+                          { id: 'custom', label: 'กำหนดเอง' },
+                        ] as const).map((r) => (
+                          <button
+                            key={r.id}
+                            onClick={() => setLinkRange(r.id)}
+                            className={`px-2.5 py-1 text-[10px] font-medium rounded-md transition-colors ${
+                              linkRange === r.id
+                                ? 'bg-white text-pink-600 shadow-sm border border-pink-100'
+                                : 'text-gray-500 hover:text-gray-700 hover:bg-white/60'
+                            }`}
+                          >
+                            {r.label}
+                          </button>
+                        ))}
+                      </div>
+                      <span className="text-[10px] text-gray-400">
+                        คลิกแสดงตามช่วงเวลา
+                      </span>
+                    </div>
+
+                    {linkRange === 'custom' && (
+                      <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                        <span className="text-[10px] text-gray-500 ml-0.5">ตั้งแต่</span>
+                        <input
+                          type="date"
+                          value={linkRangeStart}
+                          max={linkRangeEnd}
+                          onChange={(e) => setLinkRangeStart(e.target.value)}
+                          className="px-1.5 py-0.5 text-[10px] border border-gray-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300"
+                        />
+                        <span className="text-[10px] text-gray-500">ถึง</span>
+                        <input
+                          type="date"
+                          value={linkRangeEnd}
+                          min={linkRangeStart}
+                          onChange={(e) => setLinkRangeEnd(e.target.value)}
+                          className="px-1.5 py-0.5 text-[10px] border border-gray-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300"
+                        />
+                      </div>
+                    )}
+                  </div>
+
                   {/* Add new link button inside card */}
                   <button
                     onClick={() => setAddModalOpen(true)}
@@ -3247,7 +3338,11 @@ export default function CreatePage() {
                                 </button>
                                 <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 border border-gray-100">
                                   <BarChart3 size={12} className="text-gray-400" />
-                                  <span className="text-xs font-medium text-gray-600">{link.clicks || 0}</span>
+                                  <span className="text-xs font-medium text-gray-600">
+                                    {linkRange === 'all' && linkClickRecords.length === 0
+                                      ? (link.clicks || 0)
+                                      : (filteredLinkClickCounts[link.id] || 0)}
+                                  </span>
                                   <span className="text-[10px] text-gray-400">คลิก</span>
                                 </div>
                                 <button
