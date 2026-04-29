@@ -18,7 +18,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
-import { generateUniqueSlug, buildShortUrl, detectPlatform, getPlatform, translateShortUrlError } from '../lib/shortUrl';
+import { generateUniqueSlug, slugExists, validateSlug, buildShortUrl, detectPlatform, getPlatform, translateShortUrlError } from '../lib/shortUrl';
 import type { ShortUrlRecord } from '../lib/types';
 import ShortUrlStats from '../components/ShortUrlStats';
 import PlatformBarChart from '../components/PlatformBarChart';
@@ -512,6 +512,7 @@ export default function CreatePage() {
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [autoReplyKeywords, setAutoReplyKeywords] = useState('link, links, website, url');
   const [shortenerInput, setShortenerInput] = useState('');
+  const [customSlugInput, setCustomSlugInput] = useState('');
   const [shortenedLinks, setShortenedLinks] = useState<{ id?: string; slug?: string; original: string; short: string; clicks: number; createdAt: string; platform?: string }[]>(() => {
     try { const saved = localStorage.getItem('openbio_shortened_links'); return saved ? JSON.parse(saved) : []; } catch { return []; }
   });
@@ -935,10 +936,27 @@ export default function CreatePage() {
       setShortenerError('Session หมดอายุ — กรุณาออกจากระบบแล้วเข้าใหม่');
       return;
     }
+
+    const wantSlug = customSlugInput.trim();
+    if (wantSlug) {
+      const invalid = validateSlug(wantSlug);
+      if (invalid) { setShortenerError(invalid); return; }
+    }
+
     setShortenerLoading(true);
     setShortenerError('');
     try {
-      const slug = await generateUniqueSlug(6);
+      let slug: string;
+      if (wantSlug) {
+        if (await slugExists(wantSlug)) {
+          setShortenerError(`ชื่อ "${wantSlug}" ถูกใช้ไปแล้ว กรุณาเลือกชื่ออื่น`);
+          setShortenerLoading(false);
+          return;
+        }
+        slug = wantSlug;
+      } else {
+        slug = await generateUniqueSlug(6);
+      }
       const rec = await pb.collection('short_urls').create<ShortUrlRecord>({
         user: user.id,
         slug,
@@ -958,6 +976,7 @@ export default function CreatePage() {
         platform: rec.platform || detectPlatform(url),
       }, ...prev]);
       setShortenerInput('');
+      setCustomSlugInput('');
       showToast('ย่อลิงก์สำเร็จ!');
     } catch (err) {
       const t = translateShortUrlError(err);
@@ -2215,27 +2234,52 @@ export default function CreatePage() {
                             </div>
                           </div>
                         )}
-                        <form onSubmit={(e) => { e.preventDefault(); handleShortenUrl(); }} className="flex gap-2">
-                          <div className="flex-1">
-                            <input
-                              type="url"
-                              value={shortenerInput}
-                              onChange={(e) => { setShortenerInput(e.target.value); setShortenerError(''); }}
-                              placeholder="วาง URL ยาวๆ ที่นี่... (เช่น https://example.com/very-long-url)"
-                              className={`w-full px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 ${shortenerError ? 'border-red-300 bg-red-50/50' : 'border-gray-200'}`}
-                              disabled={shortenerLoading}
-                            />
-                            {shortenerError && <p className="text-xs text-red-500 mt-1">{shortenerError}</p>}
+                        <form onSubmit={(e) => { e.preventDefault(); handleShortenUrl(); }} className="space-y-2">
+                          <div className="flex gap-2">
+                            <div className="flex-1">
+                              <input
+                                type="url"
+                                value={shortenerInput}
+                                onChange={(e) => { setShortenerInput(e.target.value); setShortenerError(''); }}
+                                placeholder="วาง URL ยาวๆ ที่นี่... (เช่น https://example.com/very-long-url)"
+                                className={`w-full px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 ${shortenerError ? 'border-red-300 bg-red-50/50' : 'border-gray-200'}`}
+                                disabled={shortenerLoading}
+                              />
+                            </div>
+                            <button
+                              type="submit"
+                              disabled={shortenerLoading || !shortenerInput.trim()}
+                              className="px-5 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0 self-start"
+                            >
+                              {shortenerLoading ? (
+                                <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> กำลังย่อ...</>
+                              ) : 'ย่อลิงก์'}
+                            </button>
                           </div>
-                          <button
-                            type="submit"
-                            disabled={shortenerLoading || !shortenerInput.trim()}
-                            className="px-5 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0"
-                          >
-                            {shortenerLoading ? (
-                              <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> กำลังย่อ...</>
-                            ) : 'ย่อลิงก์'}
-                          </button>
+
+                          {/* Custom slug input — optional */}
+                          <div>
+                            <label className="text-[11px] font-semibold text-gray-600 mb-1 block">
+                              ชื่อย่อกำหนดเอง <span className="text-gray-400 font-normal">(ไม่บังคับ — เว้นว่างเพื่อสุ่มอัตโนมัติ)</span>
+                            </label>
+                            <div className="flex items-center rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-orange-500/20 focus-within:border-orange-300 overflow-hidden bg-white">
+                              <span className="pl-3 pr-1 text-xs text-gray-400 whitespace-nowrap select-none">
+                                {(import.meta.env.VITE_SITE_URL || window.location.origin).replace(/^https?:\/\//, '').replace(/\/$/, '')}/s/
+                              </span>
+                              <input
+                                type="text"
+                                value={customSlugInput}
+                                onChange={(e) => { setCustomSlugInput(e.target.value); setShortenerError(''); }}
+                                placeholder="my-link"
+                                maxLength={32}
+                                className="flex-1 min-w-0 px-1 py-2 text-sm text-gray-900 placeholder:text-gray-300 focus:outline-none"
+                                disabled={shortenerLoading}
+                              />
+                            </div>
+                            <p className="text-[10px] text-gray-400 mt-1">1-32 ตัวอักษร · ใช้ได้เฉพาะ a-z, 0-9, - และ _</p>
+                          </div>
+
+                          {shortenerError && <p className="text-xs text-red-500">{shortenerError}</p>}
                         </form>
                       </div>
 

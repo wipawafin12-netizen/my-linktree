@@ -39,7 +39,7 @@ export async function slugExists(slug: string): Promise<boolean> {
 
 export function validateSlug(slug: string): string | null {
   if (!slug) return null;
-  if (slug.length < 3 || slug.length > 32) return 'Slug ต้องยาว 3-32 ตัวอักษร';
+  if (slug.length < 1 || slug.length > 32) return 'Slug ต้องยาว 1-32 ตัวอักษร';
   if (!/^[a-zA-Z0-9_-]+$/.test(slug)) return 'Slug ใช้ได้เฉพาะ a-z, 0-9, - และ _ เท่านั้น';
   if (RESERVED_SLUGS.has(slug.toLowerCase())) return 'Slug นี้ถูกสงวนไว้ กรุณาใช้ชื่ออื่น';
   return null;
