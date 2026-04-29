@@ -64,7 +64,14 @@ export function parseUserAgent(ua: string): { device: string; browser: string } 
 }
 
 export function buildShortUrl(slug: string): string {
-  const base = import.meta.env.VITE_SITE_URL || window.location.origin;
+  // Prefer the current origin so short URLs always live on a domain the user
+  // can actually reach. Falls back to VITE_SITE_URL only when running outside
+  // a browser (e.g. SSR/tests) — avoids a stale env value baked into an old
+  // build pointing visitors at a domain whose DNS no longer resolves.
+  const base =
+    (typeof window !== 'undefined' && window.location.origin) ||
+    import.meta.env.VITE_SITE_URL ||
+    '';
   return `${base.replace(/\/$/, '')}/s/${slug}`;
 }
 
