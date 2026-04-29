@@ -6,12 +6,13 @@ import {
 import pb from '../lib/pb';
 import type { ShortUrlClickRecord } from '../lib/types';
 
-type RangeId = '7d' | '30d' | '90d' | 'all';
+type RangeId = '7d' | '30d' | '90d' | '365d' | 'all';
 
 const RANGES: { id: RangeId; label: string; titleSuffix: string }[] = [
   { id: '7d', label: '7 วัน', titleSuffix: '7 วันล่าสุด' },
   { id: '30d', label: '30 วัน', titleSuffix: '30 วันล่าสุด' },
   { id: '90d', label: '90 วัน', titleSuffix: '90 วันล่าสุด' },
+  { id: '365d', label: '365 วัน', titleSuffix: '365 วันล่าสุด' },
   { id: 'all', label: 'ทั้งหมด', titleSuffix: 'ทั้งหมด' },
 ];
 
@@ -88,6 +89,25 @@ function computeBuckets(clicks: ShortUrlClickRecord[], range: RangeId): Bucket[]
       buckets.push({
         label: end.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }),
         date: `${start.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })} - ${end.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}`,
+        count,
+      });
+    }
+    return buckets;
+  }
+
+  if (range === '365d') {
+    // 12 monthly buckets ending at the current month
+    const buckets: Bucket[] = [];
+    for (let i = 11; i >= 0; i--) {
+      const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1).getTime();
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 1).getTime();
+      const count = clicks.filter((c) => {
+        const t = new Date(c.created).getTime();
+        return t >= monthStart && t < monthEnd;
+      }).length;
+      buckets.push({
+        label: new Date(monthStart).toLocaleDateString('th-TH', { month: 'short' }),
+        date: new Date(monthStart).toLocaleDateString('th-TH', { month: 'short', year: '2-digit' }),
         count,
       });
     }
@@ -180,7 +200,7 @@ export default function ShortUrlStats({ urlId }: { urlId: string }) {
   const filteredClicks = useMemo(() => {
     if (!clicks) return [];
     if (range === 'all') return clicks;
-    const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
+    const days = range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 365;
     const cutoff = startOfDay(new Date()).getTime() - (days - 1) * 86400000;
     return clicks.filter((c) => new Date(c.created).getTime() >= cutoff);
   }, [clicks, range]);
@@ -224,7 +244,7 @@ export default function ShortUrlStats({ urlId }: { urlId: string }) {
   const total = filteredClicks.length;
   const totalAll = clicks.length;
   const currentRange = RANGES.find((r) => r.id === range)!;
-  const minWidth = range === '30d' ? 480 : range === '90d' ? 420 : 0;
+  const minWidth = range === '30d' ? 480 : range === '90d' ? 420 : range === '365d' ? 420 : 0;
 
   return (
     <div className="mt-3 space-y-4">
@@ -275,6 +295,7 @@ export default function ShortUrlStats({ urlId }: { urlId: string }) {
                 const showLabel =
                   range === '7d' ||
                   range === 'all' ||
+                  range === '365d' ||
                   (range === '30d' && (i % 5 === 0 || i === buckets.length - 1)) ||
                   (range === '90d' && (i % 2 === 0 || i === buckets.length - 1));
                 const heightPct = (b.count / maxCount) * 100;
