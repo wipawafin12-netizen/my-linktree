@@ -16,6 +16,7 @@ import LinkShortenerPage from './pages/LinkShortenerPage';
 import DashboardPage from './pages/DashboardPage';
 import EmbedGeneratorPage from './pages/EmbedGeneratorPage';
 import ShortUrlRedirectPage from './pages/ShortUrlRedirectPage';
+import SlugResolverPage from './pages/SlugResolverPage';
 
 function MainLayout() {
   return (
@@ -39,12 +40,13 @@ function AppRoutes() {
 
   return (
     <Routes>
-      {/* Short URL redirect – no Navbar, must be before /:username */}
+      {/* Legacy short URL redirect (kept so old /s/<slug> links still work) */}
       <Route path="/s/:slug" element={<ShortUrlRedirectPage />} />
 
       {/* Preview page – no Navbar */}
       <Route path="/preview" element={<PreviewPage />} />
-      <Route path="/:username" element={<PreviewPage />} />
+      {/* Single-segment routes resolve to either a short URL or a profile */}
+      <Route path="/:username" element={<SlugResolverPage />} />
 
       {/* All other pages – with Navbar */}
       <Route element={<MainLayout />}>

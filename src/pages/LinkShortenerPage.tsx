@@ -218,7 +218,7 @@ export default function LinkShortenerPage() {
   };
 
   const handleDelete = async (rec: ShortUrlRecord) => {
-    if (!confirm(`ลบลิงก์ /s/${rec.slug} และสถิติทั้งหมด?`)) return;
+    if (!confirm(`ลบลิงก์ /${rec.slug} และสถิติทั้งหมด?`)) return;
     try {
       // Delete dependent click records first (relation has no cascade)
       const clicks = await pb.collection('short_url_clicks').getFullList<{ id: string }>({
@@ -365,7 +365,7 @@ export default function LinkShortenerPage() {
             <div>
               <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Custom slug (ไม่บังคับ)</label>
               <div className="flex items-center rounded-xl border border-gray-200 focus-within:ring-2 focus-within:ring-orange-500/20 focus-within:border-orange-300 overflow-hidden">
-                <span className="pl-3 text-xs text-gray-400 whitespace-nowrap">/s/</span>
+                <span className="pl-3 text-xs text-gray-400 whitespace-nowrap">/</span>
                 <input
                   type="text"
                   value={customSlug}

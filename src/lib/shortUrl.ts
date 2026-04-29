@@ -72,7 +72,7 @@ export function buildShortUrl(slug: string): string {
     (typeof window !== 'undefined' && window.location.origin) ||
     import.meta.env.VITE_SITE_URL ||
     '';
-  return `${base.replace(/\/$/, '')}/s/${slug}`;
+  return `${base.replace(/\/$/, '')}/${slug}`;
 }
 
 export interface PlatformDef {

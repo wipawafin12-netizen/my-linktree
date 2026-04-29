@@ -2275,7 +2275,7 @@ export default function CreatePage() {
                             </label>
                             <div className="flex items-center rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-orange-500/20 focus-within:border-orange-300 overflow-hidden bg-white">
                               <span className="pl-3 pr-1 text-xs text-gray-400 whitespace-nowrap select-none">
-                                {(import.meta.env.VITE_SITE_URL || window.location.origin).replace(/^https?:\/\//, '').replace(/\/$/, '')}/s/
+                                {(typeof window !== 'undefined' ? window.location.origin : import.meta.env.VITE_SITE_URL || '').replace(/^https?:\/\//, '').replace(/\/$/, '')}/
                               </span>
                               <input
                                 type="text"
@@ -2460,7 +2460,7 @@ export default function CreatePage() {
                                             <div className="mt-1 space-y-1.5">
                                               <div className="flex items-center rounded-lg border border-orange-300 ring-2 ring-orange-500/20 overflow-hidden bg-white">
                                                 <span className="pl-2 pr-1 text-[11px] text-gray-400 whitespace-nowrap select-none">
-                                                  {(import.meta.env.VITE_SITE_URL || window.location.origin).replace(/^https?:\/\//, '').replace(/\/$/, '')}/s/
+                                                  {(typeof window !== 'undefined' ? window.location.origin : import.meta.env.VITE_SITE_URL || '').replace(/^https?:\/\//, '').replace(/\/$/, '')}/
                                                 </span>
                                                 <input
                                                   type="text"
