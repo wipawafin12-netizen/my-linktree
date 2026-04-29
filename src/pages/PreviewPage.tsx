@@ -272,6 +272,7 @@ export default function PreviewPage() {
 
           pb.collection('analytics').create({
             page: p.id, type: 'view',
+            clickedAt: new Date().toISOString(),
           }, { requestKey: null }).catch(() => {});
         } catch {
           // PocketBase unavailable — use localStorage silently
@@ -391,6 +392,7 @@ export default function PreviewPage() {
       pb.collection('analytics').create({
         page: pbPageId, type: 'click',
         linkId: link.id, linkTitle: link.title, linkUrl: link.url,
+        clickedAt: new Date().toISOString(),
       }).catch(() => {});
     }
     // Also track to localStorage

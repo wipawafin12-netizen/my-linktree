@@ -643,7 +643,11 @@ export default function CreatePage() {
               clickRecords.forEach((r: any) => {
                 if (r.linkId) {
                   clickCounts[r.linkId] = (clickCounts[r.linkId] || 0) + 1;
-                  rawRecords.push({ linkId: r.linkId, created: r.created });
+                  // Prefer the explicit clickedAt we now write, but fall back to
+                  // the system created field if the older record was logged before
+                  // the analytics schema gained clickedAt.
+                  const ts = r.clickedAt || r.created || '';
+                  if (ts) rawRecords.push({ linkId: r.linkId, created: ts });
                 }
               });
               if (!cancelled) setLinkClickRecords(rawRecords);
