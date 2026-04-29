@@ -891,34 +891,41 @@ export default function CreatePage() {
     localStorage.setItem('openbio_shortened_links', JSON.stringify(shortenedLinks));
   }, [shortenedLinks]);
 
-  // Load user's short URLs from PocketBase when signed in, with click counts
-  useEffect(() => {
+  // Reusable: refresh short URL list from PocketBase
+  const refreshShortLinks = useCallback(async () => {
     if (!user?.id || !isPocketBaseEnabled) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const list = await pb.collection('short_urls').getFullList<ShortUrlRecord>({
-          filter: `user = "${user.id}"`,
-          sort: '-created',
-        });
-        if (cancelled) return;
-        setShortenedLinks(list.map((rec) => ({
-          id: rec.id,
-          slug: rec.slug,
-          original: rec.originalUrl,
-          short: buildShortUrl(rec.slug),
-          clicks: rec.clicks || 0,
-          createdAt: rec.created,
-          platform: rec.platform || detectPlatform(rec.originalUrl),
-        })));
-      } catch (err) {
-        if (cancelled) return;
-        const t = translateShortUrlError(err);
-        if (t.isSetupIssue) setShortenerSetupIssue(true);
-      }
-    })();
-    return () => { cancelled = true; };
+    try {
+      const list = await pb.collection('short_urls').getFullList<ShortUrlRecord>({
+        filter: `user = "${user.id}"`,
+        sort: '-created',
+      });
+      setShortenedLinks(list.map((rec) => ({
+        id: rec.id,
+        slug: rec.slug,
+        original: rec.originalUrl,
+        short: buildShortUrl(rec.slug),
+        clicks: rec.clicks || 0,
+        createdAt: rec.created,
+        platform: rec.platform || detectPlatform(rec.originalUrl),
+      })));
+      setShortenerSetupIssue(false);
+    } catch (err) {
+      const t = translateShortUrlError(err);
+      if (t.isSetupIssue) setShortenerSetupIssue(true);
+    }
   }, [user?.id]);
+
+  // Load on mount + when tab becomes visible (catches admin edits / cross-page renames)
+  useEffect(() => {
+    refreshShortLinks();
+    const onVisible = () => { if (!document.hidden) refreshShortLinks(); };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onVisible);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onVisible);
+    };
+  }, [refreshShortLinks]);
 
   // Shorten URL using our own system (PocketBase) so we own the data and stats
   const handleShortenUrl = async () => {
@@ -2363,6 +2370,13 @@ export default function CreatePage() {
                                   className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300"
                                 />
                               </div>
+                              <button
+                                onClick={() => { refreshShortLinks(); showToast('โหลดข้อมูลใหม่แล้ว'); }}
+                                className="px-3 py-2 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 border border-gray-200 rounded-lg transition-colors flex items-center gap-1.5"
+                                title="โหลดข้อมูลใหม่จากเซิร์ฟเวอร์"
+                              >
+                                <RotateCcw size={13} /> รีเฟรช
+                              </button>
                               {shortenedLinks.length > 0 && (
                                 <button
                                   onClick={async () => {
@@ -2471,16 +2485,18 @@ export default function CreatePage() {
                                                         setEditSlugError(`ชื่อ "${newSlug}" ถูกใช้ไปแล้ว`);
                                                         return;
                                                       }
-                                                      await pb.collection('short_urls').update(link.id, { slug: newSlug });
-                                                      setShortenedLinks((prev) => prev.map((l) =>
-                                                        l.id === link.id
-                                                          ? { ...l, slug: newSlug, short: buildShortUrl(newSlug) }
-                                                          : l
-                                                      ));
+                                                      const updated = await pb.collection('short_urls').update<ShortUrlRecord>(
+                                                        link.id,
+                                                        { slug: newSlug },
+                                                      );
                                                       setEditingShortIdx(null);
                                                       setEditSlugValue('');
                                                       setEditSlugError('');
                                                       showToast('เปลี่ยนชื่อสำเร็จ!');
+                                                      // Refresh from PocketBase so every cached short URL stays in sync
+                                                      // with what the redirect endpoint will resolve.
+                                                      await refreshShortLinks();
+                                                      void updated;
                                                     } catch (e) {
                                                       setEditSlugError(translateShortUrlError(e).message);
                                                     } finally {
