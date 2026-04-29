@@ -908,28 +908,40 @@ export default function CreatePage() {
 
   // Reusable: refresh short URL list from PocketBase
   // Click counts per link, filtered by the selected date range on the link list
-  const filteredLinkClickCounts = useMemo(() => {
+  const filteredLinkClickStats = useMemo(() => {
     const counts: Record<string, number> = {};
     let cutoffStart = 0;
     let cutoffEnd = Number.MAX_SAFE_INTEGER;
 
     const startOfDayMs = (d: Date) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x.getTime(); };
+    // Parse YYYY-MM-DD as a local-time date (avoid UTC parsing of plain date strings,
+    // which would shift early-morning clicks in +07 to the previous day's bucket).
+    const parseLocalDate = (s: string): number => {
+      const [y, m, d] = s.split('-').map((p) => parseInt(p, 10));
+      if (!y || !m || !d) return 0;
+      return new Date(y, m - 1, d, 0, 0, 0, 0).getTime();
+    };
 
     if (linkRange === 'custom') {
-      if (linkRangeStart) cutoffStart = startOfDayMs(new Date(linkRangeStart));
-      if (linkRangeEnd) cutoffEnd = startOfDayMs(new Date(linkRangeEnd)) + 86400000;
+      if (linkRangeStart) cutoffStart = parseLocalDate(linkRangeStart);
+      if (linkRangeEnd) cutoffEnd = parseLocalDate(linkRangeEnd) + 86400000;
     } else if (linkRange !== 'all') {
       const days = linkRange === '7d' ? 7 : linkRange === '30d' ? 30 : 90;
       cutoffStart = startOfDayMs(new Date()) - (days - 1) * 86400000;
     }
 
+    let total = 0;
     for (const r of linkClickRecords) {
       const t = new Date(r.created).getTime();
       if (t < cutoffStart || t >= cutoffEnd) continue;
       counts[r.linkId] = (counts[r.linkId] || 0) + 1;
+      total += 1;
     }
-    return counts;
+    return { counts, total };
   }, [linkClickRecords, linkRange, linkRangeStart, linkRangeEnd]);
+
+  const filteredLinkClickCounts = filteredLinkClickStats.counts;
+  const filteredLinkClickTotal = filteredLinkClickStats.total;
 
   const refreshShortLinks = useCallback(async () => {
     if (!user?.id || !isPocketBaseEnabled) return;
@@ -3163,8 +3175,9 @@ export default function CreatePage() {
                           </button>
                         ))}
                       </div>
-                      <span className="text-[10px] text-gray-400">
-                        คลิกแสดงตามช่วงเวลา
+                      <span className="text-[10px] text-gray-500">
+                        <span className="font-bold text-pink-600 tabular-nums">{filteredLinkClickTotal}</span>
+                        <span className="text-gray-400"> คลิกในช่วงนี้</span>
                       </span>
                     </div>
 
@@ -3186,6 +3199,18 @@ export default function CreatePage() {
                           onChange={(e) => setLinkRangeEnd(e.target.value)}
                           className="px-1.5 py-0.5 text-[10px] border border-gray-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300"
                         />
+                        <button
+                          onClick={() => {
+                            const today = new Date();
+                            const past = new Date(); past.setDate(past.getDate() - 7);
+                            const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                            setLinkRangeStart(fmt(past));
+                            setLinkRangeEnd(fmt(today));
+                          }}
+                          className="px-2 py-0.5 text-[10px] text-gray-500 hover:text-gray-700 rounded hover:bg-white/60"
+                        >
+                          รีเซ็ต
+                        </button>
                       </div>
                     )}
                   </div>
