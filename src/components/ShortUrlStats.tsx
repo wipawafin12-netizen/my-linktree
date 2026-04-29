@@ -6,7 +6,7 @@ import {
 import pb from '../lib/pb';
 import type { ShortUrlClickRecord } from '../lib/types';
 
-type RangeId = '7d' | '30d' | '90d' | '365d' | 'all';
+type RangeId = '7d' | '30d' | '90d' | '365d' | 'all' | 'custom';
 
 const RANGES: { id: RangeId; label: string; titleSuffix: string }[] = [
   { id: '7d', label: '7 วัน', titleSuffix: '7 วันล่าสุด' },
@@ -14,7 +14,15 @@ const RANGES: { id: RangeId; label: string; titleSuffix: string }[] = [
   { id: '90d', label: '90 วัน', titleSuffix: '90 วันล่าสุด' },
   { id: '365d', label: '365 วัน', titleSuffix: '365 วันล่าสุด' },
   { id: 'all', label: 'ทั้งหมด', titleSuffix: 'ทั้งหมด' },
+  { id: 'custom', label: 'กำหนดเอง', titleSuffix: 'ช่วงที่กำหนด' },
 ];
+
+function isoDate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
 
 function startOfDay(d: Date): Date {
   const x = new Date(d);
@@ -45,6 +53,82 @@ interface Bucket {
   label: string;
   date: string;
   count: number;
+}
+
+function computeCustomBuckets(
+  clicks: ShortUrlClickRecord[],
+  startDate: Date,
+  endDate: Date,
+): Bucket[] {
+  const startMs = startOfDay(startDate).getTime();
+  const endMs = startOfDay(endDate).getTime();
+  if (endMs < startMs) return [];
+  const days = Math.round((endMs - startMs) / 86400000) + 1;
+
+  // Daily for ≤ 31 days
+  if (days <= 31) {
+    const buckets: Bucket[] = [];
+    for (let i = 0; i < days; i++) {
+      const dayStart = startMs + i * 86400000;
+      const dayEnd = dayStart + 86400000;
+      const d = new Date(dayStart);
+      const count = clicks.filter((c) => {
+        const t = new Date(c.created).getTime();
+        return t >= dayStart && t < dayEnd;
+      }).length;
+      buckets.push({
+        label: days <= 7
+          ? d.toLocaleDateString('th-TH', { weekday: 'short' })
+          : d.getDate().toString(),
+        date: d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }),
+        count,
+      });
+    }
+    return buckets;
+  }
+
+  // Weekly for ≤ 120 days
+  if (days <= 120) {
+    const buckets: Bucket[] = [];
+    let cursor = startMs;
+    while (cursor <= endMs) {
+      const weekStart = cursor;
+      const weekEndExclusive = Math.min(cursor + 7 * 86400000, endMs + 86400000);
+      const lastDayMs = weekEndExclusive - 86400000;
+      const count = clicks.filter((c) => {
+        const t = new Date(c.created).getTime();
+        return t >= weekStart && t < weekEndExclusive;
+      }).length;
+      buckets.push({
+        label: new Date(weekStart).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }),
+        date: `${new Date(weekStart).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })} - ${new Date(lastDayMs).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}`,
+        count,
+      });
+      cursor += 7 * 86400000;
+    }
+    return buckets;
+  }
+
+  // Monthly for > 120 days
+  const buckets: Bucket[] = [];
+  let cursor = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+  while (cursor.getTime() <= endMs) {
+    const monthStart = cursor.getTime();
+    const monthEnd = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1).getTime();
+    const effectiveStart = Math.max(monthStart, startMs);
+    const effectiveEnd = Math.min(monthEnd, endMs + 86400000);
+    const count = clicks.filter((c) => {
+      const t = new Date(c.created).getTime();
+      return t >= effectiveStart && t < effectiveEnd;
+    }).length;
+    buckets.push({
+      label: cursor.toLocaleDateString('th-TH', { month: 'short' }),
+      date: cursor.toLocaleDateString('th-TH', { month: 'short', year: '2-digit' }),
+      count,
+    });
+    cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+  }
+  return buckets;
 }
 
 function computeBuckets(clicks: ShortUrlClickRecord[], range: RangeId): Bucket[] {
@@ -176,6 +260,11 @@ export default function ShortUrlStats({ urlId }: { urlId: string }) {
   const [clicks, setClicks] = useState<ShortUrlClickRecord[] | null>(null);
   const [err, setErr] = useState('');
   const [range, setRange] = useState<RangeId>('7d');
+  const [customStart, setCustomStart] = useState(() => {
+    const d = new Date(); d.setDate(d.getDate() - 7);
+    return isoDate(d);
+  });
+  const [customEnd, setCustomEnd] = useState(() => isoDate(new Date()));
 
   useEffect(() => {
     let cancelled = false;
@@ -200,12 +289,26 @@ export default function ShortUrlStats({ urlId }: { urlId: string }) {
   const filteredClicks = useMemo(() => {
     if (!clicks) return [];
     if (range === 'all') return clicks;
+    if (range === 'custom') {
+      const startMs = customStart ? startOfDay(new Date(customStart)).getTime() : 0;
+      const endMs = customEnd ? startOfDay(new Date(customEnd)).getTime() + 86400000 : Date.now();
+      return clicks.filter((c) => {
+        const t = new Date(c.created).getTime();
+        return t >= startMs && t < endMs;
+      });
+    }
     const days = range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 365;
     const cutoff = startOfDay(new Date()).getTime() - (days - 1) * 86400000;
     return clicks.filter((c) => new Date(c.created).getTime() >= cutoff);
-  }, [clicks, range]);
+  }, [clicks, range, customStart, customEnd]);
 
-  const buckets = useMemo(() => computeBuckets(filteredClicks, range), [filteredClicks, range]);
+  const buckets = useMemo(() => {
+    if (range === 'custom') {
+      if (!customStart || !customEnd) return [];
+      return computeCustomBuckets(filteredClicks, new Date(customStart), new Date(customEnd));
+    }
+    return computeBuckets(filteredClicks, range);
+  }, [filteredClicks, range, customStart, customEnd]);
   const maxCount = Math.max(1, ...buckets.map((b) => b.count));
 
   const referrers = useMemo(() => {
@@ -244,35 +347,76 @@ export default function ShortUrlStats({ urlId }: { urlId: string }) {
   const total = filteredClicks.length;
   const totalAll = clicks.length;
   const currentRange = RANGES.find((r) => r.id === range)!;
-  const minWidth = range === '30d' ? 480 : range === '90d' ? 420 : range === '365d' ? 420 : 0;
+  const minWidth =
+    range === '30d' ? 480
+    : range === '90d' ? 420
+    : range === '365d' ? 420
+    : range === 'custom' && buckets.length > 13 ? 480
+    : 0;
 
   return (
     <div className="mt-3 space-y-4">
       {/* Range selector */}
-      <div className="bg-gray-50 rounded-xl p-3 flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-1 flex-wrap">
-          <Calendar size={13} className="text-gray-400 ml-1 mr-1.5" />
-          {RANGES.map((r) => (
+      <div className="bg-gray-50 rounded-xl p-3 space-y-2">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-1 flex-wrap">
+            <Calendar size={13} className="text-gray-400 ml-1 mr-1.5" />
+            {RANGES.map((r) => (
+              <button
+                key={r.id}
+                onClick={() => setRange(r.id)}
+                className={`px-3 py-1.5 text-[11px] font-medium rounded-lg transition-colors ${
+                  range === r.id
+                    ? 'bg-white text-orange-600 shadow-sm border border-orange-100'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-white/60'
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+          <div className="text-[11px] text-gray-500">
+            <span className="font-semibold text-gray-900 tabular-nums">{total}</span>
+            {range !== 'all' && (
+              <span className="text-gray-400"> / {totalAll} คลิก</span>
+            )}
+            {range === 'all' && <span className="text-gray-400"> คลิกรวม</span>}
+          </div>
+        </div>
+
+        {/* Custom date pickers — opens calendar on click */}
+        {range === 'custom' && (
+          <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-gray-200">
+            <span className="text-[11px] text-gray-500 ml-1">ตั้งแต่</span>
+            <input
+              type="date"
+              value={customStart}
+              max={customEnd || isoDate(new Date())}
+              onChange={(e) => setCustomStart(e.target.value)}
+              className="px-2 py-1 text-[11px] border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300"
+            />
+            <span className="text-[11px] text-gray-500">ถึง</span>
+            <input
+              type="date"
+              value={customEnd}
+              min={customStart}
+              max={isoDate(new Date())}
+              onChange={(e) => setCustomEnd(e.target.value)}
+              className="px-2 py-1 text-[11px] border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300"
+            />
             <button
-              key={r.id}
-              onClick={() => setRange(r.id)}
-              className={`px-3 py-1.5 text-[11px] font-medium rounded-lg transition-colors ${
-                range === r.id
-                  ? 'bg-white text-orange-600 shadow-sm border border-orange-100'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-white/60'
-              }`}
+              onClick={() => {
+                const d = new Date(); d.setDate(d.getDate() - 7);
+                setCustomStart(isoDate(d));
+                setCustomEnd(isoDate(new Date()));
+              }}
+              className="px-2 py-1 text-[10px] text-gray-500 hover:text-gray-700 rounded hover:bg-white/60"
+              title="รีเซ็ตเป็น 7 วันล่าสุด"
             >
-              {r.label}
+              รีเซ็ต
             </button>
-          ))}
-        </div>
-        <div className="text-[11px] text-gray-500">
-          <span className="font-semibold text-gray-900 tabular-nums">{total}</span>
-          {range !== 'all' && (
-            <span className="text-gray-400"> / {totalAll} คลิก</span>
-          )}
-          {range === 'all' && <span className="text-gray-400"> คลิกรวม</span>}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Bar chart */}
@@ -297,7 +441,12 @@ export default function ShortUrlStats({ urlId }: { urlId: string }) {
                   range === 'all' ||
                   range === '365d' ||
                   (range === '30d' && (i % 5 === 0 || i === buckets.length - 1)) ||
-                  (range === '90d' && (i % 2 === 0 || i === buckets.length - 1));
+                  (range === '90d' && (i % 2 === 0 || i === buckets.length - 1)) ||
+                  (range === 'custom' && (
+                    buckets.length <= 14 ||
+                    i % Math.ceil(buckets.length / 10) === 0 ||
+                    i === buckets.length - 1
+                  ));
                 const heightPct = (b.count / maxCount) * 100;
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-[10px]">
