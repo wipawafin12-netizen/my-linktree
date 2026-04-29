@@ -522,6 +522,10 @@ export default function CreatePage() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [expandedShortIdx, setExpandedShortIdx] = useState<number | null>(null);
   const [shortSearchQuery, setShortSearchQuery] = useState('');
+  const [editingShortIdx, setEditingShortIdx] = useState<number | null>(null);
+  const [editSlugValue, setEditSlugValue] = useState('');
+  const [editSlugError, setEditSlugError] = useState('');
+  const [editSlugSaving, setEditSlugSaving] = useState(false);
   const [expandedSidebar, setExpandedSidebar] = useState<string | null>(null);
   const [sidebarUserMenu, setSidebarUserMenu] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -2420,31 +2424,120 @@ export default function CreatePage() {
                                             {linkTitle} <span className="text-gray-400 font-normal">– untitled</span>
                                           </h4>
 
-                                          {/* Short URL with copy */}
-                                          <div className="flex items-center gap-1.5 mt-0.5">
-                                            <a
-                                              href={link.short}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="text-[13px] sm:text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline truncate"
-                                            >
-                                              {shortDisplay}
-                                            </a>
-                                            <button
-                                              onClick={() => {
-                                                navigator.clipboard.writeText(link.short);
-                                                setCopiedIndex(i);
-                                                setTimeout(() => setCopiedIndex(null), 2000);
-                                                showToast('คัดลอกลิงก์แล้ว!');
-                                              }}
-                                              className={`p-0.5 rounded transition-colors shrink-0 ${
-                                                copiedIndex === i ? 'text-green-500' : 'text-gray-400 hover:text-blue-600'
-                                              }`}
-                                              title="คัดลอก"
-                                            >
-                                              {copiedIndex === i ? <CheckCircle2 size={13} /> : <Copy size={13} />}
-                                            </button>
-                                          </div>
+                                          {/* Short URL with copy / Edit mode */}
+                                          {editingShortIdx === i ? (
+                                            <div className="mt-1 space-y-1.5">
+                                              <div className="flex items-center rounded-lg border border-orange-300 ring-2 ring-orange-500/20 overflow-hidden bg-white">
+                                                <span className="pl-2 pr-1 text-[11px] text-gray-400 whitespace-nowrap select-none">
+                                                  {(import.meta.env.VITE_SITE_URL || window.location.origin).replace(/^https?:\/\//, '').replace(/\/$/, '')}/s/
+                                                </span>
+                                                <input
+                                                  type="text"
+                                                  value={editSlugValue}
+                                                  autoFocus
+                                                  onChange={(e) => { setEditSlugValue(e.target.value); setEditSlugError(''); }}
+                                                  onKeyDown={(e) => {
+                                                    if (e.key === 'Escape') {
+                                                      setEditingShortIdx(null);
+                                                      setEditSlugValue('');
+                                                      setEditSlugError('');
+                                                    }
+                                                  }}
+                                                  maxLength={32}
+                                                  placeholder="my-link"
+                                                  className="flex-1 min-w-0 px-1 py-1.5 text-[13px] sm:text-sm font-semibold text-blue-600 placeholder:text-gray-300 focus:outline-none"
+                                                  disabled={editSlugSaving}
+                                                />
+                                              </div>
+                                              <div className="flex items-center gap-2">
+                                                <button
+                                                  onClick={async () => {
+                                                    const newSlug = editSlugValue.trim();
+                                                    if (!newSlug) { setEditSlugError('กรุณาใส่ชื่อย่อ'); return; }
+                                                    if (newSlug === link.slug) {
+                                                      setEditingShortIdx(null);
+                                                      setEditSlugValue('');
+                                                      return;
+                                                    }
+                                                    const invalid = validateSlug(newSlug);
+                                                    if (invalid) { setEditSlugError(invalid); return; }
+                                                    if (!link.id || !isPocketBaseEnabled) {
+                                                      setEditSlugError('ลิงก์เก่าแก้ไขไม่ได้');
+                                                      return;
+                                                    }
+                                                    setEditSlugSaving(true);
+                                                    try {
+                                                      if (await slugExists(newSlug)) {
+                                                        setEditSlugError(`ชื่อ "${newSlug}" ถูกใช้ไปแล้ว`);
+                                                        return;
+                                                      }
+                                                      await pb.collection('short_urls').update(link.id, { slug: newSlug });
+                                                      setShortenedLinks((prev) => prev.map((l) =>
+                                                        l.id === link.id
+                                                          ? { ...l, slug: newSlug, short: buildShortUrl(newSlug) }
+                                                          : l
+                                                      ));
+                                                      setEditingShortIdx(null);
+                                                      setEditSlugValue('');
+                                                      setEditSlugError('');
+                                                      showToast('เปลี่ยนชื่อสำเร็จ!');
+                                                    } catch (e) {
+                                                      setEditSlugError(translateShortUrlError(e).message);
+                                                    } finally {
+                                                      setEditSlugSaving(false);
+                                                    }
+                                                  }}
+                                                  disabled={editSlugSaving}
+                                                  className="px-3 py-1 bg-orange-500 text-white text-[11px] font-semibold rounded hover:bg-orange-600 disabled:opacity-50 flex items-center gap-1"
+                                                >
+                                                  {editSlugSaving ? (
+                                                    <><svg className="animate-spin h-3 w-3" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> กำลังบันทึก</>
+                                                  ) : (
+                                                    <><Check size={12} /> บันทึก</>
+                                                  )}
+                                                </button>
+                                                <button
+                                                  onClick={() => {
+                                                    setEditingShortIdx(null);
+                                                    setEditSlugValue('');
+                                                    setEditSlugError('');
+                                                  }}
+                                                  disabled={editSlugSaving}
+                                                  className="px-3 py-1 text-gray-500 text-[11px] font-medium rounded hover:bg-gray-100 disabled:opacity-50 flex items-center gap-1"
+                                                >
+                                                  <X size={12} /> ยกเลิก
+                                                </button>
+                                                {editSlugError && (
+                                                  <span className="text-[11px] text-red-500 flex-1 truncate">{editSlugError}</span>
+                                                )}
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className="flex items-center gap-1.5 mt-0.5">
+                                              <a
+                                                href={link.short}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-[13px] sm:text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline truncate"
+                                              >
+                                                {shortDisplay}
+                                              </a>
+                                              <button
+                                                onClick={() => {
+                                                  navigator.clipboard.writeText(link.short);
+                                                  setCopiedIndex(i);
+                                                  setTimeout(() => setCopiedIndex(null), 2000);
+                                                  showToast('คัดลอกลิงก์แล้ว!');
+                                                }}
+                                                className={`p-0.5 rounded transition-colors shrink-0 ${
+                                                  copiedIndex === i ? 'text-green-500' : 'text-gray-400 hover:text-blue-600'
+                                                }`}
+                                                title="คัดลอก"
+                                              >
+                                                {copiedIndex === i ? <CheckCircle2 size={13} /> : <Copy size={13} />}
+                                              </button>
+                                            </div>
+                                          )}
 
                                           {/* Original URL with arrow */}
                                           <div className="flex items-center gap-1.5 mt-1">
@@ -2499,6 +2592,29 @@ export default function CreatePage() {
 
                                         {/* Right actions */}
                                         <div className="flex flex-col sm:flex-row items-end sm:items-start gap-1 shrink-0">
+                                          {canExpand && (
+                                            <button
+                                              onClick={() => {
+                                                if (editingShortIdx === i) {
+                                                  setEditingShortIdx(null);
+                                                  setEditSlugValue('');
+                                                  setEditSlugError('');
+                                                } else {
+                                                  setEditingShortIdx(i);
+                                                  setEditSlugValue(link.slug || '');
+                                                  setEditSlugError('');
+                                                }
+                                              }}
+                                              className={`p-2 rounded-lg transition-all ${
+                                                editingShortIdx === i
+                                                  ? 'text-orange-600 bg-orange-50'
+                                                  : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                                              }`}
+                                              title="เปลี่ยนชื่อ"
+                                            >
+                                              <Pencil size={15} />
+                                            </button>
+                                          )}
                                           <button
                                             onClick={() => {
                                               if (typeof navigator.share === 'function') {
