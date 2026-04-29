@@ -220,6 +220,17 @@ export default function LinkShortenerPage() {
   const handleDelete = async (rec: ShortUrlRecord) => {
     if (!confirm(`ลบลิงก์ /s/${rec.slug} และสถิติทั้งหมด?`)) return;
     try {
+      // Delete dependent click records first (relation has no cascade)
+      const clicks = await pb.collection('short_url_clicks').getFullList<{ id: string }>({
+        filter: `shortUrl="${rec.id}"`,
+        fields: 'id',
+        batch: 500,
+      });
+      await Promise.all(
+        clicks.map((c) =>
+          pb.collection('short_url_clicks').delete(c.id).catch(() => undefined)
+        )
+      );
       await pb.collection('short_urls').delete(rec.id);
       setLinks(prev => prev.filter(l => l.id !== rec.id));
       showToast('ลบลิงก์แล้ว');

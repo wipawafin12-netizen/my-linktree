@@ -2382,11 +2382,20 @@ export default function CreatePage() {
                                   onClick={async () => {
                                     if (!confirm('ลบลิงก์ทั้งหมด?')) return;
                                     if (isPocketBaseEnabled) {
-                                      const results = await Promise.allSettled(
-                                        shortenedLinks
-                                          .filter((l) => l.id)
-                                          .map((l) => pb.collection('short_urls').delete(l.id!))
-                                      );
+                                      const ids = shortenedLinks.filter((l) => l.id).map((l) => l.id!);
+                                      const results = await Promise.allSettled(ids.map(async (id) => {
+                                        const clicks = await pb.collection('short_url_clicks').getFullList<{ id: string }>({
+                                          filter: `shortUrl="${id}"`,
+                                          fields: 'id',
+                                          batch: 500,
+                                        });
+                                        await Promise.all(
+                                          clicks.map((c) =>
+                                            pb.collection('short_url_clicks').delete(c.id).catch(() => undefined)
+                                          )
+                                        );
+                                        await pb.collection('short_urls').delete(id);
+                                      }));
                                       const failed = results.filter((r) => r.status === 'rejected').length;
                                       if (failed > 0) {
                                         showToast(`ลบไม่สำเร็จ ${failed} ลิงก์`);
@@ -2671,11 +2680,21 @@ export default function CreatePage() {
                                               if (!confirm(`ลบลิงก์ ${shortDisplay}?`)) return;
                                               if (link.id && isPocketBaseEnabled) {
                                                 try {
+                                                  // Remove dependent click records first (no cascade on the relation)
+                                                  const clicks = await pb.collection('short_url_clicks').getFullList<{ id: string }>({
+                                                    filter: `shortUrl="${link.id}"`,
+                                                    fields: 'id',
+                                                    batch: 500,
+                                                  });
+                                                  await Promise.all(
+                                                    clicks.map((c) =>
+                                                      pb.collection('short_url_clicks').delete(c.id).catch(() => undefined)
+                                                    )
+                                                  );
                                                   await pb.collection('short_urls').delete(link.id);
                                                 } catch (err) {
                                                   const t = translateShortUrlError(err);
                                                   showToast(`ลบไม่สำเร็จ: ${t.message}`);
-                                                  // resync UI with whatever PocketBase actually has
                                                   await refreshShortLinks();
                                                   return;
                                                 }
