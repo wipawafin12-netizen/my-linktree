@@ -30,7 +30,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-1 -ml-2">
-            <img src="/linkcenter.png" alt="LinkCenter" className={`h-12 ${isHome ? 'brightness-0 invert' : ''}`} />
+            <img src="/logo-03.png" alt="Evergreen Door Solutions" className={`h-12 ${isHome ? 'brightness-0 invert' : ''}`} />
           </Link>
 
           {/* Desktop Nav Links */}

@@ -37,7 +37,7 @@ export default function SignupPage() {
         {/* Logo */}
         <div className="text-center mb-10">
           <Link to="/" className="inline-flex items-center gap-1">
-            <img src="/linkcenter.png" alt="LinkCenter" className="h-10" />
+            <img src="/logo-03.png" alt="Evergreen Door Solutions" className="h-10" />
           </Link>
           <p className="text-gray-400 text-sm mt-2">สร้างบัญชีฟรีได้ในไม่กี่วินาที</p>
         </div>

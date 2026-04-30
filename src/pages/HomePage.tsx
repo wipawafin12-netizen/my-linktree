@@ -346,7 +346,7 @@ export default function HomePage() {
       <footer className="border-t border-white/5 py-8 sm:py-12">
         <div className="max-w-5xl mx-auto px-3 sm:px-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
-            <img src="/linkcenter.png" alt="LinkCenter" className="h-8" />
+            <img src="/logo-03.png" alt="Evergreen Door Solutions" className="h-8" />
             <div className="flex items-center gap-4">
               {[Instagram, Music2, Twitter, Youtube].map((Icon, i) => (
                 <motion.a
