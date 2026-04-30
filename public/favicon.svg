@@ -1,18 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <defs>
-    <linearGradient id="g1" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#3CC8DB"/>
-      <stop offset="100%" stop-color="#5BBD6B"/>
-    </linearGradient>
-    <linearGradient id="g2" x1="64" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#5BBD6B"/>
-      <stop offset="100%" stop-color="#3CC8DB"/>
-    </linearGradient>
-  </defs>
-  <!-- Left rounded square (rotated, cyan) -->
-  <rect x="6" y="12" width="32" height="32" rx="7" ry="7" transform="rotate(-10 22 28)" stroke="url(#g1)" stroke-width="4.5" fill="none"/>
-  <!-- Right rounded square (rotated, green) -->
-  <rect x="26" y="20" width="32" height="32" rx="7" ry="7" transform="rotate(10 42 36)" stroke="url(#g2)" stroke-width="4.5" fill="none"/>
-  <!-- Arrow pointing up -->
-  <path d="M32 44 L32 24 M24 32 L32 22 L40 32" stroke="url(#g1)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Top frame bar -->
+  <rect x="6" y="4" width="54" height="7" rx="1.5" fill="#0d0d0d"/>
+  <!-- Right frame post -->
+  <rect x="53" y="4" width="7" height="56" rx="1.5" fill="#0d0d0d"/>
+  <!-- Orange door panel -->
+  <rect x="10" y="11" width="43" height="49" rx="1" fill="#F47820"/>
+  <!-- Door handle -->
+  <circle cx="19" cy="36" r="3.4" fill="#0d0d0d"/>
 </svg>
