@@ -3425,12 +3425,48 @@ export default function CreatePage() {
                                   className="px-6 pb-4 overflow-hidden"
                                 >
                                   <div className="ml-9 pl-4 border-l-2 border-pink-100 space-y-3 pt-1">
+                                    {(() => {
+                                      const t = (link.title || '').toLowerCase().trim();
+                                      const isPhone = link.url.startsWith('tel:') || t === 'เบอร์โทรศัพท์' || t === 'เบอร์โทร' || t === 'phone';
+                                      if (isPhone) {
+                                        const phoneValue = link.url.startsWith('tel:') ? link.url.slice(4) : link.url;
+                                        return (
+                                          <div>
+                                            <label className="block text-[11px] text-gray-400 mb-1">เบอร์โทร</label>
+                                            <input
+                                              type="tel"
+                                              inputMode="tel"
+                                              value={phoneValue}
+                                              onChange={(e) => {
+                                                const num = e.target.value.replace(/^tel:/, '').trim();
+                                                updateLink(link.id, 'url', num ? `tel:${num}` : '');
+                                              }}
+                                              placeholder="0812345678"
+                                              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300"
+                                            />
+                                          </div>
+                                        );
+                                      }
+                                      return (
+                                        <div>
+                                          <label className="block text-[11px] text-gray-400 mb-1">วาง URL ของลิงก์</label>
+                                          <input
+                                            type="url"
+                                            value={link.url}
+                                            onChange={(e) => updateLink(link.id, 'url', e.target.value)}
+                                            placeholder="https://example.com/..."
+                                            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300"
+                                          />
+                                        </div>
+                                      );
+                                    })()}
                                     <div>
                                       <label className="block text-[11px] text-gray-400 mb-1">ชื่อลิงก์</label>
                                       <input
                                         type="text"
                                         value={link.title}
                                         onChange={(e) => updateLink(link.id, 'title', e.target.value)}
+                                        placeholder="ชื่อที่จะแสดงบนปุ่ม"
                                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300"
                                       />
                                     </div>
