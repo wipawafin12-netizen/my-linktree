@@ -200,23 +200,26 @@ export default function PreviewPage() {
 
         // Then try PocketBase
         try {
-          let pages = await pb.collection('pages').getList(1, 1, {
-            filter: `displayName = "${username}"`,
-            requestKey: null,
-          });
+          // Race pages-by-displayName against users-by-name. Whichever lands a
+          // hit first wins; we used to do these sequentially.
+          const [pagesByName, usersByName] = await Promise.all([
+            pb.collection('pages').getList(1, 1, {
+              filter: `displayName = "${username}"`,
+              requestKey: null,
+            }).catch(() => ({ items: [] as any[] })),
+            pb.collection('users').getList(1, 1, {
+              filter: `name = "${username}"`,
+              requestKey: null,
+            }).catch(() => ({ items: [] as any[] })),
+          ]);
 
-          if (pages.items.length === 0) {
+          let pages = pagesByName as { items: any[] };
+          if (pages.items.length === 0 && usersByName.items.length > 0) {
             try {
-              const users = await pb.collection('users').getList(1, 1, {
-                filter: `name = "${username}"`,
+              pages = await pb.collection('pages').getList(1, 1, {
+                filter: `user = "${usersByName.items[0].id}"`,
                 requestKey: null,
               });
-              if (users.items.length > 0) {
-                pages = await pb.collection('pages').getList(1, 1, {
-                  filter: `user = "${users.items[0].id}"`,
-                  requestKey: null,
-                });
-              }
             } catch { /* ignore */ }
           }
 
@@ -231,6 +234,13 @@ export default function PreviewPage() {
 
           const p = pages.items[0];
           setPbPageId(p.id);
+
+          // Fetch links and fire view-tracking in parallel — the page render
+          // does not depend on the tracking call resolving.
+          pb.collection('analytics').create({
+            page: p.id, type: 'view',
+            clickedAt: new Date().toISOString(),
+          }, { requestKey: null }).catch(() => {});
 
           const linksResult = await pb.collection('links').getFullList({
             filter: `page = "${p.id}"`,
@@ -269,11 +279,6 @@ export default function PreviewPage() {
           // Load subscribe settings
           setShowSubscribe(!!p.showSubscribe);
           setEmailFormTitle(p.emailFormTitle || 'สมัครรับข่าวสาร');
-
-          pb.collection('analytics').create({
-            page: p.id, type: 'view',
-            clickedAt: new Date().toISOString(),
-          }, { requestKey: null }).catch(() => {});
         } catch {
           // PocketBase unavailable — use localStorage silently
           if (abortController.signal.aborted) return;
