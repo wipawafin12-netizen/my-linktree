@@ -10,7 +10,7 @@ import {
 import { useParams } from 'react-router-dom';
 import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
 
-const LineIcon = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
+const LineIcon = ({ size = 16, className = '', style }: { size?: number; className?: string; style?: React.CSSProperties }) => (
   <svg
     width={size}
     height={size}
@@ -21,6 +21,7 @@ const LineIcon = ({ size = 16, className = '' }: { size?: number; className?: st
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
+    style={style}
   >
     <path d="M5 5 H 19 V 13 C 19 16.5 15.5 18.5 12 19.5 C 8.5 18.5 5 16.5 5 13 Z" />
     <path d="M 10 9 V 14 H 13.5" />
@@ -127,7 +128,7 @@ function urlToEmbedCode(url: string): string | null {
   return null;
 }
 
-const socialIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+const socialIcons: Record<string, React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>> = {
   instagram: Instagram, youtube: Youtube, twitter: Twitter, tiktok: Music2,
   facebook: Facebook, twitch: Twitch, github: Github, website: Globe,
   linkedin: AtSign, email: Mail, telegram: Send, whatsapp: Phone, line: LineIcon, phone: Phone,

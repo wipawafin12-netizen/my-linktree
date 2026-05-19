@@ -25,7 +25,7 @@ import PlatformBarChart from '../components/PlatformBarChart';
 import { QRCodeCanvas } from 'qrcode.react';
 
 
-const LineIcon = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
+const LineIcon = ({ size = 16, className = '', style }: { size?: number; className?: string; style?: React.CSSProperties }) => (
   <svg
     width={size}
     height={size}
@@ -36,6 +36,7 @@ const LineIcon = ({ size = 16, className = '' }: { size?: number; className?: st
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
+    style={style}
   >
     <path d="M5 5 H 19 V 13 C 19 16.5 15.5 18.5 12 19.5 C 8.5 18.5 5 16.5 5 13 Z" />
     <path d="M 10 9 V 14 H 13.5" />
