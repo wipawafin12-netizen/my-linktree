@@ -21,7 +21,6 @@ import pb, { getFileUrl, isPocketBaseEnabled } from '../lib/pb';
 import { generateUniqueSlug, slugExists, validateSlug, buildShortUrl, detectPlatform, getPlatform, translateShortUrlError } from '../lib/shortUrl';
 import type { ShortUrlRecord } from '../lib/types';
 import ShortUrlStats from '../components/ShortUrlStats';
-import PlatformBarChart from '../components/PlatformBarChart';
 import { QRCodeCanvas } from 'qrcode.react';
 
 
@@ -2351,47 +2350,6 @@ export default function CreatePage() {
                           {shortenerError && <p className="text-xs text-red-500">{shortenerError}</p>}
                         </form>
                       </div>
-
-                      {/* Stats summary */}
-                      {shortenedLinks.length > 0 && (() => {
-                        const totalClicks = shortenedLinks.reduce((sum, l) => sum + l.clicks, 0);
-                        const platformMap = new Map<string, { links: number; clicks: number }>();
-                        for (const l of shortenedLinks) {
-                          const id = l.platform || detectPlatform(l.original);
-                          const cur = platformMap.get(id) || { links: 0, clicks: 0 };
-                          cur.links += 1;
-                          cur.clicks += l.clicks || 0;
-                          platformMap.set(id, cur);
-                        }
-                        const platforms = Array.from(platformMap.entries())
-                          .map(([id, v]) => ({ id, ...v, def: getPlatform(id) }))
-                          .sort((a, b) => b.clicks - a.clicks || b.links - a.links);
-                        const topPlatform = platforms[0];
-                        return (
-                          <>
-                            <div className="grid grid-cols-3 gap-3">
-                              <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
-                                <p className="text-2xl font-bold text-orange-500">{shortenedLinks.length}</p>
-                                <p className="text-[11px] text-gray-400">ลิงก์ทั้งหมด</p>
-                              </div>
-                              <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
-                                <p className="text-2xl font-bold text-orange-500">{totalClicks}</p>
-                                <p className="text-[11px] text-gray-400">คลิกทั้งหมด</p>
-                              </div>
-                              <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
-                                <p className="text-lg font-bold flex items-center justify-center gap-1.5" style={{ color: topPlatform ? topPlatform.def.color : '#9CA3AF' }}>
-                                  {topPlatform && <span className="w-2 h-2 rounded-full" style={{ backgroundColor: topPlatform.def.color }} />}
-                                  {topPlatform ? topPlatform.def.label : '—'}
-                                </p>
-                                <p className="text-[11px] text-gray-400">แพลตฟอร์มยอดนิยม</p>
-                              </div>
-                            </div>
-
-                            {/* Platform breakdown — vertical bar chart */}
-                            <PlatformBarChart items={platforms} />
-                          </>
-                        );
-                      })()}
 
                       {/* Shortened links list — Bitly-style cards */}
                       {shortenedLinks.length > 0 && (() => {
