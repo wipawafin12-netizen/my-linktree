@@ -408,6 +408,8 @@ const addSuggestedItems = [
   { icon: Facebook, label: 'Facebook', desc: 'เชื่อมต่อโปรไฟล์หรือเพจ Facebook ของคุณ', category: 'social', gradient: 'from-[#1877F2] to-[#4299e1]' },
   { icon: Twitter, label: 'Twitter', desc: 'แชร์ทวีตและโปรไฟล์', category: 'social', gradient: 'from-[#1DA1F2] to-[#0d8bd9]' },
   { icon: LineIcon, label: 'Line', desc: 'แชร์ LINE ID หรือ LINE Official Account ของคุณ', category: 'social', gradient: 'from-[#06C755] to-[#00B900]' },
+  { icon: ShoppingBag, label: 'Shopee', desc: 'แชร์ร้านค้าหรือสินค้าบน Shopee ของคุณ', category: 'social', image: '/shopee.png', gradient: 'from-[#EE4D2D] to-[#FF7337]' },
+  { icon: Store, label: 'Lazada', desc: 'แชร์ร้านค้าหรือสินค้าบน Lazada ของคุณ', category: 'social', image: '/lazada.png', gradient: 'from-[#0F146D] to-[#F57224]' },
   { icon: Phone, label: 'เบอร์โทรศัพท์', desc: 'ให้ผู้เข้าชมโทรหาคุณได้โดยตรง', category: 'contact', gradient: 'from-[#10b981] to-[#34d399]' },
   { icon: Mail, label: 'แบบฟอร์มติดต่อ', desc: 'รับข้อความจากผู้เข้าชมของคุณ', category: 'contact', gradient: 'from-[#8b5cf6] to-[#a78bfa]' },
   { icon: Calendar, label: 'กิจกรรม', desc: 'โปรโมตกิจกรรมที่กำลังจะมาถึง', category: 'events', gradient: 'from-[#f59e0b] to-[#fbbf24]' },
@@ -4318,9 +4320,13 @@ export default function CreatePage() {
                           onClick={() => addLink(item.label)}
                           className="w-full flex items-center gap-3.5 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
                         >
-                          <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${item.gradient} flex items-center justify-center flex-shrink-0`}>
-                            <item.icon size={18} className="text-white" />
-                          </div>
+                          {'image' in item && item.image ? (
+                            <img src={item.image} alt={item.label} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                          ) : (
+                            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${item.gradient} flex items-center justify-center flex-shrink-0`}>
+                              <item.icon size={18} className="text-white" />
+                            </div>
+                          )}
                           <div className="flex-1 text-left">
                             <p className="text-sm font-medium text-gray-900">{item.label}</p>
                             <p className="text-[11px] text-gray-400">{item.desc}</p>
